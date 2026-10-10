@@ -75,7 +75,8 @@ $clubMenu = [
             <a class="<?= $navActive === 'community' ? 'active' : '' ?>" href="<?= e(url('messages')) ?>"><?= e(t('Comunidad')) ?><?php if ($unread): ?> <span class="badge"><?= $unread ?></span><?php endif; ?></a>
             <a class="<?= $navActive === 'help' ? 'active' : '' ?>" href="<?= e(url('help')) ?>"><?= e(t('Ayuda')) ?></a>
             <?php if ((int)$user['is_admin']): ?>
-                <a class="nav-admin <?= $navActive === 'admin' ? 'active' : '' ?>" href="<?= e(url('admin')) ?>"><?= e(t('Administración')) ?></a>
+                <?php $openTickets = Moderation::openTicketsCount(); ?>
+                <a class="nav-admin <?= $navActive === 'admin' ? 'active' : '' ?>" href="<?= e(url('admin')) ?>"><?= e(t('Administración')) ?><?php if ($openTickets): ?> <span class="badge" title="<?= e(t('Tickets de ayuda sin atender')) ?>"><?= $openTickets ?></span><?php endif; ?></a>
             <?php endif; ?>
         </div>
     </nav>
@@ -99,6 +100,8 @@ $clubMenu = [
                 <li><a href="<?= e(url('nation', ['id' => $team['country_id']])) ?>"><span class="mi">🌎</span><?= e(t('Mi nación')) ?></a></li>
                 <li><a href="<?= e(url('worldcup')) ?>"><span class="mi">🏅</span><?= e(t('Mundial')) ?></a></li>
                 <li><a href="<?= e(url('team', ['id' => $team['id']])) ?>"><span class="mi">👁</span><?= e(t('Vista pública')) ?></a></li>
+                <?php $supportUnread = Moderation::unreadForUser((int)$user['id']); ?>
+                <li><a class="<?= $currentPage === 'support' ? 'active' : '' ?>" href="<?= e(url('support')) ?>"><span class="mi">🆘</span><?= e(t('Ayuda y soporte')) ?><?php if ($supportUnread): ?> <span class="badge"><?= $supportUnread ?></span><?php endif; ?></a></li>
             </ul>
         </div>
     </aside>

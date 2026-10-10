@@ -8,7 +8,7 @@ final class Installer
 {
     public const LOCK = APP_ROOT . '/install.lock';
     /** Versión del esquema de la base de datos que espera este código */
-    public const DB_VERSION = 8;
+    public const DB_VERSION = 9;
 
     public static function isInstalled(): bool
     {
@@ -79,8 +79,12 @@ final class Installer
         try {
             $v = DB::value("SELECT v FROM game_state WHERE k = 'db_version'");
             return $v === null ? 1 : (int)$v;
-        } catch (Throwable $e) {
-            return 1;
+        } catch (PDOException $e) {
+            // Sólo se considera versión 1 si falta la tabla; un fallo de conexión no debe lanzar actualizaciones
+            if ($e->getCode() === '42S02' || str_contains($e->getMessage(), "doesn't exist")) {
+                return 1;
+            }
+            throw $e;
         }
     }
 
@@ -252,6 +256,22 @@ final class Installer
                       SELECT l.team_id, l.for_match_id, l.positions, l.orders, l.tactic, l.attitude, l.captain_id, l.setpieces_id, l.updated_at
                       FROM team_lineups l JOIN matches m ON m.id = l.for_match_id WHERE m.status = 'scheduled'");
             GameState::set('db_version', 8);
+        }
+        if (self::dbVersion() < 9) {
+            $say(t('Versión 1.8: ayuda y soporte, sanciones e historial de accesos...'));
+            $pdo = DB::pdo();
+            $alters = [
+                ['users', 'ban_reason', 'ALTER TABLE users ADD COLUMN ban_reason VARCHAR(500) NULL AFTER is_banned'],
+                ['users', 'banned_until', 'ALTER TABLE users ADD COLUMN banned_until DATETIME NULL AFTER ban_reason'],
+                ['users', 'banned_at', 'ALTER TABLE users ADD COLUMN banned_at DATETIME NULL AFTER banned_until'],
+            ];
+            foreach ($alters as [$table, $col, $sql]) {
+                if (!self::columnExists($table, $col)) {
+                    $pdo->exec($sql);
+                }
+            }
+            self::runSqlFile(APP_ROOT . '/sql/schema.sql');   // crea user_sanctions, user_logins, support_tickets y support_replies
+            GameState::set('db_version', 9);
         }
         $say(t('Base de datos actualizada a la versión {v}.', ['v' => self::DB_VERSION]));
     }

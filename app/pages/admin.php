@@ -100,6 +100,7 @@ $stats = DB::row("SELECT (SELECT COUNT(*) FROM users) users, (SELECT COUNT(*) FR
     <a class="<?= $tab === 'game' ? 'active' : '' ?>" href="<?= e(url('admin')) ?>"><?= e(t('Juego')) ?></a>
     <a class="<?= $tab === 'users' ? 'active' : '' ?>" href="<?= e(url('admin', ['tab' => 'users'])) ?>"><?= e(t('Usuarios')) ?></a>
     <a class="<?= $tab === 'news' ? 'active' : '' ?>" href="<?= e(url('admin', ['tab' => 'news'])) ?>"><?= e(t('Anuncios')) ?></a>
+    <a href="<?= e(url('admin_tickets')) ?>">🆘 <?= e(t('Soporte')) ?><?php $openT = Moderation::openTicketsCount(); if ($openT): ?> <span class="badge"><?= $openT ?></span><?php endif; ?></a>
     <a href="<?= e(url('admin_team')) ?>"><?= e(t('Editar equipos')) ?></a>
     <a class="<?= $tab === 'config' ? 'active' : '' ?>" href="<?= e(url('admin', ['tab' => 'config'])) ?>"><?= e(t('Configuración')) ?></a>
     <a href="<?= e(url('admin_reset')) ?>" style="color:#b0281b"><?= e(t('Reiniciar partida')) ?></a>
@@ -167,11 +168,11 @@ $stats = DB::row("SELECT (SELECT COUNT(*) FROM users) users, (SELECT COUNT(*) FR
             <td class="small"><?= e($u['email']) ?></td>
             <td><?= $u['tid'] ? team_link($u['tid'], $u['tname']) . ' <span class="muted small">#' . (int)$u['tid'] . '</span>' : '<span class="muted">—</span>' ?></td>
             <td class="small"><?= e(fdate($u['last_activity_at'])) ?></td>
-            <td><?= (int)$u['is_banned'] ? '<span class="tag tag-red">' . e(t('Suspendido')) . '</span>' : '<span class="tag tag-user">' . e(t('Activo')) . '</span>' ?></td>
+            <td><?= (int)$u['is_banned'] ? '<span class="tag tag-red" title="' . e(Moderation::bannedMessage($u)) . '">' . e($u['banned_until'] ? t('Suspendido') : t('Expulsado')) . '</span>' : '<span class="tag tag-user">' . e(t('Activo')) . '</span>' ?></td>
             <td class="nowrap">
                 <?php if ((int)$u['id'] !== (int)$admin['id']): ?>
                 <form method="post" class="inline-form"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
-                    <button class="btn btn-small btn-grey" name="action" value="<?= (int)$u['is_banned'] ? 'unban' : 'ban' ?>"><?= (int)$u['is_banned'] ? e(t('Reactivar')) : e(t('Suspender')) ?></button>
+                    <a class="btn btn-small<?= (int)$u['is_banned'] ? '' : ' btn-danger' ?>" href="<?= e(url('admin_user', ['id' => $u['id']])) ?>">🔎 <?= e((int)$u['is_banned'] ? t('Ver / readmitir') : t('Investigar / sancionar')) ?></a>
                     <button class="btn btn-small btn-grey" name="action" value="toggle_admin"><?= (int)$u['is_admin'] ? e(t('Quitar admin')) : e(t('Hacer admin')) ?></button>
                     <button class="btn btn-small btn-grey" name="action" value="reset_link"><?= e(t('Enlace contraseña')) ?></button>
                     <?php if ($u['tid']): ?><a class="btn btn-small" href="<?= e(url('admin_team', ['id' => $u['tid']])) ?>"><?= e(t('Editar equipo')) ?></a><?php endif; ?>

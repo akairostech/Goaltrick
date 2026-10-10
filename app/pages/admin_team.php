@@ -78,6 +78,34 @@ if ($team && is_post()) {
     } elseif ($a === 'regen_lineup') {
         Lineup::save($id, Lineup::auto($id));
         flash('success', t('Alineación automática generada.'));
+    } elseif (in_array($a, ['art_select', 'art_upload', 'art_remove'], true)) {
+        $what = (string)post('what');
+        if (in_array($what, ['kit', 'crest'], true)) {
+            $label = $what === 'kit' ? t('Uniforme') : t('Escudo');
+            if ($a === 'art_select') {
+                $n = (int)post('n');
+                if ($n >= 1 && $n <= ClubArt::COUNT) {
+                    ClubArt::deleteUpload($team[$what . '_custom']);
+                    DB::update('teams', [$what . '_id' => $n, $what . '_custom' => null], 'id = ?', [$id]);
+                    flash('success', t('{what} cambiado: has elegido el diseño nº {n}.', ['what' => $label, 'n' => $n]));
+                } else {
+                    flash('error', t('El número de diseño debe estar entre 1 y {max}.', ['max' => ClubArt::COUNT]));
+                }
+            } elseif ($a === 'art_upload') {
+                [$path, $err] = ClubArt::storeUpload($_FILES['image'] ?? [], $what, $id);
+                if ($err) {
+                    flash('error', $err);
+                } else {
+                    ClubArt::deleteUpload($team[$what . '_custom']);
+                    DB::update('teams', [$what . '_custom' => $path], 'id = ?', [$id]);
+                    flash('success', t('{what} personalizado guardado.', ['what' => $label]));
+                }
+            } else {
+                ClubArt::deleteUpload($team[$what . '_custom']);
+                DB::update('teams', [$what . '_custom' => null], 'id = ?', [$id]);
+                flash('success', t('Imagen personalizada eliminada.'));
+            }
+        }
     } elseif ($a === 'to_bot' && $team['user_id']) {
         TeamService::release($id);
         flash('success', t('El equipo ha pasado a control de la máquina.'));
@@ -181,6 +209,44 @@ if ($team && is_post()) {
         </div>
     </div>
 </form>
+
+<div class="box"><div class="box-head">🛡 <?= e(t('Escudo y uniforme')) ?>
+    <?php if ($team['user_id']): ?><a class="btn btn-small btn-danger" href="<?= e(url('admin_user', ['id' => $team['user_id']])) ?>">🔎 <?= e(t('Investigar al mánager')) ?></a><?php endif; ?></div>
+    <div class="box-body admin-art">
+        <?php foreach (['crest' => t('Escudo'), 'kit' => t('Uniforme')] as $what => $label): $n = team_art_n($team, $what); $custom = $team[$what . '_custom']; ?>
+        <div class="admin-art-item">
+            <h3><?= e($label) ?></h3>
+            <div class="admin-art-preview">
+                <img id="prev-<?= $what ?>" src="<?= e(team_art_url($team, $what)) ?>" width="110" height="126" alt="" class="<?= $what ?>">
+                <div class="small muted"><?= $custom ? e(t('Imagen personalizada')) : e(t('Diseño nº {n}', ['n' => $n])) ?></div>
+            </div>
+            <form method="post" class="inline-form"><?= csrf_field() ?><input type="hidden" name="action" value="art_select"><input type="hidden" name="what" value="<?= $what ?>">
+                <label style="margin:0"><?= e(t('Diseño nº')) ?></label>
+                <input type="number" name="n" min="1" max="<?= ClubArt::COUNT ?>" value="<?= $n ?>" style="width:90px" data-art-preview="<?= $what ?>">
+                <button class="btn btn-small" type="submit"><?= e(t('Aplicar diseño')) ?></button>
+            </form>
+            <form method="post" enctype="multipart/form-data" class="inline-form" style="margin-top:6px"><?= csrf_field() ?><input type="hidden" name="action" value="art_upload"><input type="hidden" name="what" value="<?= $what ?>">
+                <input type="file" name="image" accept="image/png,image/jpeg,image/gif,image/webp" required>
+                <button class="btn btn-small btn-grey" type="submit">⬆️ <?= e(t('Subir imagen')) ?></button>
+            </form>
+            <?php if ($custom): ?>
+            <form method="post" class="inline-form" style="margin-top:6px" data-confirm-submit="<?= e(t('¿Quitar la imagen personalizada?')) ?>"><?= csrf_field() ?><input type="hidden" name="action" value="art_remove"><input type="hidden" name="what" value="<?= $what ?>">
+                <button class="btn btn-small btn-danger" type="submit"><?= e(t('Quitar imagen personalizada')) ?></button>
+            </form>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+        <p class="small muted" style="flex-basis:100%"><?= e(t('Puedes quitar una imagen inapropiada subida por un mánager o poner cualquiera de los 1000 diseños. La vista previa cambia al escribir el número.')) ?></p>
+    </div>
+</div>
+<script>
+document.querySelectorAll('[data-art-preview]').forEach(function (inp) {
+    inp.addEventListener('input', function () {
+        var n = parseInt(inp.value, 10);
+        if (n >= 1 && n <= <?= ClubArt::COUNT ?>) { document.getElementById('prev-' + inp.dataset.artPreview).src = <?= json_encode(base_url() . '/art.php?k=') ?> + inp.dataset.artPreview + '&n=' + n; }
+    });
+});
+</script>
 
 <?php $sp = SponsorService::activeContract($id); $offersN = count(SponsorService::offers($id)); ?>
 <div class="box"><div class="box-head"><?= e(t('Patrocinio')) ?></div><div class="box-body">

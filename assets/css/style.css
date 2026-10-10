@@ -573,3 +573,23 @@ a.res:hover { text-decoration: none; opacity: .85; }
 .box-head .btn-small { margin-left: 4px; }
 .match-actions { text-align: right; }
 .match-actions .btn { padding: 2px 7px; font-size: 11px; }
+
+/* v1.8: soporte, moderación */
+.ticket-thread { padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.tmsg { border-radius: 8px; padding: 8px 12px; max-width: 92%; border: 1px solid var(--border); }
+.tmsg-user { background: #fff; align-self: flex-start; }
+.tmsg-staff { background: var(--green-50); border-color: #b9d3b0; align-self: flex-end; }
+.tmsg-note { background: var(--warn-bg); border-style: dashed; align-self: stretch; max-width: none; }
+.tmsg-head { margin-bottom: 4px; }
+.tmsg-body { white-space: normal; word-wrap: break-word; }
+.support-grid { align-items: start; }
+.sanction-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.evidence-msg { padding: 8px 12px; border-bottom: 1px solid #edf1ea; }
+.evidence-msg.em-out { background: #f7faf5; }
+.admin-art { display: flex; flex-wrap: wrap; gap: 24px; }
+.admin-art-item { flex: 1 1 320px; }
+.admin-art-item h3 { margin-top: 0; }
+.admin-art-preview { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.admin-art-preview img { object-fit: contain; background: #f4f7f2; border-radius: 6px; }
+a.tile { color: inherit; display: block; }
+a.tile:hover { text-decoration: none; border-color: var(--green-500); }

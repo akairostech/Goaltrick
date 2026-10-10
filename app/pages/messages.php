@@ -89,7 +89,8 @@ $compose = (bool)get('compose');
         <p class="small"><?= e(t('De')) ?>: <strong><?= e($m['from_name'] ?? t('Sistema')) ?></strong> · <?= e(t('Para')) ?>: <strong><?= e($m['to_name']) ?></strong></p>
         <div class="msg-body"><?= e(tdb($m['body'])) ?></div>
         <br>
-        <?php if ((int)$m['to_user_id'] === $uid && $m['from_user_id']): ?><a class="btn" href="<?= e(url('messages', ['compose' => 1, 'reply' => $m['id']])) ?>"><?= e(t('Responder')) ?></a><?php endif; ?>
+        <?php if ((int)$m['to_user_id'] === $uid && $m['from_user_id']): ?><a class="btn" href="<?= e(url('messages', ['compose' => 1, 'reply' => $m['id']])) ?>"><?= e(t('Responder')) ?></a>
+            <a class="btn btn-grey" href="<?= e(url('support', ['new' => 1, 'report' => $m['from_name'], 'link' => 'index.php?page=messages&view=' . (int)$m['id']])) ?>" title="<?= e(t('Reportar este mensaje a la administración')) ?>">🚩 <?= e(t('Reportar')) ?></a><?php endif; ?>
         <form method="post" class="inline-form" data-confirm-submit="<?= e(t('¿Borrar este mensaje?')) ?>"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$m['id'] ?>"><button class="btn btn-grey" type="submit"><?= e(t('Borrar')) ?></button></form>
     </div>
 </div>

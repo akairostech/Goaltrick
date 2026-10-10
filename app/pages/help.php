@@ -5,7 +5,7 @@ if (!current_user()) {
     $layout = 'plain';
 }
 ?>
-<div class="page-title"><h1><?= e(t('Manual del juego')) ?></h1></div>
+<div class="page-title"><h1><?= e(t('Manual del juego')) ?></h1><?php if (current_user()): ?><a class="btn btn-accent" href="<?= e(url('support')) ?>">🆘 <?= e(t('¿Tienes un problema? Contacta con soporte')) ?></a><?php endif; ?></div>
 
 <div class="box"><div class="box-head"><?= e(t('Lo básico')) ?></div><div class="box-body">
     <p><?= e(t('Eres el mánager de un club de fútbol. Cada semana se juega una jornada de liga (y, si quieres, un amistoso), tus jugadores entrenan y el club cobra y paga. No hace falta estar conectado cuando se juegan los partidos: sólo tienes que dejar preparada la alineación.')) ?></p>
@@ -96,6 +96,10 @@ if (!current_user()) {
         <li><?= t('<strong>Largo plazo:</strong> 2 o 3 temporadas cobrando lo mismo aunque desciendas, con una buena prima de firma.') ?></li>
     </ul>
     <p><?= e(t('Tienes hasta la primera actualización económica de la temporada para elegir; si no, se firma automáticamente el contrato fijo. El patrocinador paga cada semana en la actualización económica. Además, la publicidad del estadio aporta un ingreso según tus socios.')) ?></p>
+</div></div>
+<div class="box"><div class="box-head"><?= e(t('Ayuda, soporte y normas')) ?></div><div class="box-body">
+    <p><?= e(t('Si encuentras un error en el juego, tienes un problema con tu cuenta o quieres denunciar a otro mánager (insultos, mensajes molestos, multicuentas, trampas o aprovechamiento de errores), abre un ticket en «Ayuda y soporte». La administración te responderá por ese mismo ticket y recibirás un aviso en tu buzón. Las denuncias son confidenciales.')) ?></p>
+    <p><?= e(t('No está permitido tener más de una cuenta, traspasar dinero o jugadores entre cuentas a precios ficticios, aprovechar errores del juego ni acosar a otros usuarios. La administración puede enviar avisos, suspender temporalmente o expulsar del juego a quien incumpla las normas.')) ?></p>
 </div></div>
 <div class="box"><div class="box-head"><?= e(t('Economía y mercado')) ?></div><div class="box-body">
     <p><?= e(t('Ingresas dinero por taquilla (partidos en casa), tu patrocinador principal, la publicidad (según tus socios y su ánimo) y premios de fin de temporada. Pagas salarios, personal, mantenimiento del estadio y cantera cada semana.')) ?></p>

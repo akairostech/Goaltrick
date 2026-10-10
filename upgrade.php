@@ -20,6 +20,12 @@ if (!Installer::isInstalled()) {
 $log = [];
 $error = null;
 $done = false;
+try {
+    Installer::dbVersion();
+} catch (PDOException $e) {
+    http_response_code(500);
+    exit('No se puede conectar con la base de datos. Revisa config.ini y que MySQL esté encendido. / Cannot connect to the database.');
+}
 if (Installer::needsUpgrade() && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     csrf_check();
     @set_time_limit(0);
@@ -53,6 +59,12 @@ $pending = Installer::needsUpgrade();
                 <a class="btn btn-accent" href="index.php"><?= e(t('Ir al juego')) ?></a>
             <?php else: ?>
                 <p><?= e(t('Has instalado una versión nueva del juego. Hay que actualizar la base de datos (versión {from} → {to}).', ['from' => Installer::dbVersion(), 'to' => Installer::DB_VERSION])) ?> <strong><?= e(t('No se borra nada de tu partida.')) ?></strong></p>
+                <p><?= e(t('Novedades de la versión {v}:', ['v' => '1.8'])) ?></p>
+                <ul>
+                    <li><?= e(t('Ayuda y soporte: los usuarios abren tickets (errores, denuncias, dudas) y la administración los responde.')) ?></li>
+                    <li><?= e(t('Sanciones: avisos, suspensiones temporales y expulsiones con motivo, e historial de la actividad de cada usuario.')) ?></li>
+                    <li><?= e(t('La administración puede cambiar el escudo y el uniforme de cualquier equipo.')) ?></li>
+                </ul>
                 <p><?= e(t('Novedades de la versión {v}:', ['v' => '1.7'])) ?></p>
                 <ul>
                     <li><?= e(t('«Resumen del club» y «Club» se unen en una sola sección.')) ?></li>

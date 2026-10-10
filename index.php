@@ -11,7 +11,12 @@ if (!Installer::isInstalled()) {
     header('Location: install.php');
     exit;
 }
-if (Installer::needsUpgrade()) {
+try {
+    $needsUpgrade = Installer::needsUpgrade();
+} catch (PDOException $e) {
+    $needsUpgrade = false;   // sin conexión: el error se muestra más abajo al cargar la página
+}
+if ($needsUpgrade) {
     header('Location: upgrade.php');
     exit;
 }
@@ -28,7 +33,7 @@ const PAGES = [
     'profile' => 'profile', 'admin' => 'admin',
     'nations' => 'nations', 'nation' => 'nation', 'worldcup' => 'worldcup',
     'sponsors' => 'sponsors', 'companies' => 'companies', 'club' => 'club', 'staff_member' => 'staff_member', 'cup' => 'cup', 'stadium_art' => 'stadium_art',
-    'admin_team' => 'admin_team', 'admin_player' => 'admin_player', 'admin_reset' => 'admin_reset',
+    'admin_team' => 'admin_team', 'admin_tickets' => 'admin_tickets', 'admin_user' => 'admin_user', 'support' => 'support', 'admin_player' => 'admin_player', 'admin_reset' => 'admin_reset',
 ];
 
 // Cambio de idioma: index.php?...&lang=en  (se guarda en una cookie y en el perfil del usuario)

@@ -17,6 +17,9 @@ final class Auth
             $id = $_SESSION['user_id'] ?? null;
             if ($id) {
                 $u = DB::row('SELECT * FROM users WHERE id = ?', [$id]);
+                if ($u && (int)$u['is_banned']) {
+                    $u = Moderation::refresh($u);
+                }
                 if ($u && !(int)$u['is_banned']) {
                     self::$user = $u;
                 } else {
@@ -119,7 +122,10 @@ final class Auth
             return t('Usuario o contraseña incorrectos.');
         }
         if ((int)$u['is_banned']) {
-            return t('Esta cuenta ha sido suspendida.');
+            $u = Moderation::refresh($u);
+            if ((int)$u['is_banned']) {
+                return Moderation::bannedMessage($u);
+            }
         }
         if (password_needs_rehash($u['password_hash'], PASSWORD_DEFAULT)) {
             DB::exec('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($password, PASSWORD_DEFAULT), $u['id']]);
@@ -136,6 +142,7 @@ final class Auth
         session_regenerate_id(true);
         $_SESSION['user_id'] = $userId;
         DB::exec('UPDATE users SET last_login_at = ?, last_activity_at = ? WHERE id = ?', [now(), now(), $userId]);
+        Moderation::recordLogin($userId);
         self::$user = null;
     }
 
@@ -184,8 +191,11 @@ final class Auth
             setcookie(self::COOKIE, '', time() - 3600, '/');
             return;
         }
-        $u = DB::row('SELECT * FROM users WHERE id = ? AND is_banned = 0', [$row['user_id']]);
-        if (!$u) {
+        $u = DB::row('SELECT * FROM users WHERE id = ?', [$row['user_id']]);
+        if ($u && (int)$u['is_banned']) {
+            $u = Moderation::refresh($u);
+        }
+        if (!$u || (int)$u['is_banned']) {
             return;
         }
         // Rotar el token

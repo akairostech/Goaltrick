@@ -27,7 +27,11 @@ $resultNames = ['champion' => '🏆 ' . t('Campeón'), 'promoted' => '⬆️ ' .
     <span>
         <?php if ($my && (int)$my['id'] !== $id): ?>
             <a class="btn btn-small" href="<?= e(url('friendlies', ['to' => $id])) ?>">🤝 <?= e(t('Invitar a amistoso')) ?></a>
-            <?php if ($t['uid']): ?><a class="btn btn-small btn-grey" href="<?= e(url('messages', ['compose' => 1, 'to' => $t['username']])) ?>">✉️ <?= e(t('Mensaje')) ?></a><?php endif; ?>
+            <?php if ($t['uid']): ?><a class="btn btn-small btn-grey" href="<?= e(url('messages', ['compose' => 1, 'to' => $t['username']])) ?>">✉️ <?= e(t('Mensaje')) ?></a>
+                <a class="btn btn-small btn-grey" href="<?= e(url('support', ['new' => 1, 'report' => $t['username'], 'link' => 'index.php?page=team&id=' . $id])) ?>" title="<?= e(t('Reportar a este mánager a la administración')) ?>">🚩 <?= e(t('Reportar')) ?></a><?php endif; ?>
+        <?php endif; ?>
+        <?php if ($my && (int)(current_user()['is_admin'] ?? 0) && $t['uid']): ?>
+            <a class="btn btn-small btn-danger" href="<?= e(url('admin_user', ['id' => $t['uid']])) ?>">🔎 <?= e(t('Investigar')) ?></a>
         <?php endif; ?>
     </span>
 </div>
