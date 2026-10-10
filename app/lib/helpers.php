@@ -513,11 +513,39 @@ function nation_link(int|string $countryId, string $name, ?string $code = null):
 
 const AVATAR_COUNT = 400;
 
-function avatar_url(array $p): string
+/** Número de uniforme (1..1000) de cada club, cargado una sola vez por petición */
+function team_kit_n(int $teamId): ?int
+{
+    static $kits = null;
+    if ($kits === null) {
+        $kits = [];
+        try {
+            foreach (DB::all('SELECT id, kit_id FROM teams') as $r) {
+                $kits[(int)$r['id']] = (int)$r['kit_id'];
+            }
+        } catch (Throwable $e) {
+            // Base de datos sin actualizar todavía
+        }
+    }
+    if (!array_key_exists($teamId, $kits)) {
+        return null;
+    }
+    return team_art_n(['id' => $teamId, 'kit_id' => $kits[$teamId]], 'kit');
+}
+
+/**
+ * Cara del jugador. Si el jugador está en un club, viste la camiseta del uniforme que ha elegido
+ * ese club (face.php); $kit permite forzar un uniforme concreto.
+ */
+function avatar_url(array $p, ?int $kit = null): string
 {
     $n = (int)($p['avatar'] ?? 0);
     if ($n < 1 || $n > AVATAR_COUNT) {
         $n = ((int)($p['id'] ?? 0) * 7) % AVATAR_COUNT + 1;
+    }
+    $kit = $kit ?? (!empty($p['team_id']) ? team_kit_n((int)$p['team_id']) : null);
+    if ($kit) {
+        return base_url() . '/face.php?a=' . $n . '&k=' . $kit . '&v=' . APP_VERSION;
     }
     return asset(sprintf('img/avatars/%03d.svg', $n));
 }

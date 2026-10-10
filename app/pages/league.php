@@ -111,7 +111,7 @@ $n = count($table);
         <div class="box-head"><?= e(t('Máximos goleadores')) ?></div>
         <table class="table compact">
             <?php foreach ($scorers as $i => $s): ?>
-                <tr><td><?= $i + 1 ?></td><td class="nowrap"><?= avatar_img($s, 28) ?> <?= player_link($s) ?></td><td class="muted small nowrap"><?= $crest($s['tid'], 16) ?> <?= e($s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
+                <tr><td><?= $i + 1 ?></td><td class="nowrap"><?= avatar_img($s + ['team_id' => $s['tid']], 28) ?> <?= player_link($s) ?></td><td class="muted small nowrap"><?= $crest($s['tid'], 16) ?> <?= e($s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
             <?php endforeach; ?>
             <?php if (!$scorers): ?><tr><td class="muted"><?= e(t('Todavía no hay goles.')) ?></td></tr><?php endif; ?>
         </table>

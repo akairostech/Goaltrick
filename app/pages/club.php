@@ -77,8 +77,8 @@ $team = DB::row('SELECT * FROM teams WHERE id = ?', [$teamId]);
     $history = DB::all('SELECT sh.*, lu.name FROM season_history sh JOIN league_units lu ON lu.id = sh.league_unit_id WHERE sh.team_id = ? ORDER BY season DESC LIMIT 8', [$teamId]);
     $titles = (int)DB::value('SELECT COUNT(*) FROM season_history WHERE team_id = ? AND position = 1', [$teamId])
         + (int)DB::value('SELECT COUNT(*) FROM league_cups WHERE winner_team_id = ?', [$teamId]);
-    $best = DB::row('SELECT id, first_name, last_name, tsi, avatar FROM players WHERE team_id = ? AND retired = 0 ORDER BY tsi DESC LIMIT 1', [$teamId]);
-    $scorer = DB::row('SELECT id, first_name, last_name, goals_season, avatar FROM players WHERE team_id = ? AND retired = 0 AND goals_season > 0 ORDER BY goals_season DESC LIMIT 1', [$teamId]);
+    $best = DB::row('SELECT id, team_id, first_name, last_name, tsi, avatar FROM players WHERE team_id = ? AND retired = 0 ORDER BY tsi DESC LIMIT 1', [$teamId]);
+    $scorer = DB::row('SELECT id, team_id, first_name, last_name, goals_season, avatar FROM players WHERE team_id = ? AND retired = 0 AND goals_season > 0 ORDER BY goals_season DESC LIMIT 1', [$teamId]);
     $last = LeagueService::lastMatch($teamId);
     $next = LeagueService::nextMatch($teamId);
     $news = DB::all('SELECT * FROM team_events WHERE team_id = ? ORDER BY id DESC LIMIT 20', [$teamId]);

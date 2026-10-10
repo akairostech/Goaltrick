@@ -185,7 +185,7 @@ $teamId = (int)$team['id'];
     $total = (int)DB::value("SELECT COUNT(*) FROM transfer_listings l WHERE l.status = 'sold' AND $where", $wp);
     $per = 25;
     $pg = max(1, (int)get('p', 1));
-    $rows = DB::all("SELECT l.*, p.first_name, p.last_name, p.id AS pid, p.avatar,
+    $rows = DB::all("SELECT l.*, p.first_name, p.last_name, p.id AS pid, p.avatar, p.team_id AS ptid,
             s.id AS sid, s.name AS seller, s.crest_id AS s_crest_id, s.crest_custom AS s_crest_custom,
             b.id AS bid, b.name AS buyer, b.crest_id AS b_crest_id, b.crest_custom AS b_crest_custom
         FROM transfer_listings l JOIN players p ON p.id = l.player_id JOIN teams s ON s.id = l.seller_team_id LEFT JOIN teams b ON b.id = l.highest_bidder_id
@@ -222,7 +222,7 @@ $teamId = (int)$team['id'];
         <?php foreach ($rows as $r): $isBuy = (int)$r['highest_bidder_id'] === $teamId; ?>
             <tr>
                 <td class="nowrap"><?= e(fdate($r['closed_at'], false)) ?></td>
-                <td class="nowrap"><?= avatar_img(['id' => $r['pid'], 'avatar' => $r['avatar']], 22) ?> <a href="<?= e(url('player', ['id' => $r['pid']])) ?>"><?= e(player_name($r)) ?></a></td>
+                <td class="nowrap"><?= avatar_img(['id' => $r['pid'], 'avatar' => $r['avatar'], 'team_id' => $r['ptid']], 22) ?> <a href="<?= e(url('player', ['id' => $r['pid']])) ?>"><?= e(player_name($r)) ?></a></td>
                 <td><span class="tag <?= $isBuy ? 'tag-buy' : 'tag-sell' ?>"><?= e($isBuy ? t('Compra') : t('Venta')) ?></span></td>
                 <td class="nowrap"><?= crest_img($crestOf($r, 's'), 18) ?> <?= team_link($r['sid'], $r['seller']) ?></td>
                 <td class="center muted">→</td>

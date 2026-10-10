@@ -1,4 +1,4 @@
-# GoalTrick v1.8 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.9 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -35,6 +35,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Ayuda y soporte** (v1.8): los usuarios abren tickets por categorías (error del juego, reportar a un usuario, cuenta, mercado, sugerencia...), con enlace opcional y denuncias confidenciales; botones «Reportar» en los mensajes recibidos y en la página de cada club. La administración tiene su bandeja de tickets (filtros, asignación, estados, respuestas y notas internas) y el usuario recibe un aviso en su buzón al ser respondido.
 - **Moderación** (v1.8): ficha de investigación de cada usuario con sus traspasos (y con qué mánagers), pujas, mensajes enviados y recibidos (aunque los haya borrado), finanzas, amistosos, partidos, noticias, tickets, denuncias recibidas, IP de acceso y otras cuentas desde las mismas IP. Sanciones con motivo: aviso, suspensión temporal (1 a 365 días, se levanta sola), expulsión permanente (opcionalmente quitándole el equipo) y readmisión, con historial. El usuario sancionado ve el motivo al intentar entrar.
 - **Administración de equipos** (v1.8): cambiar el escudo y el uniforme de cualquier club (diseño nº 1-1000 con vista previa, subir una imagen o quitar una imagen inapropiada).
+- **Caras con el uniforme del club** (v1.9): las 400 caras de jugador se combinan con los 1000 uniformes (400.000 imágenes posibles) generándose al vuelo con `face.php`, así cada jugador aparece con la camiseta (colores, diseño, mangas, cuello y número) del uniforme que ha elegido su club. Si el club ha subido un uniforme propio, la camiseta usa los colores del último diseño elegido de la galería. Los jugadores sin club muestran su imagen original.
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos

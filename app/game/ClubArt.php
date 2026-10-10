@@ -201,6 +201,65 @@ final class ClubArt
     }
 
     /* ------------------------------------------------------------------
+     *  Caras de los jugadores con el uniforme del club
+     * ------------------------------------------------------------------ */
+
+    public const FACE_COUNT = 400;
+
+    /**
+     * Cara nº $face (1..400) vistiendo la camiseta del uniforme nº $kit (1..1000): 400 × 1000 combinaciones
+     * generadas al vuelo a partir de las caras de assets/img/avatars (la camiseta va entre las marcas KIT y
+     * el cuello entre las marcas COLLAR).
+     */
+    public static function faceSvg(int $face, int $kit): ?string
+    {
+        $face = max(1, min(self::FACE_COUNT, $face));
+        $file = APP_ROOT . sprintf('/assets/img/avatars/%03d.svg', $face);
+        $svg = @file_get_contents($file);
+        if ($svg === false) {
+            return null;
+        }
+        $k = self::kitSpec($kit);
+        $p = self::hex($k['primary']);
+        $s = self::hex($k['secondary']);
+        $sl = self::hex($k['sleeve']);
+        $ink = '#2a2420';
+        $collar = $k['pattern'] === 0 ? $s : ($k['sleeve'] === $k['primary'] ? $s : $p);
+        if ($collar === $p) {
+            $collar = $s;
+        }
+        $numCol = self::lum($p) > 0.6 ? self::hex('navy') : '#ffffff';
+        $body = 'M10 100 C10 82 26 74 50 74 C74 74 90 82 90 100Z';
+        $pat = match ($k['pattern']) {
+            1 => implode('', array_map(fn($x) => "<rect x=\"$x\" y=\"70\" width=\"6\" height=\"32\" fill=\"$s\"/>", [17, 29, 41, 53, 65, 77])),
+            2 => "<rect x=\"8\" y=\"81\" width=\"84\" height=\"5\" fill=\"$s\"/><rect x=\"8\" y=\"92\" width=\"84\" height=\"5\" fill=\"$s\"/>",
+            3 => "<rect x=\"50\" y=\"70\" width=\"42\" height=\"32\" fill=\"$s\"/>",
+            4 => "<polygon points=\"18,77 30,74 86,100 72,100\" fill=\"$s\"/>",
+            5 => "<polygon points=\"8,80 50,92 92,80 92,87 50,99 8,87\" fill=\"$s\"/>",
+            6 => "<rect x=\"50\" y=\"70\" width=\"42\" height=\"16\" fill=\"$s\"/><rect x=\"8\" y=\"86\" width=\"42\" height=\"16\" fill=\"$s\"/>",
+            7 => implode('', array_map(fn($x) => "<rect x=\"$x\" y=\"70\" width=\"1.6\" height=\"32\" fill=\"$s\"/>", range(14, 86, 5))),
+            8 => "<rect x=\"43\" y=\"70\" width=\"14\" height=\"32\" fill=\"$s\"/>",
+            9 => "<rect x=\"8\" y=\"70\" width=\"84\" height=\"9\" fill=\"$s\"/><rect x=\"8\" y=\"70\" width=\"10\" height=\"32\" fill=\"$s\"/><rect x=\"82\" y=\"70\" width=\"10\" height=\"32\" fill=\"$s\"/>",
+            default => '',
+        };
+        $sleeves = $k['sleeve'] !== $k['primary'] || $k['cuffs']
+            ? "<path d=\"M8 102 L8 86 C11 82 15 80 20 78 L26 102Z\" fill=\"$sl\"/><path d=\"M92 102 L92 86 C89 82 85 80 80 78 L74 102Z\" fill=\"$sl\"/>"
+              . "<path d=\"M20 78 L26 100 M80 78 L74 100\" stroke=\"$ink\" stroke-width=\"1.2\" opacity=\".6\"/>"
+            : '';
+        $num = (($kit * 7) % 23) + 1;
+        $shirt = "<clipPath id=\"kc$face\"><path d=\"$body\"/></clipPath>"
+            . "<path d=\"$body\" fill=\"$p\"/>"
+            . "<g clip-path=\"url(#kc$face)\">$pat$sleeves</g>"
+            . "<path d=\"$body\" fill=\"none\" stroke=\"$ink\" stroke-width=\"2.4\"/>"
+            . "<text x=\"72\" y=\"97\" text-anchor=\"middle\" font-family=\"Arial Black, Arial, sans-serif\" font-weight=\"900\" font-size=\"10\" fill=\"$numCol\" stroke=\"$ink\" stroke-width=\"0.6\">$num</text>";
+        $svg = preg_replace('#<!--KIT-->.*?<!--/KIT-->#s', $shirt, $svg, 1);
+        $svg = preg_replace_callback('#<!--COLLAR-->(.*?)<!--/COLLAR-->#s', function ($m) use ($collar, $ink) {
+            return preg_replace_callback('#(stroke|fill)="(\#[0-9a-fA-F]{6})"#', fn($c) => strtolower($c[2]) === $ink ? $c[0] : $c[1] . '="' . $collar . '"', $m[1]);
+        }, $svg, 1);
+        return $svg;
+    }
+
+    /* ------------------------------------------------------------------
      *  Escudo
      * ------------------------------------------------------------------ */
 
