@@ -58,6 +58,7 @@ $userLink = fn($uid, $name) => $uid ? '<a href="' . e(url('admin_user', ['id' =>
     <span><?php if ($ticketId): ?><a class="btn btn-small btn-grey" href="<?= e(url('admin_tickets', ['id' => $ticketId])) ?>">« <?= e(t('Volver al ticket #{id}', ['id' => $ticketId])) ?></a><?php endif; ?>
     <a href="<?= e(url('admin', ['tab' => 'users'])) ?>">« <?= e(t('Usuarios')) ?></a></span>
 </div>
+<?= admin_tabs('users') ?>
 <div class="tabs">
     <?php foreach ($tabs as $k => $label): ?><a class="<?= $tab === $k ? 'active' : '' ?>" href="<?= e($link($k)) ?>"><?= e($label) ?></a><?php endforeach; ?>
 </div>
@@ -85,7 +86,7 @@ $userLink = fn($uid, $name) => $uid ? '<a href="' . e(url('admin_user', ['id' =>
             <tr><th><?= e(t('Denuncias recibidas')) ?></th><td><?= $reports ? '<a href="' . e($link('tickets')) . '">' . $reports . '</a>' : '0' ?></td></tr>
         </table>
     </div>
-    <div class="box"><div class="box-head">⚖️ <?= e(t('Sancionar')) ?></div>
+    <div class="box" id="sancionar"><div class="box-head">⚖️ <?= e(t('Sancionar')) ?></div>
         <div class="box-body">
             <?php if ((int)$u['id'] === (int)$admin['id']): ?>
                 <p class="muted"><?= e(t('No puedes sancionarte a ti mismo.')) ?></p>

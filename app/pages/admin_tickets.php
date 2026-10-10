@@ -34,6 +34,7 @@ $catLabel = fn(string $c) => (Moderation::CATEGORIES[$c][1] ?? '') . ' ' . t(Mod
 $statusTag = fn(string $s) => '<span class="tag ' . e(Moderation::STATUSES[$s][1] ?? '') . '">' . e(t(Moderation::STATUSES[$s][0] ?? $s)) . '</span>';
 ?>
 <div class="page-title"><h1>🆘 <?= e(t('Tickets de ayuda')) ?></h1><a href="<?= e(url('admin')) ?>">« <?= e(t('Volver a Administración')) ?></a></div>
+<?= admin_tabs('support') ?>
 
 <?php if ($id):
     $tk = DB::row('SELECT t.*, u.username, u.email, u.is_banned, r.username AS reported, a.username AS assigned, tm.id AS team_id, tm.name AS team_name

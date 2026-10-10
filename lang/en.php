@@ -2004,4 +2004,6 @@ Good luck!',
     'Ayuda y soporte: los usuarios abren tickets (errores, denuncias, dudas) y la administración los responde.' => 'Help & support: users open tickets (bugs, reports, questions) and the administration answers them.',
     'Sanciones: avisos, suspensiones temporales y expulsiones con motivo, e historial de la actividad de cada usuario.' => 'Sanctions: warnings, temporary suspensions and bans with a reason, plus each user\'s activity history.',
     'La administración puede cambiar el escudo y el uniforme de cualquier equipo.' => 'The administration can change any team\'s crest and kit.',
+    'Investigar mánager' => 'Investigate manager',
+    'Readmitir' => 'Reinstate',
 ];

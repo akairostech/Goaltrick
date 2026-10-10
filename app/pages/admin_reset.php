@@ -25,6 +25,7 @@ if (is_post()) {
 $stats = DB::row('SELECT (SELECT COUNT(*) FROM users) u, (SELECT COUNT(*) FROM teams WHERE user_id IS NOT NULL) h, (SELECT COUNT(*) FROM matches WHERE status = \'played\') m');
 ?>
 <div class="page-title"><h1><?= e(t('Reiniciar la partida')) ?></h1><a href="<?= e(url('admin')) ?>">« <?= e(t('Volver a Administración')) ?></a></div>
+<?= admin_tabs('reset') ?>
 
 <?php if ($done): ?>
     <div class="alert alert-success"><?= e(t('La partida se ha reiniciado. Empieza la temporada 1.')) ?></div>

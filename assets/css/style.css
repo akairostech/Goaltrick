@@ -593,3 +593,4 @@ a.res:hover { text-decoration: none; opacity: .85; }
 .admin-art-preview img { object-fit: contain; background: #f4f7f2; border-radius: 6px; }
 a.tile { color: inherit; display: block; }
 a.tile:hover { text-decoration: none; border-color: var(--green-500); }
+.user-actions .inline-form { display: inline-flex; }

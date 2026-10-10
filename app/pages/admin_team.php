@@ -114,6 +114,7 @@ if ($team && is_post()) {
 }
 ?>
 <div class="page-title"><h1><?= e(t('Administración · Equipos')) ?></h1><a href="<?= e(url('admin')) ?>">« <?= e(t('Volver a Administración')) ?></a></div>
+<?= admin_tabs('teams') ?>
 
 <div class="box"><div class="box-head"><?= e(t('Buscar equipo')) ?></div><div class="box-body">
     <form method="get" class="inline-form">

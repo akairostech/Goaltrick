@@ -641,3 +641,23 @@ function kit_img(array $t, int $size = 80, string $class = 'kit'): string
 {
     return '<img class="' . e($class) . '" src="' . e(team_art_url($t, 'kit')) . '" width="' . $size . '" height="' . round($size * 1.15) . '" alt="" loading="lazy">';
 }
+
+/** Pestañas de navegación de la administración (se muestran en todas sus páginas) */
+function admin_tabs(string $active): string
+{
+    $open = Moderation::openTicketsCount();
+    $tabs = [
+        'game'    => [url('admin'), e(t('Juego'))],
+        'users'   => [url('admin', ['tab' => 'users']), e(t('Usuarios'))],
+        'news'    => [url('admin', ['tab' => 'news']), e(t('Anuncios'))],
+        'support' => [url('admin_tickets'), '🆘 ' . e(t('Soporte')) . ($open ? ' <span class="badge">' . $open . '</span>' : '')],
+        'teams'   => [url('admin_team'), e(t('Editar equipos'))],
+        'config'  => [url('admin', ['tab' => 'config']), e(t('Configuración'))],
+        'reset'   => [url('admin_reset'), '<span style="color:#b0281b">' . e(t('Reiniciar partida')) . '</span>'],
+    ];
+    $h = '<div class="tabs admin-tabs">';
+    foreach ($tabs as $k => [$href, $label]) {
+        $h .= '<a class="' . ($k === $active ? 'active' : '') . '" href="' . e($href) . '">' . $label . '</a>';
+    }
+    return $h . '</div>';
+}

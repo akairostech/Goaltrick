@@ -75,6 +75,7 @@ $countries = DB::all('SELECT id, name, code FROM countries ORDER BY name');
         <div class="muted">TSI <?= num($p['tsi']) ?> · <?= e(t('Salario {wage}', ['wage' => money($p['wage'])])) ?> · <?= $teamName ? e($teamName) : e(t('Sin equipo')) ?><?= (int)$p['retired'] ? ' ' . e(t('(retirado)')) : '' ?></div></div></div>
     <span><?php if ($p['team_id']): ?><a href="<?= e(url('admin_team', ['id' => $p['team_id']])) ?>">« <?= e(t('Volver al equipo')) ?></a> · <?php endif; ?><a href="<?= e(url('player', ['id' => $id])) ?>"><?= e(t('Ficha pública')) ?> »</a></span>
 </div>
+<?= admin_tabs('teams') ?>
 
 <form method="post">
     <?= csrf_field() ?>

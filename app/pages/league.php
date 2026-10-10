@@ -19,9 +19,19 @@ $lastPlayed = (int)DB::value("SELECT MAX(round) FROM matches WHERE league_unit_i
 $round = (int)(get('round') ?: max(1, $lastPlayed));
 $games = DB::all('SELECT m.*, h.name AS hn, a.name AS an FROM matches m JOIN teams h ON h.id = m.home_team_id JOIN teams a ON a.id = m.away_team_id
     WHERE m.league_unit_id = ? AND m.season = ? AND m.round = ? ORDER BY m.id', [$unitId, $season, $round]);
-$scorers = DB::all("SELECT p.id, p.first_name, p.last_name, t.name AS tn, SUM(mp.goals) g FROM match_players mp
+$scorers = DB::all("SELECT p.id, p.first_name, p.last_name, p.avatar, t.id AS tid, t.name AS tn, SUM(mp.goals) g FROM match_players mp
     JOIN matches m ON m.id = mp.match_id JOIN players p ON p.id = mp.player_id JOIN teams t ON t.id = mp.team_id
-    WHERE m.league_unit_id = ? AND m.season = ? AND m.type = 'league' GROUP BY p.id, p.first_name, p.last_name, t.name HAVING g > 0 ORDER BY g DESC LIMIT 10", [$unitId, $season]);
+    WHERE m.league_unit_id = ? AND m.season = ? AND m.type = 'league' GROUP BY p.id, p.first_name, p.last_name, p.avatar, t.id, t.name HAVING g > 0 ORDER BY g DESC LIMIT 10", [$unitId, $season]);
+// Escudos de los equipos de la división (y de los goleadores)
+$crestIds = array_unique(array_merge(array_map(fn($r) => (int)$r['team_id'], $table), array_map(fn($r) => (int)$r['tid'], $scorers),
+    array_map(fn($g) => (int)$g['home_team_id'], $games), array_map(fn($g) => (int)$g['away_team_id'], $games)));
+$crests = [];
+if ($crestIds) {
+    foreach (DB::all('SELECT id, crest_id, crest_custom FROM teams WHERE id IN (' . implode(',', $crestIds) . ')') as $c) {
+        $crests[(int)$c['id']] = $c;
+    }
+}
+$crest = fn($id, int $size = 20) => crest_img($crests[(int)$id] ?? ['id' => $id], $size);
 $seasons = array_column(DB::all('SELECT DISTINCT season FROM matches WHERE league_unit_id = ? ORDER BY season DESC', [$unitId]), 'season');
 $n = count($table);
 ?>
@@ -63,7 +73,7 @@ $n = count($table);
         ?>
             <tr class="<?= implode(' ', $cls) ?>">
                 <td><?= $r['pos'] ?></td>
-                <td><?= team_link($r['team_id'], $r['name']) ?> <?= $r['is_bot'] ? '' : '<span class="tag tag-user" title="' . e(t('Equipo de un mánager')) . '">' . e(t('M##mánager')) . '</span>' ?></td>
+                <td class="nowrap"><?= $crest($r['team_id']) ?> <?= team_link($r['team_id'], $r['name']) ?> <?= $r['is_bot'] ? '' : '<span class="tag tag-user" title="' . e(t('Equipo de un mánager')) . '">' . e(t('M##mánager')) . '</span>' ?></td>
                 <td class="num"><?= $r['pj'] ?></td><td class="num"><?= $r['g'] ?></td><td class="num"><?= $r['e'] ?></td><td class="num"><?= $r['p'] ?></td>
                 <td class="num"><?= $r['gf'] ?></td><td class="num"><?= $r['gc'] ?></td><td class="num"><?= $r['gf'] - $r['gc'] ?></td>
                 <td class="num"><strong><?= $r['pts'] ?></strong></td>
@@ -90,9 +100,9 @@ $n = count($table);
         <table class="table compact">
             <?php foreach ($games as $g): ?>
                 <tr>
-                    <td class="right"><?= e($g['hn']) ?></td>
+                    <td class="right"><?= e($g['hn']) ?> <?= $crest($g['home_team_id'], 18) ?></td>
                     <td class="center nowrap"><a href="<?= e(url('match', ['id' => $g['id']])) ?>"><?= $g['status'] === 'played' ? '<strong>' . (int)$g['home_goals'] . ' - ' . (int)$g['away_goals'] . '</strong>' : e(date('d/m H:i', strtotime($g['scheduled_at']))) ?></a></td>
-                    <td><?= e($g['an']) ?></td>
+                    <td><?= $crest($g['away_team_id'], 18) ?> <?= e($g['an']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>
@@ -101,7 +111,7 @@ $n = count($table);
         <div class="box-head"><?= e(t('Máximos goleadores')) ?></div>
         <table class="table compact">
             <?php foreach ($scorers as $i => $s): ?>
-                <tr><td><?= $i + 1 ?></td><td><?= player_link($s) ?></td><td class="muted small"><?= e($s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
+                <tr><td><?= $i + 1 ?></td><td class="nowrap"><?= avatar_img($s, 28) ?> <?= player_link($s) ?></td><td class="muted small nowrap"><?= $crest($s['tid'], 16) ?> <?= e($s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
             <?php endforeach; ?>
             <?php if (!$scorers): ?><tr><td class="muted"><?= e(t('Todavía no hay goles.')) ?></td></tr><?php endif; ?>
         </table>
