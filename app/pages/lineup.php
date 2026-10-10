@@ -10,8 +10,18 @@ foreach ($players as $p) {
     $byId[(int)$p['id']] = $p;
 }
 
-$next = LeagueService::nextMatch($teamId);
+// Partido para el que se prepara la alineación: ?match=ID o, si no, el próximo
+$upcoming = LeagueService::teamMatches($teamId, "status = 'scheduled'", [], 'x.scheduled_at', 40);
+$wanted = (int)get('match');
+$next = null;
+foreach ($upcoming as $u) {
+    if ((int)$u['id'] === $wanted) {
+        $next = $u;
+    }
+}
+$next = $next ?? ($upcoming[0] ?? null);
 $nextId = $next ? (int)$next['id'] : null;
+$self = url('lineup', $nextId ? ['match' => $nextId] : []);
 
 /** Lee la alineación enviada en el formulario. Devuelve [alineación, errores, titulares] */
 $parse = function () use ($byId): array {
@@ -72,24 +82,24 @@ if (is_post()) {
         $lu['attitude'] = $old['attitude'];
         Lineup::save($teamId, $lu, $nextId);
         flash('success', t('Alineación automática ({f}) generada con los jugadores disponibles.', ['f' => $formation]));
-        redirect(url('lineup'));
+        redirect($self);
     }
     if ($action === 'delete_preset') {
         $slot = (int)post('slot');
         Lineup::deletePreset($teamId, $slot);
         flash('success', $slot === 0 ? t('Alineación predeterminada eliminada.') : t('Alineación guardada eliminada.'));
-        redirect(url('lineup'));
+        redirect($self);
     }
     [$lineup, $errors, $starters] = $parse();
     if ($errors) {
         foreach (array_unique($errors) as $er) {
             flash('error', $er);
         }
-        redirect(url('lineup'));
+        redirect($self);
     }
     if (!$lineup['positions']) {
         flash('error', t('La alineación está vacía.'));
-        redirect(url('lineup'));
+        redirect($self);
     }
     if ($action === 'default') {
         Lineup::savePreset($teamId, 0, t('Predeterminada'), $lineup);
@@ -109,14 +119,14 @@ if (is_post()) {
         } elseif (!isset($lineup['positions']['GK'])) {
             flash('warning', t('No has alineado portero.'));
         }
-        flash('success', $next ? t('Alineación enviada para el próximo partido.') : t('Alineación guardada.'));
+        flash('success', $next ? t('Alineación enviada para el partido {home} - {away}.', ['home' => $next['home_name'], 'away' => $next['away_name']]) : t('Alineación guardada.'));
     }
-    redirect(url('lineup'));
+    redirect($self);
 }
 
 $presets = Lineup::presets($teamId);
 $sent = Lineup::get($teamId);
-$sentForNext = $nextId && $sent['for_match_id'] === $nextId;
+$sentForNext = $nextId && Lineup::sentFor($teamId, $nextId) !== null;
 $lu = $nextId ? Lineup::planned($teamId, $nextId) : $sent;
 if (!$lu['positions']) {
     $lu = Lineup::auto($teamId);
@@ -196,16 +206,30 @@ $presetLabel = fn(int $slot) => $slot === 0 ? t('Predeterminada') : ($presets[$s
 ?>
 <div class="page-title">
     <h1><?= e(t('Alineación')) ?></h1>
-    <?php if ($next): ?><span class="muted"><?= e(t('Próximo partido:')) ?> <strong><?= e($next['home_name']) ?> <?= e(t('vs')) ?> <?= e($next['away_name']) ?></strong> · <?= e(fdate_long($next['scheduled_at'])) ?></span><?php endif; ?>
+    <?php if ($next): ?><span class="muted"><?= e(t('Partido:')) ?> <strong><?= e($next['home_name']) ?> <?= e(t('vs')) ?> <?= e($next['away_name']) ?></strong> · <?= e(fdate_long($next['scheduled_at'])) ?></span><?php endif; ?>
 </div>
+
+<?php $picker = array_values(array_filter($upcoming, fn($u, $i) => $i < 6 || (int)$u['id'] === $nextId, ARRAY_FILTER_USE_BOTH));
+if (count($picker) > 1): ?>
+<div class="match-picker">
+    <span class="small muted"><?= e(t('Preparar la alineación para:')) ?></span>
+    <?php foreach ($picker as $u): $isSent = Lineup::sentFor($teamId, (int)$u['id']) !== null; $rival = (int)$u['home_team_id'] === $teamId ? ['id' => $u['away_team_id'], 'crest_id' => $u['a_crest_id'], 'crest_custom' => $u['a_crest_custom'], 'n' => $u['away_name']] : ['id' => $u['home_team_id'], 'crest_id' => $u['h_crest_id'], 'crest_custom' => $u['h_crest_custom'], 'n' => $u['home_name']]; ?>
+        <a class="mp-item<?= (int)$u['id'] === $nextId ? ' on' : '' ?>" href="<?= e(url('lineup', ['match' => $u['id']])) ?>">
+            <?= crest_img($rival, 22) ?>
+            <span><strong><?= e($rival['n']) ?></strong><br><span class="small muted"><?= e(match_type_label($u)) ?> · <?= e(date('d/m H:i', strtotime($u['scheduled_at']))) ?></span></span>
+            <span class="mp-state" title="<?= e($isSent ? t('Alineación enviada') : t('Sin enviar: se usará la predeterminada')) ?>"><?= $isSent ? '✅' : '⭐' ?></span>
+        </a>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
 
 <?php if ($next): ?>
     <?php if ($sentForNext): ?>
-        <div class="alert alert-success">✅ <?= e(t('Ya has enviado la alineación para el próximo partido ({type}). Puedes cambiarla hasta que empiece.', ['type' => match_type_label($next)])) ?></div>
+        <div class="alert alert-success">✅ <?= e(t('Ya has enviado la alineación para este partido ({type}). Puedes cambiarla hasta que empiece.', ['type' => match_type_label($next)])) ?></div>
     <?php elseif (isset($presets[0])): ?>
-        <div class="alert alert-info">📋 <?= e(t('Todavía no has enviado alineación para el próximo partido: si no lo haces se usará tu alineación predeterminada (es la que ves cargada abajo).')) ?></div>
+        <div class="alert alert-info">📋 <?= e(t('Todavía no has enviado alineación para este partido: si no lo haces se usará tu alineación predeterminada (es la que ves cargada abajo).')) ?></div>
     <?php else: ?>
-        <div class="alert alert-warning">⚠ <?= e(t('Todavía no has enviado alineación para el próximo partido y no tienes alineación predeterminada: se usará la última que enviaste. Guarda una predeterminada para no tener que preocuparte.')) ?></div>
+        <div class="alert alert-warning">⚠ <?= e(t('Todavía no has enviado alineación para este partido y no tienes alineación predeterminada: se usará la última que enviaste. Guarda una predeterminada para no tener que preocuparte.')) ?></div>
     <?php endif; ?>
 <?php endif; ?>
 
@@ -301,7 +325,7 @@ $presetLabel = fn(int $slot) => $slot === 0 ? t('Predeterminada') : ($presets[$s
         <div class="box">
             <div class="box-head"><?= e(t('Enviar y guardar')) ?></div>
             <div class="box-body">
-                <button class="btn btn-block btn-accent" type="submit" name="action" value="send">📨 <?= e($next ? t('Enviar para el próximo partido') : t('Guardar alineación')) ?></button>
+                <button class="btn btn-block btn-accent" type="submit" name="action" value="send">📨 <?= e($next ? t('Enviar para este partido') : t('Guardar alineación')) ?></button>
                 <button class="btn btn-block" type="submit" name="action" value="default" style="margin-top:6px">⭐ <?= e(t('Guardar como predeterminada')) ?></button>
                 <div class="hint"><?= e(t('La predeterminada se usa automáticamente en los partidos para los que no envíes alineación.')) ?></div>
                 <hr>

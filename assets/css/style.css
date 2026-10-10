@@ -560,3 +560,16 @@ a.res:hover { text-decoration: none; opacity: .85; }
 .box-head.side-team { justify-content: flex-start; }
 .preview-cmp thead th { text-transform: none; font-size: 12px; white-space: nowrap; }
 .preview-cmp td.right { text-align: right; }
+
+/* v1.7: partidos y alineación por partido */
+.match-actions .btn { margin-left: 2px; }
+.mini-match { font-size: 15px; margin: 6px 0; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.mini-match strong { font-size: 20px; }
+.match-picker { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+.mp-item { display: flex; align-items: center; gap: 6px; background: #fff; border: 2px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; line-height: 1.25; color: var(--text); }
+.mp-item:hover { border-color: var(--green-500); text-decoration: none; }
+.mp-item.on { border-color: var(--accent); background: var(--warn-bg); }
+.club-hero-crest .btn, .club-hero-kit .btn { margin-top: 4px; }
+.box-head .btn-small { margin-left: 4px; }
+.match-actions { text-align: right; }
+.match-actions .btn { padding: 2px 7px; font-size: 11px; }

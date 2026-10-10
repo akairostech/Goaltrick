@@ -781,6 +781,7 @@ final class MatchEngine
             'home_pens'       => $this->pens['home'] ?? null,
             'away_pens'       => $this->pens['away'] ?? null,
         ], 'id = ?', [$match['id']]);
+        DB::exec('DELETE FROM match_lineups WHERE match_id = ?', [$match['id']]);
 
         if (!$isCup) {
             $this->stadiumNotice($home, $attendance, $demand, $capacity);

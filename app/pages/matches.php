@@ -10,6 +10,8 @@ $season = (int)(get('season') ?: GameState::season());
 $pageTitle = t('Partidos');
 $navActive = $my && (int)$my['id'] === $teamId ? 'club' : 'world';
 $matches = LeagueService::teamMatches($teamId, 'season = ?', [$season]);
+$isMine = $my && (int)$my['id'] === $teamId;
+$crestOf = fn(array $m, string $x) => ['id' => $m[$x === 'h' ? 'home_team_id' : 'away_team_id'], 'crest_id' => $m[$x . '_crest_id'], 'crest_custom' => $m[$x . '_crest_custom']];
 $seasons = array_column(DB::all('SELECT DISTINCT season FROM ((SELECT season FROM matches WHERE home_team_id = ?) UNION (SELECT season FROM matches WHERE away_team_id = ?)) x ORDER BY season DESC', [$teamId, $teamId]), 'season');
 ?>
 <div class="page-title">
@@ -39,12 +41,12 @@ $seasons = array_column(DB::all('SELECT DISTINCT season FROM ((SELECT season FRO
             }
         ?>
             <tr>
-                <td class="nowrap"><?= e(fdate($m['scheduled_at'])) ?></td>
-                <td><?= $m['type'] === 'league' ? e(t('Liga J{n}', ['n' => (int)$m['round']])) : e(match_type_label($m)) ?></td>
-                <td class="right"><?= (int)$m['home_team_id'] === $teamId ? '<strong>' . e($m['hn']) . '</strong>' : team_link($m['home_team_id'], $m['hn']) ?></td>
+                <td class="nowrap small"><?= e(date('d/m/y H:i', strtotime($m['scheduled_at']))) ?></td>
+                <td class="small"><?= $m['type'] === 'league' ? e(t('Liga J{n}', ['n' => (int)$m['round']])) : e(match_type_label($m)) ?></td>
+                <td class="right nowrap"><?= (int)$m['home_team_id'] === $teamId ? '<strong>' . e($m['hn']) . '</strong>' : team_link($m['home_team_id'], $m['hn']) ?> <?= crest_img($crestOf($m, 'h'), 22) ?></td>
                 <td class="center nowrap"><?= $played ? '<strong>' . e(score_label($m)) . '</strong>' : '<span class="muted">- : -</span>' ?></td>
-                <td><?= (int)$m['away_team_id'] === $teamId ? '<strong>' . e($m['an']) . '</strong>' : team_link($m['away_team_id'], $m['an']) ?></td>
-                <td class="nowrap"><?php if ($played): ?><span class="form-badge form-<?= $res ?>"><?= e($resLabel) ?></span> <a href="<?= e(url('match', ['id' => $m['id']])) ?>"><?= e(t('Crónica')) ?></a><?php else: ?><a href="<?= e(url('match', ['id' => $m['id']])) ?>"><?= e(t('Previa')) ?></a><?php endif; ?></td>
+                <td class="nowrap"><?= crest_img($crestOf($m, 'a'), 22) ?> <?= (int)$m['away_team_id'] === $teamId ? '<strong>' . e($m['an']) . '</strong>' : team_link($m['away_team_id'], $m['an']) ?></td>
+                <td class="nowrap match-actions"><?php if ($played): ?><span class="form-badge form-<?= $res ?>"><?= e($resLabel) ?></span> <a class="btn btn-small btn-grey" href="<?= e(url('match', ['id' => $m['id']])) ?>">📰 <?= e(t('Crónica')) ?></a><?php else: ?><a class="btn btn-small btn-grey" href="<?= e(url('match', ['id' => $m['id']])) ?>">🔎 <?= e(t('Previa')) ?></a><?php if ($isMine): $sentM = Lineup::sentFor($teamId, (int)$m['id']) !== null; ?> <a class="btn btn-small<?= $sentM ? '' : ' btn-accent' ?>" href="<?= e(url('lineup', ['match' => $m['id']])) ?>" title="<?= e($sentM ? t('Alineación enviada') : t('Sin enviar: se usará la predeterminada')) ?>"><?= $sentM ? '✅' : '📋' ?> <?= e(t('Alineación')) ?></a><?php endif; ?><?php endif; ?></td>
             </tr>
         <?php endforeach; ?>
         <?php if (!$matches): ?><tr><td colspan="6" class="muted"><?= e(t('No hay partidos.')) ?></td></tr><?php endif; ?>

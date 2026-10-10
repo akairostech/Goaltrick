@@ -37,7 +37,7 @@ $resultNames = ['champion' => '🏆 ' . t('Campeón'), 'promoted' => '⬆️ ' .
         <table class="kv">
             <tr><th><?= e(t('Mánager')) ?></th><td><?= $t['username'] ? e($t['username']) : '<span class="tag tag-bot">' . e(t('Controlado por la máquina')) . '</span>' ?></td></tr>
             <?php if ($t['username']): ?><tr><th><?= e(t('Última conexión')) ?></th><td><?= e(fdate($t['last_activity_at'])) ?></td></tr><?php endif; ?>
-            <tr><th><?= e(t('Liga')) ?></th><td><?= nation_link($t['country_id'], $t['country'], $t['ccode']) ?> · <a href="<?= e(url('league', ['unit' => $t['league_unit_id']])) ?>"><?= e(t('Serie {name}', ['name' => $t['unit_name']])) ?></a></td></tr>
+            <tr><th><?= e(t('Liga')) ?></th><td><?= nation_link($t['country_id'], $t['country'], $t['ccode']) ?> · <a href="<?= e(url('league', ['unit' => $t['league_unit_id']])) ?>"><?= e(t('División {name}', ['name' => $t['unit_name']])) ?></a></td></tr>
             <tr><th><?= e(t('Escudo y uniforme')) ?></th><td class="club-art-cell"><?= crest_img($t, 52, 'crest') ?> <?= kit_img($t, 56) ?></td></tr>
             <tr><th><?= e(t('Fundado')) ?></th><td><?= e(fdate($t['founded_at'], false)) ?></td></tr>
             <tr><th><?= e(t('Estadio')) ?></th><td><?= e($t['stadium_name']) ?> (<?= num($capacity) ?>)</td></tr>
@@ -94,7 +94,7 @@ $resultNames = ['champion' => '🏆 ' . t('Campeón'), 'promoted' => '⬆️ ' .
 <div class="box">
     <div class="box-head"><?= e(t('Historial de temporadas')) ?></div>
     <table class="table compact">
-        <thead><tr><th><?= e(t('Temporada')) ?></th><th><?= e(t('Serie')) ?></th><th class="num"><?= e(t('Posición')) ?></th><th class="num"><?= e(t('Puntos')) ?></th><th class="num"><?= e(t('Goles')) ?></th><th></th></tr></thead>
+        <thead><tr><th><?= e(t('Temporada')) ?></th><th><?= e(t('División')) ?></th><th class="num"><?= e(t('Posición')) ?></th><th class="num"><?= e(t('Puntos')) ?></th><th class="num"><?= e(t('Goles')) ?></th><th></th></tr></thead>
         <?php foreach ($history as $h): ?>
             <tr><td><?= (int)$h['season'] ?></td><td><?= e($h['name']) ?></td><td class="num"><?= (int)$h['position'] ?>º</td><td class="num"><?= (int)$h['points'] ?></td><td class="num"><?= (int)$h['goals_for'] ?>:<?= (int)$h['goals_against'] ?></td><td><?= e($resultNames[$h['result']] ?? '') ?></td></tr>
         <?php endforeach; ?>

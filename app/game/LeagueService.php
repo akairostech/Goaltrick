@@ -293,15 +293,15 @@ final class LeagueService
                         'points' => $row['pts'], 'goals_for' => $row['gf'], 'goals_against' => $row['gc'], 'result' => $res,
                     ]);
                     $prize = (int)round(Config::int('economy', 'prize_' . $row['pos'], 0) * $prizeF);
-                    Economy::transaction($tid, $prize, 'prizes', tx('Premio por terminar {pos}º en la serie {series}', ['pos' => $row['pos'], 'series' => $u['name']]), $season);
+                    Economy::transaction($tid, $prize, 'prizes', tx('Premio por terminar {pos}º en la división {series}', ['pos' => $row['pos'], 'series' => $u['name']]), $season);
                     $team = DB::row('SELECT is_bot FROM teams WHERE id = ?', [$tid]);
                     if ($team && !(int)$team['is_bot']) {
-                        $msg = tx('🏆 Temporada {season} terminada: posición {pos} en la serie {series} con {pts} puntos.', ['season' => $season, 'pos' => $row['pos'], 'series' => $u['name'], 'pts' => $row['pts']]);
+                        $msg = tx('🏆 Temporada {season} terminada: posición {pos} en la división {series} con {pts} puntos.', ['season' => $season, 'pos' => $row['pos'], 'series' => $u['name'], 'pts' => $row['pts']]);
                         if (isset($moves[$tid])) {
                             $newName = DB::value('SELECT name FROM league_units WHERE id = ?', [$moves[$tid]]);
                             $msg = tx_join($msg, $result[$tid] === 'promoted'
-                                ? tx('¡ASCENSO a la serie {series}.', ['series' => $newName])
-                                : tx('Descenso a la serie {series}.', ['series' => $newName]));
+                                ? tx('¡ASCENSO a la división {series}!', ['series' => $newName])
+                                : tx('Descenso a la división {series}.', ['series' => $newName]));
                         }
                         DB::insert('team_events', ['team_id' => $tid, 'created_at' => $ts, 'type' => 'season', 'message' => $msg]);
                     }
@@ -357,7 +357,8 @@ final class LeagueService
      */
     public static function teamMatches(int $teamId, string $where = '1=1', array $params = [], string $order = 'x.scheduled_at', int $limit = 500): array
     {
-        $sql = "SELECT x.*, h.name AS home_name, a.name AS away_name, h.name AS hn, a.name AS an FROM (
+        $sql = "SELECT x.*, h.name AS home_name, a.name AS away_name, h.name AS hn, a.name AS an,
+                    h.crest_id AS h_crest_id, h.crest_custom AS h_crest_custom, a.crest_id AS a_crest_id, a.crest_custom AS a_crest_custom FROM (
                     (SELECT * FROM matches WHERE home_team_id = ? AND $where)
                     UNION ALL
                     (SELECT * FROM matches WHERE away_team_id = ? AND $where)

@@ -9,7 +9,7 @@ if (!current_user()) {
 
 <div class="box"><div class="box-head"><?= e(t('Lo básico')) ?></div><div class="box-body">
     <p><?= e(t('Eres el mánager de un club de fútbol. Cada semana se juega una jornada de liga (y, si quieres, un amistoso), tus jugadores entrenan y el club cobra y paga. No hace falta estar conectado cuando se juegan los partidos: sólo tienes que dejar preparada la alineación.')) ?></p>
-    <p><?= e(t('Cada temporada dura {weeks} semanas: 14 jornadas en series de 8 equipos (todos contra todos, ida y vuelta) y semanas de descanso al final.', ['weeks' => Config::int('game', 'season_weeks', 16)])) ?></p>
+    <p><?= e(t('Cada temporada dura {weeks} semanas: 14 jornadas en divisiones de 8 equipos (todos contra todos, ida y vuelta) y semanas de descanso al final.', ['weeks' => Config::int('game', 'season_weeks', 16)])) ?></p>
     <table class="table compact">
         <tr><th><?= e(t('Evento')) ?></th><th><?= e(t('Cuándo')) ?></th></tr>
         <tr><td><?= e(t('Amistosos')) ?></td><td><?= e(ucfirst(weekday_name(Config::int('game', 'friendly_weekday', 3)))) ?> <?= e((string)Config::get('game', 'friendly_time')) ?></td></tr>
@@ -84,7 +84,7 @@ if (!current_user()) {
     <p><?= t('El entrenador y cada miembro del personal tienen su <strong>perfil</strong> (nombre, edad, nacionalidad, carácter e imagen). El carácter del entrenador influye en el juego: el <em>exigente</em> entrena más pero baja el espíritu, el <em>motivador</em> lo sube, el <em>paternal</em> hace crecer más a los jóvenes, el <em>táctico</em> mejora el medio campo, el <em>carismático</em> anima a la afición…') ?></p>
 </div></div>
 <div class="box"><div class="box-head"><?= e(t('Naciones y Mundial')) ?></div><div class="box-body">
-    <p><?= e(t('Cada país tiene su propia liga, con la misma estructura de series de 8 equipos, ascensos y descensos. Al registrarte puedes elegir en qué país empieza tu club.')) ?></p>
+    <p><?= e(t('Cada país tiene su propia liga, con la misma estructura de divisiones de 8 equipos, ascensos y descensos. Al registrarte puedes elegir en qué país empieza tu club.')) ?></p>
     <p><?= t('Cada nación tiene una <strong>selección nacional</strong> que convoca automáticamente a los jugadores de su nacionalidad con mayor TSI en cada posición (2 porteros, 3 centrales, 3 laterales, 4 mediocampistas, 3 extremos y 3 delanteros), estén en el club que estén. Los lesionados no son convocados.') ?></p>
     <p><?= t('Las selecciones disputan el <strong>Mundial</strong>: 32 selecciones en 8 grupos de 4, octavos de final, cuartos, semifinales, tercer puesto y final, una jornada por semana en campo neutral. Las eliminatorias empatadas se deciden por penaltis. Los clubes reciben una prima por cada partido que jueguen sus internacionales, y los jugadores ganan mucha experiencia… aunque también se pueden lesionar.') ?></p>
 </div></div>
@@ -92,7 +92,7 @@ if (!current_user()) {
     <p><?= t('Antes de cada temporada recibes <strong>3 ofertas</strong> de empresas que quieren patrocinar a tu club. El dinero depende de la división en la que juegues (y las empresas más prestigiosas sólo se fijan en las divisiones altas):') ?></p>
     <ul>
         <li><?= t('<strong>Contrato fijo:</strong> el pago semanal más alto y una prima por firmar. Dura una temporada.') ?></li>
-        <li><?= t('<strong>Por objetivos:</strong> menos fijo, pero una prima por cada victoria en liga y un gran premio si ganas tu serie.') ?></li>
+        <li><?= t('<strong>Por objetivos:</strong> menos fijo, pero una prima por cada victoria en liga y un gran premio si ganas tu división.') ?></li>
         <li><?= t('<strong>Largo plazo:</strong> 2 o 3 temporadas cobrando lo mismo aunque desciendas, con una buena prima de firma.') ?></li>
     </ul>
     <p><?= e(t('Tienes hasta la primera actualización económica de la temporada para elegir; si no, se firma automáticamente el contrato fijo. El patrocinador paga cada semana en la actualización económica. Además, la publicidad del estadio aporta un ingreso según tus socios.')) ?></p>

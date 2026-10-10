@@ -116,7 +116,7 @@ if ($team && is_post()) {
             JOIN countries c ON c.id = t.country_id LEFT JOIN league_units lu ON lu.id = t.league_unit_id WHERE ' . implode(' AND ', $where) . ' ORDER BY t.name LIMIT 60', $params);
     ?>
         <table class="table compact" style="margin-top:10px">
-            <thead><tr><th>ID</th><th><?= e(t('Equipo')) ?></th><th><?= e(t('Mánager')) ?></th><th><?= e(t('Serie')) ?></th><th class="num"><?= e(t('Caja')) ?></th><th></th></tr></thead>
+            <thead><tr><th>ID</th><th><?= e(t('Equipo')) ?></th><th><?= e(t('Mánager')) ?></th><th><?= e(t('División')) ?></th><th class="num"><?= e(t('Caja')) ?></th><th></th></tr></thead>
             <?php foreach ($rows as $r): ?>
                 <tr><td><?= (int)$r['id'] ?></td><td><?= flag($r['code']) ?> <?= e($r['name']) ?></td><td><?= e($r['username'] ?? t('— máquina —')) ?></td><td><?= e($r['unit']) ?></td>
                     <td class="num"><?= e(money($r['cash'])) ?></td><td><a class="btn btn-small" href="<?= e(url('admin_team', ['id' => $r['id']])) ?>"><?= e(t('Editar')) ?></a></td></tr>
@@ -133,7 +133,7 @@ if ($team && is_post()) {
 <form method="post">
     <?= csrf_field() ?><input type="hidden" name="action" value="save">
     <div class="box">
-        <div class="box-head"><?= flag($team['code']) ?> <?= e($team['name']) ?> (#<?= $id ?>) · <?= $team['username'] ? e(t('Mánager: {name}', ['name' => $team['username']])) : e(t('Controlado por la máquina')) ?> · <?= e(t('Serie {unit}', ['unit' => $team['unit'] ?? '-'])) ?>
+        <div class="box-head"><?= flag($team['code']) ?> <?= e($team['name']) ?> (#<?= $id ?>) · <?= $team['username'] ? e(t('Mánager: {name}', ['name' => $team['username']])) : e(t('Controlado por la máquina')) ?> · <?= e(t('División {unit}', ['unit' => $team['unit'] ?? '-'])) ?>
             <a href="<?= e(url('team', ['id' => $id])) ?>"><?= e(t('Ver página pública')) ?> »</a></div>
         <div class="box-body">
             <h3><?= e(t('Club')) ?></h3>

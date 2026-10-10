@@ -8,7 +8,7 @@ final class Installer
 {
     public const LOCK = APP_ROOT . '/install.lock';
     /** Versión del esquema de la base de datos que espera este código */
-    public const DB_VERSION = 7;
+    public const DB_VERSION = 8;
 
     public static function isInstalled(): bool
     {
@@ -244,6 +244,15 @@ final class Installer
                       WHERE l.status = 'sold' AND l.tsi_at_sale IS NULL");
             GameState::set('db_version', 7);
         }
+        if (self::dbVersion() < 8) {
+            $say(t('Versión 1.7: alineaciones para cada partido...'));
+            self::runSqlFile(APP_ROOT . '/sql/schema.sql');   // crea match_lineups
+            // La alineación ya enviada para el próximo partido pasa a la tabla nueva
+            DB::exec("INSERT IGNORE INTO match_lineups (team_id, match_id, positions, orders, tactic, attitude, captain_id, setpieces_id, updated_at)
+                      SELECT l.team_id, l.for_match_id, l.positions, l.orders, l.tactic, l.attitude, l.captain_id, l.setpieces_id, l.updated_at
+                      FROM team_lineups l JOIN matches m ON m.id = l.for_match_id WHERE m.status = 'scheduled'");
+            GameState::set('db_version', 8);
+        }
         $say(t('Base de datos actualizada a la versión {v}.', ['v' => self::DB_VERSION]));
     }
 
@@ -283,7 +292,7 @@ final class Installer
 
     /** Tablas con datos de la partida (no se tocan users, countries ni la sesión) */
     private const GAME_TABLES = [
-        'lineup_presets', 'cup_entries', 'league_cups', 'staff', 'sponsor_contracts', 'worldcup_teams', 'worldcups', 'transfer_bids', 'transfer_listings', 'friendly_requests', 'match_players', 'matches',
+        'match_lineups', 'lineup_presets', 'cup_entries', 'league_cups', 'staff', 'sponsor_contracts', 'worldcup_teams', 'worldcups', 'transfer_bids', 'transfer_listings', 'friendly_requests', 'match_players', 'matches',
         'finances', 'player_events', 'players', 'team_events', 'season_history', 'team_lineups', 'teams', 'league_units',
         'scheduled_events', 'announcements', 'game_state',
     ];

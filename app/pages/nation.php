@@ -45,7 +45,7 @@ $roleOrder = array_flip(array_keys(NationService::QUOTA));
     <div class="box-head"><?= e(t('Liga de {country}', ['country' => t($c['name'])])) ?></div>
     <div class="box-body">
         <?php foreach ($byLevel as $lvl => $list): ?>
-            <p><strong><?= e(t('División {n}', ['n' => LeagueService::roman($lvl)])) ?></strong> (<?= e(count($list) > 1 ? t('{n} series', ['n' => count($list)]) : t('{n} serie', ['n' => count($list)])) ?>):
+            <p><strong><?= e(t('División {n}', ['n' => LeagueService::roman($lvl)])) ?></strong> (<?= e(count($list) > 1 ? t('{n} grupos', ['n' => count($list)]) : t('{n} grupo', ['n' => count($list)])) ?>):
             <?php foreach ($list as $u): ?><a href="<?= e(url('league', ['unit' => $u['id']])) ?>"><?= e($u['name']) ?></a><?= (int)$u['humans'] ? '<sup class="small" title="' . e(t('mánagers')) . '">' . (int)$u['humans'] . '</sup>' : '' ?>&nbsp; <?php endforeach; ?></p>
         <?php endforeach; ?>
         <?php if (!$byLevel): ?><p class="muted"><?= e(t('Este país todavía no tiene liga.')) ?></p><?php endif; ?>

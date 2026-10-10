@@ -130,6 +130,20 @@ final class Lineup
      */
     public static function save(int $teamId, array $lineup, ?int $forMatchId = null): void
     {
+        if ($forMatchId) {
+            // Cada partido guarda su propia alineación enviada
+            DB::exec(
+                'INSERT INTO match_lineups (team_id, match_id, positions, orders, tactic, attitude, captain_id, setpieces_id, updated_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE positions = VALUES(positions), orders = VALUES(orders), tactic = VALUES(tactic),
+                   attitude = VALUES(attitude), captain_id = VALUES(captain_id), setpieces_id = VALUES(setpieces_id), updated_at = VALUES(updated_at)',
+                [
+                    $teamId, $forMatchId, json_encode($lineup['positions']), json_encode($lineup['orders'] ?? []),
+                    $lineup['tactic'] ?? 'normal', $lineup['attitude'] ?? 'normal',
+                    $lineup['captain_id'] ?? null, $lineup['setpieces_id'] ?? null, now(),
+                ]
+            );
+        }
         DB::exec(
             'INSERT INTO team_lineups (team_id, positions, orders, tactic, attitude, captain_id, setpieces_id, for_match_id, updated_at)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -187,8 +201,21 @@ final class Lineup
     }
 
     /** Alineación que se usará en un partido concreto: la enviada para él o, si no, la predeterminada */
+    /** Alineación enviada para un partido concreto (o null si no se envió ninguna) */
+    public static function sentFor(int $teamId, int $matchId): ?array
+    {
+        if ($matchId <= 0) {
+            return null;
+        }
+        $row = DB::row('SELECT * FROM match_lineups WHERE team_id = ? AND match_id = ?', [$teamId, $matchId]);
+        return $row ? self::decode($row) + ['for_match_id' => $matchId, 'updated_at' => $row['updated_at']] : null;
+    }
+
     public static function planned(int $teamId, int $matchId = 0): array
     {
+        if ($matchId > 0 && ($own = self::sentFor($teamId, $matchId))) {
+            return $own;
+        }
         $sent = self::get($teamId);
         if ($matchId <= 0 || ($sent['for_match_id'] ?? null) === $matchId) {
             return $sent;

@@ -22,7 +22,7 @@ $stats = DB::row('SELECT (SELECT COUNT(*) FROM users) u, (SELECT COUNT(*) FROM t
     <form method="get" class="inline-form"><input type="hidden" name="page" value="world"><input type="text" name="q" value="<?= e($q) ?>" placeholder="<?= e(t('Nombre del equipo o usuario')) ?>" style="min-width:260px"><button class="btn" type="submit"><?= e(t('Buscar')) ?></button></form>
     <?php if ($q !== ''): ?>
         <table class="table compact" style="margin-top:10px">
-            <?php foreach ($results as $r): ?><tr><td><?= team_link($r['id'], $r['name']) ?></td><td><?= e($r['username'] ?? '—') ?></td><td><?= e(t('Serie {name}', ['name' => $r['unit']])) ?></td></tr><?php endforeach; ?>
+            <?php foreach ($results as $r): ?><tr><td><?= team_link($r['id'], $r['name']) ?></td><td><?= e($r['username'] ?? '—') ?></td><td><?= e(t('División {name}', ['name' => $r['unit']])) ?></td></tr><?php endforeach; ?>
             <?php if (!$results): ?><tr><td class="muted"><?= e(t('Sin resultados.')) ?></td></tr><?php endif; ?>
         </table>
     <?php endif; ?>

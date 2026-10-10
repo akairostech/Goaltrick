@@ -30,21 +30,21 @@ foreach ($ranking as $i => $r) {
     <h1><?= e(t('Naciones')) ?></h1>
     <span class="muted"><?= e(t('{n} países con liga propia y selección nacional', ['n' => count($rows)])) ?></span>
 </div>
-<p class="muted"><?= t('Cada país tiene su propia pirámide de ligas (series de 8 equipos con ascensos y descensos) y una selección nacional formada por los jugadores de esa nacionalidad con mayor TSI en cada posición, jueguen donde jueguen. Las selecciones compiten en el {link}.', ['link' => '<a href="' . e(url('worldcup')) . '">' . e(t('Mundial')) . '</a>']) ?></p>
+<p class="muted"><?= t('Cada país tiene su propia pirámide de ligas (divisiones de 8 equipos con ascensos y descensos) y una selección nacional formada por los jugadores de esa nacionalidad con mayor TSI en cada posición, jueguen donde jueguen. Las selecciones compiten en el {link}.', ['link' => '<a href="' . e(url('worldcup')) . '">' . e(t('Mundial')) . '</a>']) ?></p>
 
 <div class="box">
     <div class="box-head"><?= e(t('Países')) ?></div>
     <div class="table-wrap">
     <table class="table">
         <thead><tr>
-            <th><?= e(t('País')) ?></th><th><?= e(t('Liga')) ?></th><th class="num"><?= e(t('Div.')) ?></th><th class="num"><?= e(t('Series')) ?></th><th class="num"><?= e(t('Equipos')) ?></th>
+            <th><?= e(t('País')) ?></th><th><?= e(t('Liga')) ?></th><th class="num"><?= e(t('Niveles')) ?></th><th class="num"><?= e(t('Divisiones')) ?></th><th class="num"><?= e(t('Equipos')) ?></th>
             <th class="num"><?= e(t('Mánag.')) ?></th><th class="num"><?= e(t('Jugadores')) ?></th><th class="num" title="<?= e(t('Suma del TSI de los convocados')) ?>"><?= e(t('Fuerza')) ?></th><th class="num"><?= e(t('Rank.')) ?></th><th class="num" title="<?= e(t('Mundiales ganados')) ?>"><?= e(t('Títulos')) ?></th>
         </tr></thead>
         <tbody>
         <?php foreach ($rows as $r): ?>
             <tr<?= $my && (int)$my['country_id'] === (int)$r['id'] ? ' class="me"' : '' ?>>
                 <td class="nowrap"><?= nation_link($r['id'], $r['name'], $r['code']) ?></td>
-                <td class="nowrap"><?= $r['top_unit'] ? '<a href="' . e(url('league', ['unit' => $r['top_unit']])) . '">' . e(t('Serie {name}', ['name' => 'I'])) . '</a>' : '<span class="muted">—</span>' ?></td>
+                <td class="nowrap"><?= $r['top_unit'] ? '<a href="' . e(url('league', ['unit' => $r['top_unit']])) . '">' . e(t('División {name}', ['name' => 'I'])) . '</a>' : '<span class="muted">—</span>' ?></td>
                 <td class="num"><?= (int)$r['divisions'] ?></td>
                 <td class="num"><?= (int)$r['series'] ?></td>
                 <td class="num"><?= num($r['teams']) ?></td>

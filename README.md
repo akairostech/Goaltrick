@@ -1,4 +1,4 @@
-# GoalTrick v1.6 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.7 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -6,7 +6,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 
 - **Usuarios**: registro (con pregunta anti‑bots), inicio de sesión, «recordarme», bloqueo por intentos fallidos, cambio de contraseña/correo, recuperación de contraseña (por correo o enlace generado por el administrador), abandonar equipo, roles de administrador.
 - **Equipos**: al registrarte recibes un equipo de la división más baja con 18 jugadores, estadio, personal y dinero.
-- **Ligas**: pirámide de divisiones (1 serie en la I, 4 en la II, 16 en la III…) de 8 equipos, 14 jornadas a doble vuelta, ascensos/descensos y premios por posición. Los equipos sin dueño los controla la máquina.
+- **Ligas**: pirámide de divisiones (1 en el nivel I, 4 en el II, 16 en el III…) de 8 equipos, 14 jornadas a doble vuelta, ascensos/descensos y premios por posición. Los equipos sin dueño los controla la máquina.
 - **Jugadores**: 7 habilidades (0‑20, de «inexistente» a «divino»), resistencia, forma, experiencia, liderazgo, fidelidad, especialidades, TSI, salario, lesiones, tarjetas, edad (1 año = 112 días), retiradas.
 - **Motor de partidos**: 7 valoraciones por sector, posesión por medio campo, ocasiones por bandas/centro, balón parado, tiros lejanos, contraataques, 6 tácticas, actitud PIC/Normal/MOTS, órdenes individuales, eventos por especialidad, tarjetas, lesiones con sustituciones, cansancio, crónica minuto a minuto y valoración en estrellas.
 - **Entrenamiento** semanal según la posición jugada, intensidad, parte de resistencia, nivel del entrenador y ayudantes; declive por edad.
@@ -31,6 +31,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Sección Club** (v1.6): resumen general del club (escudo, uniforme, datos, plantilla, temporada, historial y vitrina) y elección entre **1000 uniformes** y **1000 escudos** caricaturescos generados en SVG (`art.php`), con galería filtrable por diseño, forma, símbolo y color. Cada club puede **subir su propio uniforme o escudo** (PNG/JPG/GIF/WEBP, se guardan en `assets/uploads/`). El escudo aparece en la barra lateral, el resumen, la página pública del club, los partidos y el historial de traspasos.
 - **Transferencias** (v1.6): sección propia en el menú con buscador, mis ventas y pujas, **historial de transferencias** (fecha, jugador, procedencia/destino, precio y TSI del jugador en ese momento) con total de compras, total de ventas, diferencia, número de traspasos y sus promedios, y los últimos traspasos del mundo.
 - **Previa de los partidos** (v1.6): escudos junto al nombre de cada equipo, gráfico del índice de rendimiento estimado (las 7 valoraciones y un índice global), resumen comparado de los dos equipos, pronóstico (probabilidades y marcador más probable con un modelo de Poisson calibrado con el motor) y encuesta entre los socios de cada club.
+- **v1.7**: «Club» reúne en una sola sección el resumen del club (noticias, próximos partidos, datos, plantilla, calendario, historial y vitrina), el uniforme y el escudo. En «Partidos» cada equipo lleva su escudo y hay botones de previa/crónica y de alineación: **cada partido puede tener su propia alineación enviada** (tabla `match_lineups`); si no se envía, se usa la predeterminada. Las «series» pasan a llamarse «divisiones».
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos
@@ -56,13 +57,13 @@ Si prefieres importar tú las tablas (por ejemplo con phpMyAdmin): crea la base 
 php cron/run.php --install admin admin@correo.com MiContraseña "Mi Equipo FC"
 ```
 
-## Actualizar desde una versión anterior (1.0 – 1.5)
+## Actualizar desde una versión anterior (1.0 – 1.6)
 
 1. Copia los archivos nuevos encima de los antiguos **conservando tu `config.ini`** (o copia en él los datos de tu base de datos). Las opciones nuevas (`other_country_divisions` y la sección `[worldcup]`) tienen valores por defecto, así que no es obligatorio añadirlas.
 2. Abre la web: se te redirigirá a `upgrade.php`. Pulsa **Actualizar ahora**. (Por consola: `php cron/run.php --upgrade`.)
-3. El actualizador aplica todos los cambios pendientes en orden. De 1.5 a 1.6 añade el uniforme y el escudo de cada club y guarda el TSI de los jugadores en cada traspaso (para los traspasos antiguos usa su TSI actual). De 1.4 a 1.5 añade el idioma de cada usuario, las alineaciones guardadas y amplía algunas columnas de texto; además vuelve a sortear el Mundial de la temporada en curso con las 32 selecciones (si ya había empezado, se anulan sus partidos y empieza de nuevo; si ya no cabe en el calendario, el de la temporada siguiente tendrá las 32). De 1.3 a 1.4 crea las ligas de las 16 naciones nuevas (jugando las jornadas ya disputadas), da un perfil a todo el personal existente, envía ofertas de patrocinio a los clubes nuevos y sortea la Copa de cada país (puede tardar unos minutos). De 1.2 a 1.3 amplía las caras de jugador a 400, carga las empresas y envía las ofertas de patrocinio de la temporada en curso. De 1.1 a 1.2 añade la imagen de perfil de los jugadores. De 1.0 a 1.1 además añade las columnas y tablas nuevas, renombra Futbolandia a Panamá, crea las ligas de los demás países (jugando las jornadas que ya se hubieran disputado esta temporada), crea las selecciones y programa el Mundial. No se borra nada de tu partida.
+3. El actualizador aplica todos los cambios pendientes en orden. De 1.6 a 1.7 crea la tabla de alineaciones por partido y conserva la que ya hubieras enviado. De 1.5 a 1.6 añade el uniforme y el escudo de cada club y guarda el TSI de los jugadores en cada traspaso (para los traspasos antiguos usa su TSI actual). De 1.4 a 1.5 añade el idioma de cada usuario, las alineaciones guardadas y amplía algunas columnas de texto; además vuelve a sortear el Mundial de la temporada en curso con las 32 selecciones (si ya había empezado, se anulan sus partidos y empieza de nuevo; si ya no cabe en el calendario, el de la temporada siguiente tendrá las 32). De 1.3 a 1.4 crea las ligas de las 16 naciones nuevas (jugando las jornadas ya disputadas), da un perfil a todo el personal existente, envía ofertas de patrocinio a los clubes nuevos y sortea la Copa de cada país (puede tardar unos minutos). De 1.2 a 1.3 amplía las caras de jugador a 400, carga las empresas y envía las ofertas de patrocinio de la temporada en curso. De 1.1 a 1.2 añade la imagen de perfil de los jugadores. De 1.0 a 1.1 además añade las columnas y tablas nuevas, renombra Futbolandia a Panamá, crea las ligas de los demás países (jugando las jornadas que ya se hubieran disputado esta temporada), crea las selecciones y programa el Mundial. No se borra nada de tu partida.
 
-`sql/upgrade_v1.1.sql` … `sql/upgrade_v1.6.sql` contienen los mismos cambios de tablas por si prefieres aplicarlos a mano en phpMyAdmin (después abre igualmente `upgrade.php`).
+`sql/upgrade_v1.1.sql` … `sql/upgrade_v1.7.sql` contienen los mismos cambios de tablas por si prefieres aplicarlos a mano en phpMyAdmin (después abre igualmente `upgrade.php`).
 
 ## Tareas programadas (partidos, entrenamiento, economía)
 

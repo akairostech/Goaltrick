@@ -171,6 +171,22 @@ CREATE TABLE IF NOT EXISTS team_lineups (
     CONSTRAINT fk_lineup_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Alineación enviada para cada partido concreto (se borra cuando el partido se juega)
+CREATE TABLE IF NOT EXISTS match_lineups (
+    team_id        INT UNSIGNED NOT NULL,
+    match_id       INT UNSIGNED NOT NULL,
+    positions      TEXT NOT NULL,
+    orders         TEXT NULL,
+    tactic         VARCHAR(20) NOT NULL DEFAULT 'normal',
+    attitude       VARCHAR(10) NOT NULL DEFAULT 'normal',
+    captain_id     INT UNSIGNED NULL,
+    setpieces_id   INT UNSIGNED NULL,
+    updated_at     DATETIME NOT NULL,
+    PRIMARY KEY (team_id, match_id),
+    KEY idx_ml_match (match_id),
+    CONSTRAINT fk_ml_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Alineaciones guardadas: slot 0 = predeterminada, 1..3 = alineaciones libres del mánager
 CREATE TABLE IF NOT EXISTS lineup_presets (
     team_id        INT UNSIGNED NOT NULL,

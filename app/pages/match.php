@@ -19,7 +19,7 @@ $teamLink = fn(string $side) => (int)$m[$side[0] . '_nat']
     ? '<a href="' . e(url('nation', ['id' => $m[$side[0] . '_country']])) . '">' . e($m[$side === 'home' ? 'hn' : 'an']) . '</a>'
     : team_link($m[$side . '_team_id'], $m[$side === 'home' ? 'hn' : 'an']);
 $type = match ($m['type']) {
-    'league' => t('Liga · Serie {unit} · Jornada {round}', ['unit' => $m['unit_name'], 'round' => (int)$m['round']]),
+    'league' => t('Liga · División {unit} · Jornada {round}', ['unit' => $m['unit_name'], 'round' => (int)$m['round']]),
     'worldcup' => t('Mundial · {stage} · Campo neutral', ['stage' => WorldCupService::stageName($m['cup_stage'])]),
     'cup' => t('Copa · {stage}', ['stage' => CupService::stageName($m['cup_stage'])]),
     default => t('Partido amistoso'),
@@ -101,7 +101,7 @@ $type = match ($m['type']) {
                 $mgr = fn(array $s) => $s['manager'] !== null ? e($s['manager']) : '<span class="tag tag-bot">' . e(t('Máquina')) . '</span>';
                 $row(t('Mánager'), $mgr($S['home']), $mgr($S['away']));
                 if ($S['home']['unit'] || $S['away']['unit']) {
-                    $lg = fn(array $s) => $s['unit'] ? e(t('Serie {name}', ['name' => $s['unit']['name']])) . ($s['pos'] ? ' · <strong>' . $s['pos'] . 'º</strong> (' . e(t('{n} pts', ['n' => $s['pts']])) . ')' : '') : '–';
+                    $lg = fn(array $s) => $s['unit'] ? e(t('División {name}', ['name' => $s['unit']['name']])) . ($s['pos'] ? ' · <strong>' . $s['pos'] . 'º</strong> (' . e(t('{n} pts', ['n' => $s['pts']])) . ')' : '') : '–';
                     $row(t('Liga'), $lg($S['home']), $lg($S['away']));
                     $gl = fn(array $s) => $s['gf'] !== null ? $s['gf'] . ' : ' . $s['gc'] : '–';
                     $row(t('Goles (liga)'), $gl($S['home']), $gl($S['away']));

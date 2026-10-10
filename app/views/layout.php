@@ -13,8 +13,7 @@ $season = GameState::season();
 $week = GameState::week();
 
 $clubMenu = [
-    'home'       => ['🏠', 'Resumen del club'],
-    'club'       => ['🛡', 'Club'],
+    'home'       => ['🛡', 'Club'],
     'players'    => ['👥', 'Jugadores'],
     'lineup'     => ['📋', 'Alineación'],
     'matches'    => ['⚽', 'Partidos'],
@@ -90,7 +89,7 @@ $clubMenu = [
             <div class="box-head side-team"><?= crest_img($team, 20) ?> <?= e($team['name']) ?></div>
             <ul class="menu">
                 <?php foreach ($clubMenu as $p => [$icon, $label]): ?>
-                    <li><a class="<?= $currentPage === $p ? 'active' : '' ?>" href="<?= e(url($p)) ?>"><span class="mi"><?= $icon ?></span><?= e(t($label)) ?></a></li>
+                    <li><a class="<?= ($currentPage === $p || ($p === 'home' && $currentPage === 'club')) ? 'active' : '' ?>" href="<?= e(url($p)) ?>"><span class="mi"><?= $icon ?></span><?= e(t($label)) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         </div>
@@ -143,7 +142,7 @@ $clubMenu = [
             <div class="box-head"><?= e(t('Mi equipo')) ?></div>
             <table class="kv">
                 <tr><th><?= e(t('Caja')) ?></th><td class="<?= (int)$team['cash'] < 0 ? 'neg' : '' ?>"><?= e(money($team['cash'])) ?></td></tr>
-                <tr><th><?= e(t('Serie')) ?></th><td><a href="<?= e(url('league', ['unit' => $unit['id']])) ?>"><?= e(NationService::flag((string)DB::value('SELECT code FROM countries WHERE id = ?', [$team['country_id']]))) ?> <?= e($unit['name']) ?></a></td></tr>
+                <tr><th><?= e(t('División')) ?></th><td><a href="<?= e(url('league', ['unit' => $unit['id']])) ?>"><?= e(NationService::flag((string)DB::value('SELECT code FROM countries WHERE id = ?', [$team['country_id']]))) ?> <?= e($unit['name']) ?></a></td></tr>
                 <?php if ($pos): ?><tr><th><?= e(t('Posición')) ?></th><td><?= e(t('{pos}º ({pts} pts)', ['pos' => $pos['pos'], 'pts' => $pos['pts']])) ?></td></tr><?php endif; ?>
                 <tr><th><?= e(t('Socios')) ?></th><td><?= num($team['fans']) ?></td></tr>
                 <tr><th><?= e(t('Espíritu')) ?></th><td><?= e(mood_name($team['team_spirit'])) ?></td></tr>

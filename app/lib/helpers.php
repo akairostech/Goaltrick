@@ -564,7 +564,7 @@ function trophy_cabinet(int $teamId, bool $own = false): string
             $h .= '<div class="trophy" title="' . e(t('{p} puntos · {gf}:{ga} goles', ['p' => $t['points'], 'gf' => $t['goals_for'], 'ga' => $t['goals_against']])) . '">'
                 . '<img src="' . e(trophy_url((int)$t['level'])) . '" alt="">'
                 . '<div class="trophy-label"><strong>' . e(t('Campeón División {n}', ['n' => LeagueService::roman((int)$t['level'])])) . '</strong><br>'
-                . e(NationService::flag($t['code'])) . ' ' . e(t('Serie {name}', ['name' => $t['unit']])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$t['season']])) . '</div></div>';
+                . e(NationService::flag($t['code'])) . ' ' . e(t('División {name}', ['name' => $t['unit']])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$t['season']])) . '</div></div>';
         }
     }
     if (!$count) {
@@ -572,7 +572,7 @@ function trophy_cabinet(int $teamId, bool $own = false): string
     }
     $h .= '</div></div>';
     if (!$count) {
-        $h .= '<div class="box-body small muted center">' . e($own ? t('Tu vitrina está vacía. ¡Gana tu serie para conseguir el primer trofeo!') : t('Este club todavía no ha ganado ningún título.')) . '</div>';
+        $h .= '<div class="box-body small muted center">' . e($own ? t('Tu vitrina está vacía. ¡Gana tu división para conseguir el primer trofeo!') : t('Este club todavía no ha ganado ningún título.')) . '</div>';
     }
     return $h . '</div>';
 }
