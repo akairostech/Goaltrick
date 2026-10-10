@@ -156,13 +156,12 @@ $stats = DB::row("SELECT (SELECT COUNT(*) FROM users) users, (SELECT COUNT(*) FR
     <?php foreach ($users as $u): ?>
         <tr>
             <td><?= (int)$u['id'] ?></td>
-            <td><?= e($u['username']) ?> <?= (int)$u['is_admin'] ? '<span class="tag tag-user">admin</span>' : '' ?></td>
+            <td><a href="<?= e(url('admin_user', ['id' => $u['id']])) ?>" title="<?= e(t('Investigar mánager')) ?>"><strong><?= e($u['username']) ?></strong></a> <?= (int)$u['is_admin'] ? '<span class="tag tag-user">admin</span>' : '' ?></td>
             <td class="small"><?= e($u['email']) ?></td>
             <td><?= $u['tid'] ? team_link($u['tid'], $u['tname']) . ' <span class="muted small">#' . (int)$u['tid'] . '</span>' : '<span class="muted">—</span>' ?></td>
             <td class="small"><?= e(fdate($u['last_activity_at'])) ?></td>
             <td><?= (int)$u['is_banned'] ? '<span class="tag tag-red" title="' . e(Moderation::bannedMessage($u)) . '">' . e($u['banned_until'] ? t('Suspendido') : t('Expulsado')) . '</span>' : '<span class="tag tag-user">' . e(t('Activo')) . '</span>' ?></td>
             <td class="nowrap user-actions">
-                <a class="btn btn-small" href="<?= e(url('admin_user', ['id' => $u['id']])) ?>">🔎 <?= e(t('Investigar mánager')) ?></a>
                 <?php if ((int)$u['id'] !== (int)$admin['id']): ?>
                 <form method="post" class="inline-form"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
                     <a class="btn btn-small<?= (int)$u['is_banned'] ? '' : ' btn-danger' ?>" href="<?= e(url('admin_user', ['id' => $u['id']])) ?>#sancionar"><?= e((int)$u['is_banned'] ? '✅ ' . t('Readmitir') : '⚖️ ' . t('Sancionar')) ?></a>

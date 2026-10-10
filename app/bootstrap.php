@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 
 define('APP_ROOT', dirname(__DIR__));
-define('APP_VERSION', '1.9.0');
+define('APP_VERSION', '1.9.1');
 
 spl_autoload_register(function (string $class): void {
     foreach (['lib', 'game'] as $dir) {
