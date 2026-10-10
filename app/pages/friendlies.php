@@ -40,7 +40,7 @@ $suggest = DB::all('SELECT t.id, t.name, t.is_bot, t.crest_id, t.crest_custom, l
     <?php if ($slot): ?><span class="muted"><?= e(t('Próxima fecha de amistosos:')) ?> <strong><?= e(fdate_long($slot['run_at'])) ?></strong></span><?php endif; ?>
 </div>
 <?php if (CupService::isAlive((int)$team['id'])): ?>
-    <div class="alert alert-info">🥇 <?= t('Tu equipo sigue vivo en la {link}: sus partidos se juegan en la fecha de los amistosos, así que no podrás jugar amistosos hasta que quedes eliminado.', ['link' => '<a href="' . e(url('cup')) . '">' . e(t('Copa')) . '</a>']) ?></div>
+    <div class="alert alert-info">🏆 <?= t('Tu equipo sigue vivo en la {link}: sus partidos se juegan en la fecha de los amistosos, así que no podrás jugar amistosos hasta que quedes eliminado.', ['link' => '<a href="' . e(url('cup')) . '">' . e(t('Copa')) . '</a>']) ?></div>
 <?php endif; ?>
 <p class="muted"><?= e(t('Los amistosos sirven para que entrenen los jugadores que no juegan en liga y para ganar algo de experiencia. Los ingresos de taquilla son la mitad que en liga y no afectan a la afición.')) ?></p>
 

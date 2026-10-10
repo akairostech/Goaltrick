@@ -17,8 +17,8 @@ $clubMenu = [
     'players'    => ['👥', 'Jugadores'],
     'lineup'     => ['📋', 'Alineación'],
     'matches'    => ['⚽', 'Partidos'],
-    'league'     => ['🏆', 'Liga'],
-    'cup'        => ['🥇', 'Copa'],
+    'league'     => ['🥇', 'Liga'],
+    'cup'        => ['🏆', 'Copa'],
     'training'   => ['🏋️', 'Entrenamiento'],
     'transfers'  => ['🔁', 'Transferencias'],
     'finances'   => ['💰', 'Finanzas'],
@@ -106,7 +106,7 @@ $clubMenu = [
             <div class="box-head"><?= e(t('Accesos rápidos')) ?></div>
             <ul class="menu">
                 <li><a href="<?= e(url('nation', ['id' => $team['country_id']])) ?>"><span class="mi">🌎</span><?= e(t('Mi nación')) ?></a></li>
-                <li><a href="<?= e(url('worldcup')) ?>"><span class="mi">🏅</span><?= e(t('Mundial')) ?></a></li>
+                <li><a href="<?= e(url('worldcup')) ?>"><span class="mi"><img class="wc-ico" src="<?= e(asset('img/trophies/worldcup.svg')) ?>" alt="" width="14" height="19"></span><?= e(t('Mundial')) ?></a></li>
                 <li><a href="<?= e(url('team', ['id' => $team['id']])) ?>"><span class="mi">👁</span><?= e(t('Vista pública')) ?></a></li>
                 <?php $supportUnread = Moderation::unreadForUser((int)$user['id']); ?>
                 <li><a class="<?= $currentPage === 'support' ? 'active' : '' ?>" href="<?= e(url('support')) ?>"><span class="mi">🆘</span><?= e(t('Ayuda y soporte')) ?><?php if ($supportUnread): ?> <span class="badge"><?= $supportUnread ?></span><?php endif; ?></a></li>

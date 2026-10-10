@@ -8,7 +8,7 @@ $cup = WorldCupService::forSeason($season);
 $titles = WorldCupService::titles();
 ?>
 <div class="page-title">
-    <h1>🏅 <?= e(t('Mundial de Fútbol')) ?></h1>
+    <h1><img class="wc-ico" src="<?= e(asset('img/trophies/worldcup.svg')) ?>" alt="" width="14" height="19"> <?= e(t('Mundial de Fútbol')) ?></h1>
     <?php if ($seasons): ?>
     <form class="inline-form" method="get">
         <input type="hidden" name="page" value="worldcup">

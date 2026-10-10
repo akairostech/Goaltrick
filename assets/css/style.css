@@ -683,3 +683,5 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
 }
 /* v1.10.3: emojis como imagen (Twemoji, assets/img/emoji/, ver assets/js/emoji.js) */
 img.emoji { display: inline-block !important; width: 1.15em !important; height: 1.15em !important; min-width: 0 !important; max-width: none !important; margin: 0 .05em !important; padding: 0 !important; vertical-align: -.2em !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; object-fit: contain; }
+/* v1.10.5: trofeo del Mundial como icono de la sección */
+img.wc-ico { display: inline-block; height: 1.45em; width: auto; vertical-align: -.32em; }

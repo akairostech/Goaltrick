@@ -1,4 +1,4 @@
-# GoalTrick v1.10.4 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.10.5 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -41,6 +41,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **v1.10.2**: en «Partidos», columnas más juntas para que la tabla quepa sin barra de desplazamiento lateral (los nombres de equipo muy largos se recortan con «…» y se ven completos al pasar el ratón), y el resultado de los penales va debajo del marcador en letra más pequeña.
 - **v1.10.3**: todos los emojis se muestran como imágenes (Twemoji, licencia CC-BY 4.0, en `assets/img/emoji/`, con el script `assets/js/emoji.js`), para que se vean igual en todos los sistemas, incluidos los emojis que escriban los usuarios; en «Partidos», los botones muestran solo el icono con un tooltip con su texto, y el resultado de los penales va entre paréntesis y en negrita.
 - **v1.10.4**: en «Partidos», los partidos de copa muestran solo «Copa» (sin la ronda) y los nombres de equipo se ven completos (sin recortar).
+- **v1.10.5**: los iconos de «Liga» (🥇) y «Copa» (🏆) se intercambian; la sección «Copa» muestra los escudos de los equipos (partidos de cada ronda, campeón, goleadores y palmarés), y el icono del «Mundial» es ahora una versión pequeña del trofeo de la Copa del Mundo (`assets/img/trophies/worldcup.svg`).
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos
