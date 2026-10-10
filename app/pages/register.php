@@ -84,7 +84,7 @@ $_SESSION['captcha'] = $a + $b;
                     <label for="country"><?= e(t('País de tu equipo')) ?></label>
                     <select id="country" name="country">
                         <?php foreach ($countries as $c): ?>
-                            <option value="<?= (int)$c['id'] ?>"<?= (int)$data['country'] === (int)$c['id'] ? ' selected' : '' ?><?= (int)$c['free'] ? '' : ' disabled' ?>><?= e(NationService::flag($c['code']) . ' ' . t($c['name'])) ?> (<?= e(t('{n} equipos libres', ['n' => (int)$c['free']])) ?>)</option>
+                            <option value="<?= (int)$c['id'] ?>"<?= (int)$data['country'] === (int)$c['id'] ? ' selected' : '' ?><?= (int)$c['free'] ? '' : ' disabled' ?>><?= e(t($c['name'])) ?> (<?= e(t('{n} equipos libres', ['n' => (int)$c['free']])) ?>)</option>
                         <?php endforeach; ?>
                     </select>
                     <div class="hint"><?= e(t('Empezarás en la división más baja de la liga de ese país.')) ?></div>

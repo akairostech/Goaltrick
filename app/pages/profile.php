@@ -59,7 +59,7 @@ if (is_post()) {
             <div class="field"><label><?= e(t('Idioma')) ?></label>
                 <div>
                     <?php $curLang = Lang::code(); foreach (Lang::available() as $code => [$lname, $lflag]): ?>
-                        <a class="btn<?= $code === $curLang ? '' : ' btn-grey' ?>" href="<?= e(lang_url($code)) ?>" hreflang="<?= e($code) ?>"<?= $code === $curLang ? ' aria-current="true"' : '' ?>><?= e($lflag) ?> <?= e($lname) ?></a>
+                        <a class="btn<?= $code === $curLang ? '' : ' btn-grey' ?>" href="<?= e(lang_url($code)) ?>" hreflang="<?= e($code) ?>"<?= $code === $curLang ? ' aria-current="true"' : '' ?>><?= NationService::emojiFlagImg($lflag) ?> <?= e($lname) ?></a>
                     <?php endforeach; ?>
                 </div>
                 <div class="hint"><?= e(t('El idioma elegido se guarda en tu cuenta.')) ?></div>

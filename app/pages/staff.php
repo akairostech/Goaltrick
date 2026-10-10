@@ -80,7 +80,7 @@ $card = function (array $s, bool $fire = false) use ($countryCodes) {
     $code = $s['code'] ?? ($countryCodes[$s['country_id']] ?? '');
     $h = '<div class="staff-card"><img src="' . e(StaffService::avatarUrl($s)) . '" width="56" height="56" alt="">'
         . '<div class="staff-info"><div class="staff-name">' . (isset($s['id']) ? StaffService::link($s) : e(StaffService::name($s))) . '</div>'
-        . '<div class="small muted">' . NationService::flag($code) . ' ' . e(t('{n} años', ['n' => (int)$s['age']])) . '</div>'
+        . '<div class="small muted">' . NationService::flagImg($code) . ' ' . e(t('{n} años', ['n' => (int)$s['age']])) . '</div>'
         . '<div class="small"><span class="tag" title="' . e(t(StaffService::PERSONALITIES[$s['personality']][1])) . '">' . e(t(StaffService::PERSONALITIES[$s['personality']][0])) . '</span></div></div>';
     if ($fire) {
         $h .= '<form method="post" data-confirm-submit="' . e(t('¿Despedir a {name}?', ['name' => StaffService::name($s)])) . '">' . csrf_field()
@@ -114,7 +114,7 @@ $card = function (array $s, bool $fire = false) use ($countryCodes) {
         <thead><tr><th><?= e(t('Candidato')) ?></th><th><?= e(t('Nivel')) ?></th><th><?= e(t('Carácter')) ?></th><th class="num"><?= e(t('Salario')) ?></th><th class="num"><?= e(t('Fichaje')) ?></th><th></th></tr></thead>
         <?php for ($l = 1; $l <= 5; $l++): $c = $candidate('trainer', $l, $l); $cost = Config::int('economy', 'trainer_hire_cost', 15000) * $l * $l; ?>
             <tr>
-                <td class="nowrap"><img class="avatar" src="<?= e(StaffService::avatarUrl($c)) ?>" width="30" height="30" alt=""> <?= e(StaffService::name($c)) ?> <span class="small muted"><?= NationService::flag($countryCodes[$c['country_id']] ?? '') ?> <?= e(t('{n} años', ['n' => (int)$c['age']])) ?></span></td>
+                <td class="nowrap"><img class="avatar" src="<?= e(StaffService::avatarUrl($c)) ?>" width="30" height="30" alt=""> <?= e(StaffService::name($c)) ?> <span class="small muted"><?= NationService::flagImg($countryCodes[$c['country_id']] ?? '') ?> <?= e(t('{n} años', ['n' => (int)$c['age']])) ?></span></td>
                 <td><?= $l ?> · <?= e(t($trainerNames[$l])) ?></td>
                 <td><span class="tag" title="<?= e(t(StaffService::PERSONALITIES[$c['personality']][1])) ?>"><?= e(t(StaffService::PERSONALITIES[$c['personality']][0])) ?></span></td>
                 <td class="num"><?= e(money(Economy::trainerWage($l))) ?></td>
@@ -137,7 +137,7 @@ $card = function (array $s, bool $fire = false) use ($countryCodes) {
                 <div class="staff-card candidate">
                     <img src="<?= e(StaffService::avatarUrl($next)) ?>" width="56" height="56" alt="">
                     <div class="staff-info"><div class="staff-name"><?= e(StaffService::name($next)) ?></div>
-                        <div class="small muted"><?= NationService::flag($countryCodes[$next['country_id']] ?? '') ?> <?= e(t('{n} años', ['n' => (int)$next['age']])) ?> · <?= e(t(StaffService::PERSONALITIES[$next['personality']][0])) ?></div>
+                        <div class="small muted"><?= NationService::flagImg($countryCodes[$next['country_id']] ?? '') ?> <?= e(t('{n} años', ['n' => (int)$next['age']])) ?> · <?= e(t(StaffService::PERSONALITIES[$next['personality']][0])) ?></div>
                         <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="hire"><input type="hidden" name="role" value="<?= e($role) ?>"><button class="btn btn-small" type="submit"><?= e(t('Contratar ({price})', ['price' => money($hireCost)])) ?></button></form>
                     </div>
                 </div>

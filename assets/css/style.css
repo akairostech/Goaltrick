@@ -309,6 +309,9 @@ textarea { min-height: 120px; resize: vertical; }
 
 /* ---------------- v1.1: naciones y Mundial ---------------- */
 .flag { font-size: 14px; line-height: 1; vertical-align: -1px; }
+/* Banderas en imagen (v1.10.1): mismo tamaño que el emoji de 14px */
+.flag-img { display: inline-block; width: 18px; height: 13.5px; vertical-align: -2px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.18); object-fit: fill; }
+.flag-img.flag-em { width: 1.33em; height: 1em; vertical-align: -.14em; }
 .events li.ev-pen { background: #eaf6e7; }
 .events li.ev-penmiss { background: #fdf3f1; }
 .events li.ev-crowd { background: #fff8e1; }
@@ -570,6 +573,9 @@ a.res:hover { text-decoration: none; opacity: .85; }
 /* v1.7: partidos y alineación por partido */
 .match-actions .btn { margin-left: 2px; }
 .mini-match { font-size: 15px; margin: 6px 0; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.mini-match.one-line { font-size: 12.5px; flex-wrap: nowrap; white-space: nowrap; gap: 5px; }
+.mini-match.one-line img { flex-shrink: 0; }
+.mini-match.one-line .mm-team { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .mini-match strong { font-size: 20px; }
 .match-picker { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
 .mp-item { display: flex; align-items: center; gap: 6px; background: #fff; border: 2px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; line-height: 1.25; color: var(--text); }
@@ -603,18 +609,18 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
 
 /* Perfil público del mánager y menú de usuario (v1.10) */
 .user-menu { position: relative; }
-.user-menu summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; padding: 1px 8px 1px 2px; border-radius: 14px; background: rgba(255,255,255,.12); user-select: none; }
+.user-menu summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; padding: 2px 8px 2px 3px; border-radius: 8px; background: rgba(255,255,255,.12); user-select: none; }
 .user-menu summary::-webkit-details-marker { display: none; }
 .user-menu summary:hover, .user-menu[open] summary { background: rgba(255,255,255,.22); }
 .user-menu .caret { font-size: 10px; opacity: .8; }
-.tb-face { border-radius: 50%; border: 2px solid #2a2420; background: #fff; vertical-align: middle; }
+.tb-face { border-radius: 5px; border: 2px solid #2a2420; background: #fff; vertical-align: middle; }
 .user-drop { position: absolute; right: 0; top: 30px; background: #fff; border: 2px solid #2a2420; border-radius: 10px; box-shadow: 0 6px 0 rgba(0,0,0,.18), 0 10px 22px rgba(0,0,0,.2); z-index: 1000; min-width: 220px; padding: 4px 0; color: var(--text); font-weight: normal; }
 .user-drop-head { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px dashed var(--border); margin-bottom: 4px; }
 .user-drop a { display: block; padding: 7px 14px; color: var(--text); white-space: nowrap; }
 .user-drop a.sub { padding-left: 32px; font-size: 12px; color: var(--muted); }
 .user-drop a:hover { background: var(--green-50); text-decoration: none; }
 .manager-link { white-space: nowrap; }
-.manager-link img { border-radius: 50%; vertical-align: middle; border: 1px solid #2a2420; }
+.manager-link img { border-radius: 4px; vertical-align: middle; background: #eef2ec; }
 .mgr-hero { display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center; background: linear-gradient(135deg, #fffaf0, #f3ecd8); border: 2px solid #2a2420; border-radius: 14px; box-shadow: 0 5px 0 rgba(42,36,32,.15); padding: 18px 20px; margin-bottom: 16px; }
 .mgr-face { position: relative; }
 .president-big { border-radius: 22px; border: 3px solid #2a2420; box-shadow: 0 5px 0 rgba(42,36,32,.25); background: #fff; display: block; }
@@ -654,3 +660,6 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
     .user-menu .tb-uname { display: none; }
     .face-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+.crest-name { display: inline-flex; align-items: center; gap: 5px; }
+.crest-name img { flex-shrink: 0; }
+.table td.num { white-space: nowrap; }

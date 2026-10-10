@@ -44,10 +44,10 @@ $clubMenu = [
         <div class="topbar-right">
             <?php $langs = Lang::available(); if (count($langs) > 1): $cur = Lang::code(); ?>
             <details class="lang-switch">
-                <summary title="<?= e(t('Idioma')) ?>"><?= e($langs[$cur][1] ?? '🌐') ?> <span class="lang-code"><?= e(strtoupper($cur)) ?></span></summary>
+                <summary title="<?= e(t('Idioma')) ?>"><?= NationService::emojiFlagImg($langs[$cur][1] ?? '🌐') ?> <span class="lang-code"><?= e(strtoupper($cur)) ?></span></summary>
                 <div class="lang-menu">
                     <?php foreach ($langs as $code => [$lname, $lflag]): ?>
-                        <a href="<?= e(lang_url($code)) ?>" class="<?= $code === $cur ? 'active' : '' ?>" hreflang="<?= e($code) ?>"><?= e($lflag) ?> <?= e($lname) ?></a>
+                        <a href="<?= e(lang_url($code)) ?>" class="<?= $code === $cur ? 'active' : '' ?>" hreflang="<?= e($code) ?>"><?= NationService::emojiFlagImg($lflag) ?> <?= e($lname) ?></a>
                     <?php endforeach; ?>
                 </div>
             </details>
@@ -153,7 +153,7 @@ $clubMenu = [
             <div class="box-head"><?= e(t('Mi equipo')) ?></div>
             <table class="kv">
                 <tr><th><?= e(t('Caja')) ?></th><td class="<?= (int)$team['cash'] < 0 ? 'neg' : '' ?>"><?= e(money($team['cash'])) ?></td></tr>
-                <tr><th><?= e(t('División')) ?></th><td><a href="<?= e(url('league', ['unit' => $unit['id']])) ?>"><?= e(NationService::flag((string)DB::value('SELECT code FROM countries WHERE id = ?', [$team['country_id']]))) ?> <?= e($unit['name']) ?></a></td></tr>
+                <tr><th><?= e(t('División')) ?></th><td><a href="<?= e(url('league', ['unit' => $unit['id']])) ?>"><?= flag((string)DB::value('SELECT code FROM countries WHERE id = ?', [$team['country_id']])) ?> <?= e($unit['name']) ?></a></td></tr>
                 <?php if ($pos): ?><tr><th><?= e(t('Posición')) ?></th><td><?= e(t('{pos}º ({pts} pts)', ['pos' => $pos['pos'], 'pts' => $pos['pts']])) ?></td></tr><?php endif; ?>
                 <tr><th><?= e(t('Socios')) ?></th><td><?= num($team['fans']) ?></td></tr>
                 <tr><th><?= e(t('Espíritu')) ?></th><td><?= e(mood_name($team['team_spirit'])) ?></td></tr>

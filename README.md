@@ -1,4 +1,4 @@
-# GoalTrick v1.10 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.10.1 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -37,6 +37,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Administración de equipos** (v1.8): cambiar el escudo y el uniforme de cualquier club (diseño nº 1-1000 con vista previa, subir una imagen o quitar una imagen inapropiada).
 - **Caras con el uniforme del club** (v1.9): las 5000 caras de jugador se combinan con los 1000 uniformes (5 millones de imágenes posibles) generándose al vuelo con `face.php`, así cada jugador aparece con la camiseta (colores, diseño, mangas, cuello y número) del uniforme que ha elegido su club. Si el club ha subido un uniforme propio, la camiseta usa los colores del último diseño elegido de la galería. Los jugadores sin club muestran su imagen original.
 - **Perfil público del mánager** (v1.10): `index.php?page=manager&id=N`, enlazado desde la ficha de cada equipo, el buscador, los conectados y los mensajes. Muestra cara de presidente, lema, país y ciudad, edad, club favorito, presentación, días en el cargo, balance de partidos, goles, mayor goleada, títulos, fichajes y ventas, vitrina de trofeos, últimos partidos e historial de temporadas. Cada mánager lo edita en «Mi perfil → Editar mi perfil» y elige su cara entre **1000 presidentes caricaturescos** (`assets/img/presidents/`) agrupados en 8 tonos de piel de 125 caras cada uno (Porcelana, Marfil, Miel, Arena, Canela, Avellana, Cacao y Ébano). Al pulsar el nombre de usuario en la barra superior se abre un menú con «Mi cuenta» y «Mi perfil».
+- **v1.10.1**: banderas en imagen SVG (`assets/img/flags/`, se ven igual en Windows, donde los emojis de banderas no aparecen), miniaturas cuadradas de los mánagers, escudos en los rankings de «Mundo» y en los rivales sugeridos de «Amistosos», y el próximo partido de «Club» en una sola línea.
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos

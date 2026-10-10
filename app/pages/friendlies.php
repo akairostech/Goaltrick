@@ -34,7 +34,7 @@ $incoming = DB::all("SELECT r.*, t.name FROM friendly_requests r JOIN teams t ON
 $outgoing = DB::all("SELECT r.*, t.name FROM friendly_requests r JOIN teams t ON t.id = r.to_team_id WHERE r.from_team_id = ? AND r.status = 'pending'", [$teamId]);
 $to = (int)get('to');
 $toTeam = $to ? DB::row('SELECT id, name, is_bot FROM teams WHERE id = ?', [$to]) : null;
-$suggest = DB::all('SELECT t.id, t.name, t.is_bot, lu.name AS unit FROM teams t JOIN league_units lu ON lu.id = t.league_unit_id WHERE t.id <> ? ORDER BY (t.league_unit_id = ?) DESC, RAND() LIMIT 12', [$teamId, $team['league_unit_id']]);
+$suggest = DB::all('SELECT t.id, t.name, t.is_bot, t.crest_id, t.crest_custom, lu.name AS unit FROM teams t JOIN league_units lu ON lu.id = t.league_unit_id WHERE t.id <> ? ORDER BY (t.league_unit_id = ?) DESC, RAND() LIMIT 12', [$teamId, $team['league_unit_id']]);
 ?>
 <div class="page-title"><h1><?= e(t('Partidos amistosos')) ?></h1>
     <?php if ($slot): ?><span class="muted"><?= e(t('Próxima fecha de amistosos:')) ?> <strong><?= e(fdate_long($slot['run_at'])) ?></strong></span><?php endif; ?>
@@ -99,7 +99,7 @@ $suggest = DB::all('SELECT t.id, t.name, t.is_bot, lu.name AS unit FROM teams t 
         <div class="box-head"><?= e(t('Rivales sugeridos')) ?></div>
         <table class="table compact">
             <?php foreach ($suggest as $s): ?>
-                <tr><td><?= team_link($s['id'], $s['name']) ?> <?= $s['is_bot'] ? '' : '<span class="tag tag-user">' . e(t('M##mánager')) . '</span>' ?></td><td class="small muted"><?= e($s['unit']) ?></td>
+                <tr><td><?= crest_img($s, 20) ?> <?= team_link($s['id'], $s['name']) ?> <?= $s['is_bot'] ? '' : '<span class="tag tag-user">' . e(t('M##mánager')) . '</span>' ?></td><td class="small muted"><?= e($s['unit']) ?></td>
                     <td class="right"><a class="btn btn-small btn-grey" href="<?= e(url('friendlies', ['to' => $s['id']])) ?>"><?= e(t('Elegir')) ?></a></td></tr>
             <?php endforeach; ?>
         </table>

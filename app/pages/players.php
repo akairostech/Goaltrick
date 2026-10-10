@@ -50,7 +50,7 @@ $sl = fn(string $k, string $label) => '<a href="' . e(url('players', ['sort' => 
         <tbody>
         <?php foreach ($players as $p): ?>
             <tr>
-                <td class="nowrap"><?= avatar_img($p, 24) ?> <span title="<?= e(t($p['cname'])) ?>"><?= NationService::flag($p['ccode']) ?></span> <?= player_link($p) ?></td>
+                <td class="nowrap"><?= avatar_img($p, 24) ?> <?= NationService::flagImg($p['ccode'], t($p['cname'])) ?> <?= player_link($p) ?></td>
                 <td><span class="tag" title="<?= e(isset(ROLES[$p['role']]) ? role_name($p['role']) : '') ?>"><?= e($p['role']) ?></span></td>
                 <td class="nowrap"><?= (int)$p['age_years'] ?> <span class="muted small">(<?= (int)$p['age_days'] ?>)</span></td>
                 <td class="num"><?= num($p['tsi']) ?></td>

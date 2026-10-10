@@ -23,6 +23,35 @@ final class NationService
         return mb_chr(0x1F1E6 + ord($code[0]) - 65) . mb_chr(0x1F1E6 + ord($code[1]) - 65);
     }
 
+    /**
+     * Bandera como imagen (assets/img/flags/<código>.svg): los emojis de banderas no se ven en Windows.
+     * $country = true: Inglaterra (GB) usa la cruz de San Jorge; false (idiomas) usa la del Reino Unido.
+     */
+    public static function flagImg(?string $code, string $title = '', bool $country = true, string $class = 'flag-img'): string
+    {
+        $code = strtolower((string)$code);
+        if (!preg_match('/^[a-z]{2}$/', $code)) {
+            return '';
+        }
+        $file = $country && $code === 'gb' ? 'eng' : $code;
+        if (!is_file(APP_ROOT . '/assets/img/flags/' . $file . '.svg')) {
+            return '<span class="flag">' . self::flag($code) . '</span>';
+        }
+        return '<img class="' . e($class) . '" src="' . e(asset('img/flags/' . $file . '.svg')) . '" alt="' . e(strtoupper($code)) . '"'
+            . ($title !== '' ? ' title="' . e($title) . '"' : '') . '>';
+    }
+
+    /** Convierte un emoji de bandera (p. ej. el @flag de un idioma) en la imagen correspondiente */
+    public static function emojiFlagImg(string $emoji, string $title = ''): string
+    {
+        $cps = array_values(array_filter(array_map('mb_ord', mb_str_split($emoji)), fn($c) => $c >= 0x1F1E6 && $c <= 0x1F1FF));
+        if (count($cps) !== 2) {
+            return e($emoji);
+        }
+        $code = chr($cps[0] - 0x1F1E6 + 65) . chr($cps[1] - 0x1F1E6 + 65);
+        return self::flagImg($code, $title, false, 'flag-img flag-em');
+    }
+
     public static function nationalTeam(int $countryId): ?array
     {
         return DB::row('SELECT * FROM teams WHERE is_national = 1 AND country_id = ?', [$countryId]);

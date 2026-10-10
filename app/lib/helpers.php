@@ -499,9 +499,9 @@ function score_label(array $m): string
     return $t;
 }
 
-function flag(?string $code): string
+function flag(?string $code, ?string $title = null): string
 {
-    return $code ? '<span class="flag" title="' . e($code) . '">' . NationService::flag($code) . '</span>' : '';
+    return $code ? NationService::flagImg($code, $title ?? strtoupper($code)) : '';
 }
 
 function nation_link(int|string $countryId, string $name, ?string $code = null): string
@@ -581,7 +581,7 @@ function trophy_cabinet(int $teamId, bool $own = false): string
         $h .= '<div class="trophy trophy-cup" title="' . e(t('Copa de {country}', ['country' => t($c['country'])])) . '">'
             . '<img src="' . e(asset('img/trophies/trophy-cup.svg')) . '" alt="">'
             . '<div class="trophy-label"><strong>' . e(t('Campeón de la Copa')) . '</strong><br>'
-            . e(NationService::flag($c['code'])) . ' ' . e(t($c['country'])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$c['season']])) . '</div></div>';
+            . NationService::flagImg($c['code']) . ' ' . e(t($c['country'])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$c['season']])) . '</div></div>';
     }
     if (!$count) {
         foreach ([1, 2, 3] as $lvl) {
@@ -592,7 +592,7 @@ function trophy_cabinet(int $teamId, bool $own = false): string
             $h .= '<div class="trophy" title="' . e(t('{p} puntos · {gf}:{ga} goles', ['p' => $t['points'], 'gf' => $t['goals_for'], 'ga' => $t['goals_against']])) . '">'
                 . '<img src="' . e(trophy_url((int)$t['level'])) . '" alt="">'
                 . '<div class="trophy-label"><strong>' . e(t('Campeón División {n}', ['n' => LeagueService::roman((int)$t['level'])])) . '</strong><br>'
-                . e(NationService::flag($t['code'])) . ' ' . e(t('División {name}', ['name' => $t['unit']])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$t['season']])) . '</div></div>';
+                . NationService::flagImg($t['code']) . ' ' . e(t('División {name}', ['name' => $t['unit']])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$t['season']])) . '</div></div>';
         }
     }
     if (!$count) {

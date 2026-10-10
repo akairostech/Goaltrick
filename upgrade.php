@@ -47,7 +47,7 @@ $pending = Installer::needsUpgrade();
     <link rel="icon" type="image/svg+xml" href="<?= e(asset('img/logo-ball.svg')) ?>">
 </head>
 <body class="layout-plain">
-<header class="topbar"><div class="wrap topbar-inner"><span class="logo"><?= logo_html($site) ?></span><span><?= e(t('Actualización')) ?> <span class="lang-switch"><?php foreach (Lang::available() as $lcode => [$lname, $lflag]): ?> <a href="?lang=<?= e(urlencode($lcode)) ?>" title="<?= e($lname) ?>"<?= $lcode === Lang::code() ? ' style="font-weight:bold"' : '' ?>><?= e($lflag) ?> <?= e($lname) ?></a><?php endforeach; ?></span></span></div></header>
+<header class="topbar"><div class="wrap topbar-inner"><span class="logo"><?= logo_html($site) ?></span><span><?= e(t('Actualización')) ?> <span class="lang-switch"><?php foreach (Lang::available() as $lcode => [$lname, $lflag]): ?> <a href="?lang=<?= e(urlencode($lcode)) ?>" title="<?= e($lname) ?>"<?= $lcode === Lang::code() ? ' style="font-weight:bold"' : '' ?>><?= NationService::emojiFlagImg($lflag) ?> <?= e($lname) ?></a><?php endforeach; ?></span></span></div></header>
 <div class="wrap page">
 <main class="content">
     <div class="auth-box box" style="max-width:640px">

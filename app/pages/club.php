@@ -137,7 +137,7 @@ $team = DB::row('SELECT * FROM teams WHERE id = ?', [$teamId]);
         <div class="box-body center">
             <?php if ($next): ?>
                 <div class="muted small"><?= e(match_type_label($next)) ?></div>
-                <div class="mini-match"><?= crest_img(['id' => $next['home_team_id'], 'crest_id' => $next['h_crest_id'], 'crest_custom' => $next['h_crest_custom']], 26) ?> <?= e($next['home_name']) ?> <span class="muted">vs</span> <?= e($next['away_name']) ?> <?= crest_img(['id' => $next['away_team_id'], 'crest_id' => $next['a_crest_id'], 'crest_custom' => $next['a_crest_custom']], 26) ?></div>
+                <div class="mini-match one-line"><?= crest_img(['id' => $next['home_team_id'], 'crest_id' => $next['h_crest_id'], 'crest_custom' => $next['h_crest_custom']], 22) ?> <span class="mm-team" title="<?= e($next['home_name']) ?>"><?= e($next['home_name']) ?></span> <span class="muted">vs</span> <span class="mm-team" title="<?= e($next['away_name']) ?>"><?= e($next['away_name']) ?></span> <?= crest_img(['id' => $next['away_team_id'], 'crest_id' => $next['a_crest_id'], 'crest_custom' => $next['a_crest_custom']], 22) ?></div>
                 <div><?= e(fdate_long($next['scheduled_at'])) ?> · <span class="countdown" style="font-size:13px" data-deadline="<?= e(date('c', strtotime($next['scheduled_at']))) ?>"></span></div>
             <?php else: ?>
                 <p class="muted"><?= e(t('No hay partidos programados.')) ?></p>

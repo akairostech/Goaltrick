@@ -91,7 +91,7 @@ $params = $skin >= 0 ? ['skin' => $skin] : [];
                     <div class="field"><label for="country_id"><?= e(t('País')) ?></label>
                         <select id="country_id" name="country_id">
                             <option value="0">—</option>
-                            <?php foreach ($countries as $c): ?><option value="<?= (int)$c['id'] ?>"<?= (int)$u['country_id'] === (int)$c['id'] ? ' selected' : '' ?>><?= e(NationService::flag($c['code'])) ?> <?= e(t($c['name'])) ?></option><?php endforeach; ?>
+                            <?php foreach ($countries as $c): ?><option value="<?= (int)$c['id'] ?>"<?= (int)$u['country_id'] === (int)$c['id'] ? ' selected' : '' ?>><?= e(t($c['name'])) ?></option><?php endforeach; ?>
                         </select></div>
                     <div class="field"><label for="city"><?= e(t('Ciudad')) ?></label>
                         <input type="text" id="city" name="city" maxlength="60" value="<?= e($u['city']) ?>"></div>

@@ -91,7 +91,7 @@ $countries = DB::all('SELECT id, name, code FROM countries ORDER BY name');
             </div>
             <div class="form-row">
                 <div class="field"><label><?= e(t('Posición natural')) ?></label><select name="role"><?php foreach (ROLES as $k => $v): ?><option value="<?= $k ?>"<?= $p['role'] === $k ? ' selected' : '' ?>><?= e(role_name($k)) ?></option><?php endforeach; ?></select></div>
-                <div class="field"><label><?= e(t('Nacionalidad')) ?></label><select name="country_id"><?php foreach ($countries as $c): ?><option value="<?= (int)$c['id'] ?>"<?= (int)$p['country_id'] === (int)$c['id'] ? ' selected' : '' ?>><?= e(NationService::flag($c['code']) . ' ' . t($c['name'])) ?></option><?php endforeach; ?></select></div>
+                <div class="field"><label><?= e(t('Nacionalidad')) ?></label><select name="country_id"><?php foreach ($countries as $c): ?><option value="<?= (int)$c['id'] ?>"<?= (int)$p['country_id'] === (int)$c['id'] ? ' selected' : '' ?>><?= e(t($c['name'])) ?></option><?php endforeach; ?></select></div>
             </div>
             <div class="form-row">
                 <div class="field"><label><?= e(t('Especialidad')) ?></label><select name="specialty"><option value=""><?= e(t('Ninguna')) ?></option><?php foreach (SPECIALTIES as $k => [$n, $i]): ?><option value="<?= $k ?>"<?= $p['specialty'] === $k ? ' selected' : '' ?>><?= $i ?> <?= e(specialty_name($k)) ?></option><?php endforeach; ?></select></div>
