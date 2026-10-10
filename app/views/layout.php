@@ -171,10 +171,12 @@ $clubMenu = [
 <footer class="footer">
     <div class="wrap">
         <?= e($site) ?> · <?= e(t('Juego de gestión de fútbol')) ?> · v<?= APP_VERSION ?>
+        <span class="muted"> · <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a> (CC-BY 4.0)</span>
         <?php $le = GameState::get('last_event'); if ($le): ?><span class="muted"> · <?= e(t('Última actualización: {x}', ['x' => tdb($le)])) ?></span><?php endif; ?>
     </div>
 </footer>
 <script>window.GT_I18N = <?= json_encode(Lang::code() === 'es' ? new stdClass() : Lang::jsDictionary(JS_STRINGS), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
+<script src="<?= e(asset('js/emoji.js')) ?>"></script>
 <script src="<?= e(asset('js/app.js')) ?>"></script>
 </body>
 </html>

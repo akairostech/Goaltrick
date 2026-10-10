@@ -673,4 +673,14 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
 .matches-table .match-actions .btn { padding: 2px 5px; margin-left: 1px; }
 .matches-table .match-actions .form-badge { margin-right: 0; }
 .matches-table .mt-name { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
-.matches-table .mt-pens { font-size: 11.5px; line-height: 1.1; }
+.matches-table .mt-pens { font-size: 11.5px; line-height: 1.1; font-weight: bold; }
+/* v1.10.3: botones solo con icono y tooltip con el texto */
+.btn-icon { position: relative; min-width: 26px; }
+.matches-table .match-actions .btn-icon { padding: 2px 6px; }
+[data-tip]:hover::after, [data-tip]:focus-visible::after {
+    content: attr(data-tip); position: absolute; right: 0; bottom: calc(100% + 5px); z-index: 50;
+    background: #263238; color: #fff; font: normal 11px/1.3 Verdana, Tahoma, sans-serif; padding: 4px 8px; border-radius: 4px;
+    white-space: nowrap; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+/* v1.10.3: emojis como imagen (Twemoji, assets/img/emoji/, ver assets/js/emoji.js) */
+img.emoji { display: inline-block !important; width: 1.15em !important; height: 1.15em !important; min-width: 0 !important; max-width: none !important; margin: 0 .05em !important; padding: 0 !important; vertical-align: -.2em !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; object-fit: contain; }

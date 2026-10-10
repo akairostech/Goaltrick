@@ -1,4 +1,4 @@
-# GoalTrick v1.10.2 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.10.3 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -39,6 +39,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Perfil público del mánager** (v1.10): `index.php?page=manager&id=N`, enlazado desde la ficha de cada equipo, el buscador, los conectados y los mensajes. Muestra cara de presidente, lema, país y ciudad, edad, club favorito, presentación, días en el cargo, balance de partidos, goles, mayor goleada, títulos, fichajes y ventas, vitrina de trofeos, últimos partidos e historial de temporadas. Cada mánager lo edita en «Mi perfil → Editar mi perfil» y elige su cara entre **1000 presidentes caricaturescos** (`assets/img/presidents/`) agrupados en 8 tonos de piel de 125 caras cada uno (Porcelana, Marfil, Miel, Arena, Canela, Avellana, Cacao y Ébano). Al pulsar el nombre de usuario en la barra superior se abre un menú con «Mi cuenta» y «Mi perfil».
 - **v1.10.1**: banderas en imagen SVG (`assets/img/flags/`, se ven igual en Windows, donde los emojis de banderas no aparecen), miniaturas cuadradas de los mánagers, escudos en los rankings de «Mundo» y en los rivales sugeridos de «Amistosos», y el próximo partido de «Club» en una sola línea.
 - **v1.10.2**: en «Partidos», columnas más juntas para que la tabla quepa sin barra de desplazamiento lateral (los nombres de equipo muy largos se recortan con «…» y se ven completos al pasar el ratón), y el resultado de los penales va debajo del marcador en letra más pequeña.
+- **v1.10.3**: todos los emojis se muestran como imágenes (Twemoji, licencia CC-BY 4.0, en `assets/img/emoji/`, con el script `assets/js/emoji.js`), para que se vean igual en todos los sistemas, incluidos los emojis que escriban los usuarios; en «Partidos», los botones muestran solo el icono con un tooltip con su texto, y el resultado de los penales va entre paréntesis y en negrita.
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos
