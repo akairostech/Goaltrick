@@ -39,14 +39,14 @@ final class Scheduler
     public static function runDue(int $maxEvents = 100): array
     {
         if (!self::lock()) {
-            return ['El planificador ya se está ejecutando en otro proceso.'];
+            return [t('El planificador ya se está ejecutando en otro proceso.')];
         }
         $log = [];
         try {
             @set_time_limit(0);
             $n = TransferService::processDue();
             if ($n) {
-                $log[] = "Traspasos completados: $n";
+                $log[] = t('Traspasos completados: {n}', ['n' => $n]);
             }
             Economy::finishConstructions();
             for ($i = 0; $i < $maxEvents; $i++) {
@@ -67,13 +67,13 @@ final class Scheduler
     public static function forceNext(): string
     {
         if (!self::lock()) {
-            return 'El planificador ya se está ejecutando.';
+            return t('El planificador ya se está ejecutando.');
         }
         try {
             @set_time_limit(0);
             $ev = DB::row("SELECT * FROM scheduled_events WHERE status = 'pending' ORDER BY run_at, id LIMIT 1");
             if (!$ev) {
-                return 'No hay eventos pendientes.';
+                return t('No hay eventos pendientes.');
             }
             // Los bots pujan y se cierran las subastas que acabarían antes de este evento
             BotAI::bids($ev['run_at']);
@@ -101,7 +101,7 @@ final class Scheduler
                 foreach ($ids as $m) {
                     MatchEngine::play((int)$m['id']);
                 }
-                $label = "Jornada {$ev['round']} de liga jugada (" . count($ids) . ' partidos)';
+                $label = tx('Jornada {round} de liga jugada ({n} partidos)', ['round' => $ev['round'], 'n' => count($ids)]);
                 break;
             case 'friendly_round':
                 // Rechazar invitaciones no respondidas (los partidos de copa se juegan a la vez que los amistosos)
@@ -110,10 +110,10 @@ final class Scheduler
                 foreach ($ids as $m) {
                     MatchEngine::play((int)$m['id']);
                 }
-                $label = 'Amistosos jugados (' . count($ids) . ')';
+                $label = tx('Amistosos jugados ({n})', ['n' => count($ids)]);
                 $cupLog = CupService::playDue($ev['run_at']);
                 if ($cupLog !== '') {
-                    $label = $cupLog . ' · ' . $label;
+                    $label = tx('{a} · {b}', ['a' => $cupLog, 'b' => $label]);
                 }
                 break;
             case 'worldcup_round':
@@ -121,22 +121,22 @@ final class Scheduler
                 break;
             case 'training':
                 Training::weeklyUpdate();
-                $label = "Entrenamiento semanal (semana $week)";
+                $label = tx('Entrenamiento semanal (semana {week})', ['week' => $week]);
                 break;
             case 'economy':
                 Economy::weeklyUpdate($season, $week);
                 BotAI::weekly();
-                $label = "Actualización económica (semana $week)";
+                $label = tx('Actualización económica (semana {week})', ['week' => $week]);
                 break;
             case 'season_end':
                 LeagueService::seasonEnd($season);
-                $label = "Fin de la temporada $season. Comienza la temporada " . ($season + 1);
+                $label = tx('Fin de la temporada {season}. Comienza la temporada {next}', ['season' => $season, 'next' => $season + 1]);
                 break;
             default:
-                $label = 'Evento desconocido: ' . $ev['type'];
+                $label = tx('Evento desconocido: {type}', ['type' => $ev['type']]);
         }
-        GameState::set('last_event', $label . ' — ' . now());
-        return $label;
+        GameState::set('last_event', tx('{event} — {time}', ['event' => $label, 'time' => now()]));
+        return tdb($label);
     }
 
     public static function nextEvent(?string $type = null): ?array
@@ -149,9 +149,10 @@ final class Scheduler
 
     public static function eventName(string $type): string
     {
-        return [
+        $names = [
             'league_round' => 'Jornada de liga', 'friendly_round' => 'Amistosos', 'training' => 'Entrenamiento',
             'economy' => 'Economía', 'season_end' => 'Fin de temporada', 'worldcup_round' => 'Mundial',
-        ][$type] ?? $type;
+        ];
+        return isset($names[$type]) ? t($names[$type]) : $type;
     }
 }

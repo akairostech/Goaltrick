@@ -27,15 +27,23 @@ const PAGES = [
     'youth' => 'youth', 'friendlies' => 'friendlies', 'messages' => 'messages', 'world' => 'world',
     'profile' => 'profile', 'admin' => 'admin',
     'nations' => 'nations', 'nation' => 'nation', 'worldcup' => 'worldcup',
-    'sponsors' => 'sponsors', 'companies' => 'companies', 'staff_member' => 'staff_member', 'cup' => 'cup',
+    'sponsors' => 'sponsors', 'companies' => 'companies', 'staff_member' => 'staff_member', 'cup' => 'cup', 'stadium_art' => 'stadium_art',
     'admin_team' => 'admin_team', 'admin_player' => 'admin_player', 'admin_reset' => 'admin_reset',
 ];
+
+// Cambio de idioma: index.php?...&lang=en  (se guarda en una cookie y en el perfil del usuario)
+if (isset($_GET['lang']) && is_string($_GET['lang'])) {
+    Lang::choose($_GET['lang']);
+    $q = $_GET;
+    unset($q['lang']);
+    redirect('index.php' . ($q ? '?' . http_build_query($q) : ''));
+}
 
 $page = (string)($_GET['page'] ?? 'home');
 if (!isset(PAGES[$page])) {
     http_response_code(404);
     $page = 'home';
-    flash('error', 'La página solicitada no existe.');
+    flash('error', t('La página solicitada no existe.'));
 }
 
 try {
@@ -56,7 +64,7 @@ try {
         ob_end_clean();
     }
     http_response_code(500);
-    $msg = Config::bool('app', 'debug') ? $e->getMessage() : 'Error de base de datos. Revisa la configuración en config.ini.';
+    $msg = Config::bool('app', 'debug') ? $e->getMessage() : t('Error de base de datos. Revisa la configuración en config.ini.');
     echo '<!doctype html><meta charset="utf-8"><title>Error</title><div style="font-family:sans-serif;padding:40px">'
         . '<h2>Error de base de datos</h2><p>' . e($msg) . '</p></div>';
 } catch (Throwable $e) {

@@ -107,8 +107,13 @@ final class Lineup
     {
         $row = DB::row('SELECT * FROM team_lineups WHERE team_id = ?', [$teamId]);
         if (!$row) {
-            return ['positions' => [], 'orders' => [], 'tactic' => 'normal', 'attitude' => 'normal', 'captain_id' => null, 'setpieces_id' => null];
+            return ['positions' => [], 'orders' => [], 'tactic' => 'normal', 'attitude' => 'normal', 'captain_id' => null, 'setpieces_id' => null, 'for_match_id' => null];
         }
+        return self::decode($row) + ['for_match_id' => isset($row['for_match_id']) && $row['for_match_id'] ? (int)$row['for_match_id'] : null];
+    }
+
+    private static function decode(array $row): array
+    {
         return [
             'positions'    => json_decode($row['positions'], true) ?: [],
             'orders'       => json_decode((string)$row['orders'], true) ?: [],
@@ -119,13 +124,18 @@ final class Lineup
         ];
     }
 
-    public static function save(int $teamId, array $lineup): void
+    /**
+     * Guarda la alineación enviada. $forMatchId = partido para el que se envía (si el mánager no envía
+     * alineación para un partido se usa su alineación predeterminada, ver forMatch()).
+     */
+    public static function save(int $teamId, array $lineup, ?int $forMatchId = null): void
     {
         DB::exec(
-            'INSERT INTO team_lineups (team_id, positions, orders, tactic, attitude, captain_id, setpieces_id, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            'INSERT INTO team_lineups (team_id, positions, orders, tactic, attitude, captain_id, setpieces_id, for_match_id, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE positions = VALUES(positions), orders = VALUES(orders), tactic = VALUES(tactic),
-               attitude = VALUES(attitude), captain_id = VALUES(captain_id), setpieces_id = VALUES(setpieces_id), updated_at = VALUES(updated_at)',
+               attitude = VALUES(attitude), captain_id = VALUES(captain_id), setpieces_id = VALUES(setpieces_id),
+               for_match_id = VALUES(for_match_id), updated_at = VALUES(updated_at)',
             [
                 $teamId,
                 json_encode($lineup['positions']),
@@ -134,9 +144,60 @@ final class Lineup
                 $lineup['attitude'] ?? 'normal',
                 $lineup['captain_id'] ?? null,
                 $lineup['setpieces_id'] ?? null,
+                $forMatchId,
                 now(),
             ]
         );
+    }
+
+    /* ---------------- Alineaciones guardadas (0 = predeterminada, 1..3 = libres) ---------------- */
+
+    public const PRESET_SLOTS = 3;
+
+    /** slot => ['name' => ..., 'lineup' => [...], 'updated_at' => ...] */
+    public static function presets(int $teamId): array
+    {
+        $out = [];
+        foreach (DB::all('SELECT * FROM lineup_presets WHERE team_id = ? ORDER BY slot', [$teamId]) as $r) {
+            $out[(int)$r['slot']] = ['name' => $r['name'], 'lineup' => self::decode($r), 'updated_at' => $r['updated_at']];
+        }
+        return $out;
+    }
+
+    public static function savePreset(int $teamId, int $slot, string $name, array $lineup): void
+    {
+        $slot = max(0, min(self::PRESET_SLOTS, $slot));
+        DB::exec(
+            'INSERT INTO lineup_presets (team_id, slot, name, positions, orders, tactic, attitude, captain_id, setpieces_id, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE name = VALUES(name), positions = VALUES(positions), orders = VALUES(orders), tactic = VALUES(tactic),
+               attitude = VALUES(attitude), captain_id = VALUES(captain_id), setpieces_id = VALUES(setpieces_id), updated_at = VALUES(updated_at)',
+            [
+                $teamId, $slot, mb_substr($name, 0, 40),
+                json_encode($lineup['positions']), json_encode($lineup['orders'] ?? []),
+                $lineup['tactic'] ?? 'normal', $lineup['attitude'] ?? 'normal',
+                $lineup['captain_id'] ?? null, $lineup['setpieces_id'] ?? null, now(),
+            ]
+        );
+    }
+
+    public static function deletePreset(int $teamId, int $slot): void
+    {
+        DB::exec('DELETE FROM lineup_presets WHERE team_id = ? AND slot = ?', [$teamId, $slot]);
+    }
+
+    /** Alineación que se usará en un partido concreto: la enviada para él o, si no, la predeterminada */
+    public static function planned(int $teamId, int $matchId = 0): array
+    {
+        $sent = self::get($teamId);
+        if ($matchId <= 0 || ($sent['for_match_id'] ?? null) === $matchId) {
+            return $sent;
+        }
+        $default = self::presets($teamId)[0] ?? null;
+        if ($default && $default['lineup']['positions']) {
+            return $default['lineup'] + ['for_match_id' => null, 'is_default' => true];
+        }
+        return $sent;
     }
 
     /** Genera la mejor alineación posible para una formación con los jugadores disponibles */
@@ -237,7 +298,7 @@ final class Lineup
      * rellena huecos (lesionados, sancionados o vendidos) con suplentes.
      * Resultado: ['starters' => [pos => player], 'bench' => [slot => player], tactic, attitude, captain, setpieces, orders]
      */
-    public static function forMatch(array $team): array
+    public static function forMatch(array $team, int $matchId = 0): array
     {
         $teamId = (int)$team['id'];
         $players = self::available($teamId);
@@ -245,7 +306,7 @@ final class Lineup
         foreach ($players as $p) {
             $byId[(int)$p['id']] = $p;
         }
-        $lineup = (int)$team['is_bot'] ? self::auto($teamId, self::botFormation($teamId), $players) : self::get($teamId);
+        $lineup = (int)$team['is_bot'] ? self::auto($teamId, self::botFormation($teamId), $players) : self::planned($teamId, $matchId);
         if (!$lineup['positions']) {
             $lineup = self::auto($teamId, '4-4-2', $players);
         }

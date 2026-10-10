@@ -1,7 +1,7 @@
 <?php
 $user = require_login();
 $myTeam = current_team();
-$pageTitle = 'Copa';
+$pageTitle = t('Copa');
 $navActive = 'league';
 $countryId = (int)(get('country') ?: ($myTeam['country_id'] ?? 1));
 $countryRow = DB::row('SELECT * FROM countries WHERE id = ?', [$countryId]) ?: DB::row('SELECT * FROM countries ORDER BY id LIMIT 1');
@@ -10,18 +10,18 @@ $seasons = array_map('intval', array_column(DB::all('SELECT season FROM league_c
 $season = (int)(get('season') ?: ($seasons[0] ?? GameState::season()));
 $cup = DB::row('SELECT * FROM league_cups WHERE country_id = ? AND season = ?', [$countryId, $season]);
 $countries = DB::all('SELECT c.id, c.name, c.code FROM countries c WHERE EXISTS (SELECT 1 FROM league_cups lc WHERE lc.country_id = c.id) ORDER BY c.name');
-$cupName = 'Copa de ' . $countryRow['name'];
+$cupName = t('Copa de {country}', ['country' => t($countryRow['name'])]);
 ?>
 <div class="page-title">
     <h1>🥇 <?= flag($countryRow['code']) ?> <?= e($cupName) ?></h1>
     <form class="inline-form" method="get">
         <input type="hidden" name="page" value="cup">
         <select name="country" onchange="this.form.submit()">
-            <?php foreach ($countries as $c): ?><option value="<?= (int)$c['id'] ?>"<?= (int)$c['id'] === $countryId ? ' selected' : '' ?>><?= e($c['name']) ?></option><?php endforeach; ?>
+            <?php foreach ($countries as $c): ?><option value="<?= (int)$c['id'] ?>"<?= (int)$c['id'] === $countryId ? ' selected' : '' ?>><?= e(t($c['name'])) ?></option><?php endforeach; ?>
         </select>
         <?php if ($seasons): ?>
         <select name="season" onchange="this.form.submit()">
-            <?php foreach ($seasons as $s): ?><option value="<?= $s ?>"<?= $s === $season ? ' selected' : '' ?>>Temporada <?= $s ?></option><?php endforeach; ?>
+            <?php foreach ($seasons as $s): ?><option value="<?= $s ?>"<?= $s === $season ? ' selected' : '' ?>><?= e(t('Temporada {n}', ['n' => $s])) ?></option><?php endforeach; ?>
         </select>
         <?php endif; ?>
     </form>
@@ -30,11 +30,11 @@ $cupName = 'Copa de ' . $countryRow['name'];
 <?php if (!$cup): ?>
     <div class="box"><div class="box-body">
         <?php if (!CupService::enabled()): ?>
-            <p>La Copa está desactivada en <code>config.ini</code> (sección <code>[cup]</code>).</p>
+            <p><?= t('La Copa está desactivada en <code>config.ini</code> (sección <code>[cup]</code>).') ?></p>
         <?php else: ?>
-            <p>No hay Copa de <?= e($countryRow['name']) ?> en la temporada <?= $season ?>. La Copa se sortea al comenzar cada temporada.</p>
+            <p><?= e(t('No hay Copa de {country} en la temporada {season}. La Copa se sortea al comenzar cada temporada.', ['country' => t($countryRow['name']), 'season' => $season])) ?></p>
         <?php endif; ?>
-        <p class="small muted">En la Copa participan todos los equipos de todas las divisiones del país, a eliminación directa. Los partidos se juegan en la fecha de los amistosos.</p>
+        <p class="small muted"><?= e(t('En la Copa participan todos los equipos de todas las divisiones del país, a eliminación directa. Los partidos se juegan en la fecha de los amistosos.')) ?></p>
     </div></div>
 <?php return; endif;
 
@@ -69,54 +69,54 @@ $history = DB::all('SELECT lc.season, w.id AS wid, w.name AS wn, r.id AS rid, r.
 <?php if ($cup['status'] === 'finished' && $cup['winner_team_id']): $w = $teamRow($cup['winner_team_id']); $r = $teamRow($cup['runnerup_team_id']); ?>
 <div class="box">
     <div class="box-body sponsor-main">
-        <img src="<?= e(asset('img/trophies/trophy-cup.svg')) ?>" width="110" alt="Copa">
+        <img src="<?= e(asset('img/trophies/trophy-cup.svg')) ?>" width="110" alt="<?= e(t('Copa')) ?>">
         <div>
-            <h2>Campeón: <?= team_link($w['id'], $w['name']) ?></h2>
-            <?php if ($r): ?><div class="muted">Subcampeón: <?= team_link($r['id'], $r['name']) ?></div><?php endif; ?>
+            <h2><?= e(t('Campeón:')) ?> <?= team_link($w['id'], $w['name']) ?></h2>
+            <?php if ($r): ?><div class="muted"><?= e(t('Subcampeón:')) ?> <?= team_link($r['id'], $r['name']) ?></div><?php endif; ?>
         </div>
     </div>
 </div>
 <?php endif; ?>
 
 <div class="grid-2">
-    <div class="box"><div class="box-head">La competición</div>
+    <div class="box"><div class="box-head"><?= e(t('La competición')) ?></div>
         <table class="kv">
-            <tr><th>Estado</th><td><?= $cup['status'] === 'finished' ? 'Terminada' : 'En juego · ' . e(CupService::stageName($stageOfRound[(int)$cup['current_round']] ?? null)) ?></td></tr>
-            <tr><th>Participantes</th><td><?= $total ?> equipos<?= $cup['status'] === 'playing' ? ' (' . $alive . ' siguen vivos)' : '' ?></td></tr>
-            <tr><th>Premios</th><td>Pasar ronda: <?= e(money(Config::int('cup', 'round_prize', 8000))) ?> · Campeón: <?= e(money(Config::int('cup', 'winner_prize', 150000))) ?> · Subcampeón: <?= e(money(Config::int('cup', 'runnerup_prize', 60000))) ?></td></tr>
+            <tr><th><?= e(t('Estado')) ?></th><td><?= $cup['status'] === 'finished' ? e(t('Terminada')) : e(t('En juego')) . ' · ' . e(CupService::stageName($stageOfRound[(int)$cup['current_round']] ?? null)) ?></td></tr>
+            <tr><th><?= e(t('Participantes')) ?></th><td><?= e(t('{n} equipos', ['n' => $total])) ?><?= $cup['status'] === 'playing' ? ' ' . e(t('({n} siguen vivos)', ['n' => $alive])) : '' ?></td></tr>
+            <tr><th><?= e(t('Premios')) ?></th><td><?= e(t('Pasar ronda:')) ?> <?= e(money(Config::int('cup', 'round_prize', 8000))) ?> · <?= e(t('Campeón:')) ?> <?= e(money(Config::int('cup', 'winner_prize', 150000))) ?> · <?= e(t('Subcampeón:')) ?> <?= e(money(Config::int('cup', 'runnerup_prize', 60000))) ?></td></tr>
         </table>
-        <div class="box-body small muted">Eliminación directa a un partido: juega en casa el equipo de la división inferior y, si hay empate, se decide en la tanda de penaltis. Mientras sigas vivo en la Copa no podrás jugar amistosos.</div>
+        <div class="box-body small muted"><?= e(t('Eliminación directa a un partido: juega en casa el equipo de la división inferior y, si hay empate, se decide en la tanda de penaltis. Mientras sigas vivo en la Copa no podrás jugar amistosos.')) ?></div>
     </div>
-    <div class="box"><div class="box-head">Mi equipo</div><div class="box-body">
+    <div class="box"><div class="box-head"><?= e(t('Mi equipo')) ?></div><div class="box-body">
         <?php if (!$myTeam || !$mine): ?>
-            <p class="muted">Tu equipo no participa en esta Copa.</p>
+            <p class="muted"><?= e(t('Tu equipo no participa en esta Copa.')) ?></p>
         <?php elseif ($mine['eliminated_round'] === null && $cup['status'] === 'playing'): ?>
-            <p>✅ <strong>Sigues vivo</strong> en la Copa.</p>
+            <p>✅ <?= t('<strong>Sigues vivo</strong> en la Copa.') ?></p>
             <?php if ($myMatch && $myMatch['status'] === 'scheduled'): ?>
-                <p>Próximo partido (<?= e(CupService::stageName($myMatch['cup_stage'])) ?>): <a href="<?= e(url('match', ['id' => $myMatch['id']])) ?>"><?= e($myMatch['hn']) ?> – <?= e($myMatch['an']) ?></a><br><span class="small muted"><?= e(fdate($myMatch['scheduled_at'])) ?></span></p>
+                <p><?= e(t('Próximo partido ({stage}):', ['stage' => CupService::stageName($myMatch['cup_stage'])])) ?> <a href="<?= e(url('match', ['id' => $myMatch['id']])) ?>"><?= e($myMatch['hn']) ?> – <?= e($myMatch['an']) ?></a><br><span class="small muted"><?= e(fdate($myMatch['scheduled_at'])) ?></span></p>
             <?php else: ?>
-                <p class="small muted">Esta ronda pasas directamente (exento) o el rival se sortea tras la jornada en curso.</p>
+                <p class="small muted"><?= e(t('Esta ronda pasas directamente (exento) o el rival se sortea tras la jornada en curso.')) ?></p>
             <?php endif; ?>
         <?php elseif ((int)$cup['winner_team_id'] === (int)$myTeam['id']): ?>
-            <p>🏆 <strong>¡Sois los campeones!</strong> El trofeo ya está en tu vitrina.</p>
+            <p>🏆 <?= t('<strong>¡Sois los campeones!</strong> El trofeo ya está en tu vitrina.') ?></p>
         <?php else: ?>
-            <p>❌ Eliminado en <?= e(mb_strtolower(CupService::stageName($stageOfRound[(int)$mine['eliminated_round']] ?? null))) ?>.</p>
+            <p>❌ <?= e(t('Eliminado en {stage}.', ['stage' => mb_strtolower(CupService::stageName($stageOfRound[(int)$mine['eliminated_round']] ?? null))])) ?></p>
             <?php if ($myMatch): ?><p class="small"><a href="<?= e(url('match', ['id' => $myMatch['id']])) ?>"><?= e($myMatch['hn']) ?> <?= e(score_label($myMatch)) ?> <?= e($myMatch['an']) ?></a></p><?php endif; ?>
-            <p class="small muted">Ya puedes volver a jugar amistosos.</p>
+            <p class="small muted"><?= e(t('Ya puedes volver a jugar amistosos.')) ?></p>
         <?php endif; ?>
     </div></div>
 </div>
 
 <?php if ($rounds): ?>
 <div class="box">
-    <div class="box-head">Rondas</div>
+    <div class="box-head"><?= e(t('Rondas')) ?></div>
     <div class="box-body tabs-inline">
         <?php foreach (array_reverse($rounds) as $r): $rr = (int)$r['round']; ?>
             <a class="btn btn-small <?= $rr === $viewRound ? '' : 'btn-grey' ?>" href="<?= e(url('cup', ['country' => $countryId, 'season' => $season, 'round' => $rr])) ?>"><?= e(CupService::stageName($r['cup_stage'])) ?></a>
         <?php endforeach; ?>
     </div>
     <?php if ($games): ?>
-    <div class="box-head small"><?= e(CupService::stageName($games[0]['cup_stage'])) ?> · <?= e(fdate($games[0]['scheduled_at'])) ?> · <?= count($games) ?> partido(s)</div>
+    <div class="box-head small"><?= e(CupService::stageName($games[0]['cup_stage'])) ?> · <?= e(fdate($games[0]['scheduled_at'])) ?> · <?= e(t('{n} partido(s)', ['n' => count($games)])) ?></div>
     <div class="table-wrap">
     <table class="table compact">
         <?php foreach ($games as $m): $played = $m['status'] === 'played';
@@ -135,8 +135,8 @@ $history = DB::all('SELECT lc.season, w.id AS wid, w.name AS wn, r.id AS rid, r.
 <?php endif; ?>
 
 <div class="grid-2">
-    <div class="box"><div class="box-head">Goleadores de la Copa</div>
-        <?php if (!$scorers): ?><div class="box-body muted small">Todavía no hay goles.</div><?php else: ?>
+    <div class="box"><div class="box-head"><?= e(t('Goleadores de la Copa')) ?></div>
+        <?php if (!$scorers): ?><div class="box-body muted small"><?= e(t('Todavía no hay goles.')) ?></div><?php else: ?>
         <table class="table compact">
             <?php foreach ($scorers as $i => $s): ?>
                 <tr><td><?= $i + 1 ?>.</td><td><?= player_link($s) ?></td><td class="small"><?= team_link($s['tid'], $s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
@@ -144,10 +144,10 @@ $history = DB::all('SELECT lc.season, w.id AS wid, w.name AS wn, r.id AS rid, r.
         </table>
         <?php endif; ?>
     </div>
-    <div class="box"><div class="box-head">Palmarés</div>
-        <?php if (!$history): ?><div class="box-body muted small">Aún no se ha disputado ninguna final.</div><?php else: ?>
+    <div class="box"><div class="box-head"><?= e(t('Palmarés')) ?></div>
+        <?php if (!$history): ?><div class="box-body muted small"><?= e(t('Aún no se ha disputado ninguna final.')) ?></div><?php else: ?>
         <table class="table compact">
-            <thead><tr><th>Temp.</th><th>Campeón</th><th>Subcampeón</th></tr></thead>
+            <thead><tr><th><?= e(t('Temp.')) ?></th><th><?= e(t('Campeón')) ?></th><th><?= e(t('Subcampeón')) ?></th></tr></thead>
             <?php foreach ($history as $h): ?>
                 <tr><td><?= (int)$h['season'] ?></td><td>🏆 <?= team_link($h['wid'], $h['wn']) ?></td><td><?= $h['rid'] ? team_link($h['rid'], $h['rn']) : '–' ?></td></tr>
             <?php endforeach; ?>

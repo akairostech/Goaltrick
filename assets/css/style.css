@@ -445,3 +445,36 @@ textarea { min-height: 120px; resize: vertical; }
 }
 .lineup-msg { background: var(--warn-bg); border: 1px solid #e8c766; border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 12px; }
 .table tr.highlight td { background: var(--warn-bg); font-weight: bold; }
+
+/* Selector de idioma (v1.5) */
+.lang-switch { position: relative; }
+.lang-switch summary { list-style: none; cursor: pointer; background: rgba(255,255,255,.12); color: #fff; border-radius: 12px; padding: 2px 9px; font-size: 12px; user-select: none; }
+.lang-switch summary::-webkit-details-marker { display: none; }
+.lang-switch .lang-code { font-weight: bold; }
+.lang-switch .lang-menu { position: absolute; right: 0; top: 26px; background: #fff; border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.2); z-index: 1000; min-width: 150px; padding: 4px 0; }
+.lang-switch .lang-menu a { display: block; padding: 5px 12px; color: var(--text); white-space: nowrap; }
+.lang-switch .lang-menu a:hover { background: var(--green-50); text-decoration: none; }
+.lang-switch .lang-menu a.active { font-weight: bold; background: var(--green-100); }
+
+/* Estadio ilustrado (v1.5) */
+.stadium-art { display: block; width: 100%; height: auto; }
+.stadium-hero { overflow: hidden; }
+.stadium-canvas { background: #7cc4f2; line-height: 0; }
+.stadium-caption { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.stadium-model { font-size: 18px; font-weight: bold; color: var(--green-800); }
+.stadium-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.stadium-tags .tag { font-size: 12px; padding: 2px 8px; }
+.stadium-models { display: flex; gap: 4px; padding: 10px 12px 0; flex-wrap: wrap; }
+.stadium-models .sm-step { flex: 1 1 90px; text-align: center; font-size: 11px; padding: 5px 4px; border-radius: 4px; background: #eef2ea; color: var(--muted); border: 1px solid var(--border); }
+.stadium-models .sm-step small { display: block; font-size: 10px; }
+.stadium-models .sm-step.done { background: var(--green-100); color: var(--green-800); }
+.stadium-models .sm-step.current { background: var(--green-700); color: #fff; font-weight: bold; border-color: var(--green-800); }
+.stadium-mini { margin: 6px 0 10px; border-radius: 6px; overflow: hidden; line-height: 0; }
+.stadium-mini:empty { display: none; }
+
+/* Alineaciones guardadas (v1.5) */
+.lineup-tools { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; }
+.preset-load { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.preset-save { display: flex; gap: 6px; flex-wrap: wrap; }
+.preset-save select { flex: 0 0 auto; width: auto; }
+.preset-save input { flex: 1 1 160px; min-width: 0; }

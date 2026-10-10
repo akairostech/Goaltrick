@@ -30,7 +30,7 @@ final class LeagueService
                 continue;
             }
             if ($progress) {
-                $progress('Creando la liga de ' . $c['name'] . '...');
+                $progress(t('Creando la liga de {country}...', ['country' => t($c['name'])]));
             }
             self::createCountryLeague((int)$c['id'], self::countryDivisions((int)$c['id']));
         }
@@ -293,13 +293,15 @@ final class LeagueService
                         'points' => $row['pts'], 'goals_for' => $row['gf'], 'goals_against' => $row['gc'], 'result' => $res,
                     ]);
                     $prize = (int)round(Config::int('economy', 'prize_' . $row['pos'], 0) * $prizeF);
-                    Economy::transaction($tid, $prize, 'prizes', 'Premio por terminar ' . $row['pos'] . 'º en la serie ' . $u['name'], $season);
+                    Economy::transaction($tid, $prize, 'prizes', tx('Premio por terminar {pos}º en la serie {series}', ['pos' => $row['pos'], 'series' => $u['name']]), $season);
                     $team = DB::row('SELECT is_bot FROM teams WHERE id = ?', [$tid]);
                     if ($team && !(int)$team['is_bot']) {
-                        $msg = "🏆 Temporada $season terminada: posición {$row['pos']} en la serie {$u['name']} con {$row['pts']} puntos.";
+                        $msg = tx('🏆 Temporada {season} terminada: posición {pos} en la serie {series} con {pts} puntos.', ['season' => $season, 'pos' => $row['pos'], 'series' => $u['name'], 'pts' => $row['pts']]);
                         if (isset($moves[$tid])) {
                             $newName = DB::value('SELECT name FROM league_units WHERE id = ?', [$moves[$tid]]);
-                            $msg .= ($result[$tid] === 'promoted' ? ' ¡ASCENSO a la serie ' : ' Descenso a la serie ') . $newName . '.';
+                            $msg = tx_join($msg, $result[$tid] === 'promoted'
+                                ? tx('¡ASCENSO a la serie {series}.', ['series' => $newName])
+                                : tx('Descenso a la serie {series}.', ['series' => $newName]));
                         }
                         DB::insert('team_events', ['team_id' => $tid, 'created_at' => $ts, 'type' => 'season', 'message' => $msg]);
                     }
@@ -343,7 +345,7 @@ final class LeagueService
                 DB::exec("UPDATE transfer_listings SET status = 'cancelled', closed_at = ? WHERE player_id = ? AND status = 'active'", [$ts, $p['id']]);
                 if ($p['team_id'] && !(int)$p['is_bot']) {
                     DB::insert('team_events', ['team_id' => $p['team_id'], 'created_at' => $ts, 'type' => 'retire',
-                        'message' => '👋 ' . player_name($p) . ' (' . $p['age_years'] . ' años) ha anunciado su retirada.']);
+                        'message' => tx('👋 {player} ({age} años) ha anunciado su retirada.', ['player' => player_name($p), 'age' => $p['age_years']])]);
                 }
             }
         }

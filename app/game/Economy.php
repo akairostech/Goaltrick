@@ -77,25 +77,25 @@ final class Economy
         foreach ($teams as $t) {
             DB::transaction(function () use ($t, $season, $week) {
                 $id = (int)$t['id'];
-                self::transaction($id, self::ads($t), 'ads', 'Publicidad estática y merchandising', $season, $week);
+                self::transaction($id, self::ads($t), 'ads', tx('Publicidad estática y merchandising'), $season, $week);
                 SponsorService::payWeekly($t, $season, $week);
                 $wages = (int)DB::value('SELECT COALESCE(SUM(wage),0) FROM players WHERE team_id = ? AND retired = 0', [$id]);
-                self::transaction($id, -$wages, 'wages', 'Salarios de la plantilla', $season, $week);
-                self::transaction($id, -self::weeklyStaffCost($t), 'staff', 'Entrenador y personal', $season, $week);
-                self::transaction($id, -self::maintenance($t), 'stadium', 'Mantenimiento del estadio', $season, $week);
+                self::transaction($id, -$wages, 'wages', tx('Salarios de la plantilla'), $season, $week);
+                self::transaction($id, -self::weeklyStaffCost($t), 'staff', tx('Entrenador y personal'), $season, $week);
+                self::transaction($id, -self::maintenance($t), 'stadium', tx('Mantenimiento del estadio'), $season, $week);
                 if ((int)$t['youth_level'] > 0) {
-                    self::transaction($id, -(int)$t['youth_level'] * Config::int('economy', 'youth_cost', 5000), 'youth', 'Inversión en cantera', $season, $week);
+                    self::transaction($id, -(int)$t['youth_level'] * Config::int('economy', 'youth_cost', 5000), 'youth', tx('Inversión en cantera'), $season, $week);
                 }
                 $cash = (int)DB::value('SELECT cash FROM teams WHERE id = ?', [$id]);
                 $neg = $cash < 0 ? min(255, (int)$t['negative_weeks'] + 1) : 0;
                 DB::exec('UPDATE teams SET negative_weeks = ? WHERE id = ?', [$neg, $id]);
                 if ($neg > 0 && !(int)$t['is_bot']) {
                     DB::insert('team_events', ['team_id' => $id, 'created_at' => now(), 'type' => 'finance',
-                        'message' => "⚠️ Tu club está en números rojos ($neg semana(s)). Vende jugadores o reduce gastos."]);
+                        'message' => tx('⚠️ Tu club está en números rojos ({n} semana(s)). Vende jugadores o reduce gastos.', ['n' => $neg])]);
                 }
                 // Los bots en bancarrota reciben ayuda de la federación para no romper la liga
                 if ((int)$t['is_bot'] && $cash < -200000) {
-                    self::transaction($id, 250000, 'other', 'Ayuda de la federación', $season, $week);
+                    self::transaction($id, 250000, 'other', tx('Ayuda de la federación'), $season, $week);
                 }
             });
         }
@@ -113,7 +113,7 @@ final class Economy
                 [$t['id']]
             );
             if (!(int)$t['is_bot']) {
-                DB::insert('team_events', ['team_id' => $t['id'], 'created_at' => now(), 'type' => 'stadium', 'message' => '🏟 Las obras de ampliación del estadio han finalizado.']);
+                DB::insert('team_events', ['team_id' => $t['id'], 'created_at' => now(), 'type' => 'stadium', 'message' => tx('🏟 Las obras de ampliación del estadio han finalizado.')]);
             }
         }
     }

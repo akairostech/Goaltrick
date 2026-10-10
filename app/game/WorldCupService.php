@@ -29,7 +29,7 @@ final class WorldCupService
 
     public static function stageName(?string $stage): string
     {
-        return self::STAGE_NAMES[$stage ?? ''] ?? (string)$stage;
+        return isset(self::STAGE_NAMES[$stage ?? '']) ? t(self::STAGE_NAMES[$stage]) : (string)$stage;
     }
 
     /** Número de grupos según las selecciones disponibles (16 → 4 grupos, 8 → 2 grupos) */
@@ -115,12 +115,69 @@ final class WorldCupService
         });
     }
 
+    /**
+     * Si el Mundial de la temporada todavía no ha empezado y hay más selecciones disponibles que
+     * participantes (por ejemplo tras añadir naciones nuevas), se vuelve a sortear con todas.
+     * Devuelve true si se ha rehecho.
+     */
+    public static function rebuildIfNotStarted(int $season): bool
+    {
+        return self::rebuild($season, false);
+    }
+
+    /**
+     * Vuelve a sortear el Mundial de la temporada con todas las selecciones si le faltan participantes.
+     * Con $restartStarted también se rehace un Mundial ya empezado (pero no terminado): se anulan sus
+     * partidos jugados (y las internacionalidades y goles con la selección que dieron) y empieza de cero.
+     */
+    public static function rebuild(int $season, bool $restartStarted = false): bool
+    {
+        if (!self::enabled()) {
+            return false;
+        }
+        $nations = (int)DB::value('SELECT COUNT(*) FROM teams WHERE is_national = 1');
+        $wanted = self::groupCount($nations) * 4;
+        $cup = self::forSeason($season);
+        if ($cup) {
+            $have = (int)DB::value('SELECT COUNT(*) FROM worldcup_teams WHERE cup_id = ?', [$cup['id']]);
+            $played = (int)DB::value("SELECT COUNT(*) FROM matches WHERE type = 'worldcup' AND cup_id = ? AND status = 'played'", [$cup['id']]);
+            if ($have >= $wanted || $cup['status'] === 'finished' || ($played > 0 && !$restartStarted)) {
+                return false;
+            }
+        }
+        $seasonStart = strtotime(GameState::get('season_start') ?? date('Y-m-d', LeagueService::firstSeasonStart()));
+        $minWeek = GameState::week() + 1;
+        try {
+            return DB::transaction(function () use ($cup, $season, $seasonStart, $minWeek) {
+                if ($cup) {
+                    // Deshacer las estadísticas internacionales de los partidos que se anulan
+                    foreach (DB::all("SELECT mp.player_id, mp.goals FROM match_players mp JOIN matches m ON m.id = mp.match_id
+                                      WHERE m.type = 'worldcup' AND m.cup_id = ? AND m.status = 'played'", [$cup['id']]) as $r) {
+                        DB::exec('UPDATE players SET caps = GREATEST(caps, 1) - 1, goals_national = GREATEST(goals_national, ?) - ? WHERE id = ?',
+                            [(int)$r['goals'], (int)$r['goals'], $r['player_id']]);
+                    }
+                    DB::exec("DELETE mp FROM match_players mp JOIN matches m ON m.id = mp.match_id WHERE m.type = 'worldcup' AND m.cup_id = ?", [$cup['id']]);
+                    DB::exec("DELETE FROM matches WHERE type = 'worldcup' AND cup_id = ?", [$cup['id']]);
+                    DB::exec('DELETE FROM worldcup_teams WHERE cup_id = ?', [$cup['id']]);
+                    DB::exec("DELETE FROM scheduled_events WHERE type = 'worldcup_round' AND season = ? AND status = 'pending'", [$season]);
+                    DB::exec('DELETE FROM worldcups WHERE id = ?', [$cup['id']]);
+                }
+                if (!self::scheduleForSeason($season, $seasonStart, $minWeek)) {
+                    throw new RuntimeException('no cabe');   // se deshace todo y se conserva el Mundial anterior
+                }
+                return true;
+            });
+        } catch (RuntimeException $e) {
+            return false;
+        }
+    }
+
     /** Juega una jornada del Mundial y prepara la siguiente fase */
     public static function playRound(int $season, int $round): string
     {
         $cup = self::forSeason($season);
         if (!$cup) {
-            return 'No hay Mundial esta temporada';
+            return tx('No hay Mundial esta temporada');
         }
         $ids = DB::all("SELECT id FROM matches WHERE type = 'worldcup' AND cup_id = ? AND round = ? AND status = 'scheduled'", [$cup['id'], $round]);
         foreach ($ids as $m) {
@@ -128,7 +185,7 @@ final class WorldCupService
         }
         $groups = (int)DB::value('SELECT COUNT(DISTINCT group_letter) FROM worldcup_teams WHERE cup_id = ?', [$cup['id']]);
         $letters = self::letters($groups);
-        $label = "Mundial: jornada $round (" . count($ids) . ' partidos)';
+        $label = tx('Mundial: jornada {round} ({n} partidos)', ['round' => $round, 'n' => count($ids)]);
         if (!$ids) {
             return $label; // ya se había jugado (no repetir el paso de fase)
         }
@@ -151,7 +208,7 @@ final class WorldCupService
             $first = match ($groups) { 8 => 'R16', 4 => 'QF', default => 'SF' };
             self::createKnockout($cup, 4, $first, $pairs);
             DB::exec("UPDATE worldcups SET status = 'knockout' WHERE id = ?", [$cup['id']]);
-            $label .= ' · fin de la fase de grupos';
+            $label = tx_join($label, tx('· fin de la fase de grupos'));
         } elseif ($round > 3) {
             $played = DB::all("SELECT * FROM matches WHERE type = 'worldcup' AND cup_id = ? AND round = ? ORDER BY id", [$cup['id'], $round]);
             $stage = $played[0]['cup_stage'] ?? '';
@@ -186,11 +243,11 @@ final class WorldCupService
                     $name = DB::value('SELECT name FROM teams WHERE id = ?', [$champ]);
                     DB::insert('announcements', [
                         'user_id' => null,
-                        'title' => "🏆 ¡$name, campeón del Mundial de la temporada $season!",
-                        'body' => "$name ha ganado la final del Mundial: " . self::scoreText($final) . ". Consulta todos los resultados en la sección «Mundial».",
+                        'title' => tx('🏆 ¡{team}, campeón del Mundial de la temporada {season}!', ['team' => tx((string)$name), 'season' => $season]),
+                        'body' => tx('{team} ha ganado la final del Mundial: {score}. Consulta todos los resultados en la sección «Mundial».', ['team' => tx((string)$name), 'score' => self::scoreText($final)]),
                         'created_at' => now(),
                     ]);
-                    $label .= " · ¡$name campeón!";
+                    $label = tx_join($label, tx('· ¡{team} campeón!', ['team' => tx((string)$name)]));
                 }
             }
         }

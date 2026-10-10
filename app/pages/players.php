@@ -1,6 +1,6 @@
 <?php
 $team = require_team();
-$pageTitle = 'Jugadores';
+$pageTitle = t('Jugadores');
 $navActive = 'club';
 
 $sorts = [
@@ -18,40 +18,40 @@ $wages = array_sum(array_column($players, 'wage'));
 $sl = fn(string $k, string $label) => '<a href="' . e(url('players', ['sort' => $k])) . '"' . ($sort === $k ? ' style="text-decoration:underline"' : '') . '>' . $label . '</a>';
 ?>
 <div class="page-title">
-    <h1>Jugadores</h1>
-    <span class="muted"><?= count($players) ?> jugadores · Salarios: <strong><?= e(money($wages)) ?></strong>/semana</span>
+    <h1><?= e(t('Jugadores')) ?></h1>
+    <span class="muted"><?= t('{n} jugadores · Salarios: {wages}/semana', ['n' => count($players), 'wages' => '<strong>' . e(money($wages)) . '</strong>']) ?></span>
 </div>
 
 <div class="box">
-    <div class="box-head">Plantilla de <?= e($team['name']) ?></div>
+    <div class="box-head"><?= e(t('Plantilla de {team}', ['team' => $team['name']])) ?></div>
     <div class="table-wrap">
     <table class="table compact">
         <thead>
         <tr>
-            <th><?= $sl('name', 'Jugador') ?></th>
-            <th><?= $sl('role', 'Pos') ?></th>
-            <th><?= $sl('age', 'Edad') ?></th>
+            <th><?= $sl('name', e(t('Jugador'))) ?></th>
+            <th><?= $sl('role', e(t('Pos'))) ?></th>
+            <th><?= $sl('age', e(t('Edad'))) ?></th>
             <th class="num"><?= $sl('tsi', 'TSI') ?></th>
-            <th class="num" title="Forma"><?= $sl('form', 'For') ?></th>
-            <th class="num" title="Condición"><?= $sl('stamina', 'Cnd') ?></th>
-            <th class="num" title="Portería"><?= $sl('keeper', 'Por') ?></th>
-            <th class="num" title="Defensa"><?= $sl('defending', 'Def') ?></th>
-            <th class="num" title="Jugadas"><?= $sl('playmaking', 'Jug') ?></th>
-            <th class="num" title="Lateral"><?= $sl('winger', 'Lat') ?></th>
-            <th class="num" title="Pases"><?= $sl('passing', 'Pas') ?></th>
-            <th class="num" title="Anotación"><?= $sl('scoring', 'Ano') ?></th>
-            <th class="num" title="Balón parado"><?= $sl('set_pieces', 'BP') ?></th>
-            <th class="num" title="Experiencia"><?= $sl('xp', 'Exp') ?></th>
-            <th>Esp.</th>
-            <th class="num"><?= $sl('wage', 'Salario') ?></th>
-            <th>Estado</th>
+            <th class="num" title="<?= e(t('Forma')) ?>"><?= $sl('form', e(t('For'))) ?></th>
+            <th class="num" title="<?= e(t('Condición')) ?>"><?= $sl('stamina', e(t('Cnd'))) ?></th>
+            <th class="num" title="<?= e(t('Portería')) ?>"><?= $sl('keeper', e(t('Por'))) ?></th>
+            <th class="num" title="<?= e(t('Defensa')) ?>"><?= $sl('defending', e(t('Def'))) ?></th>
+            <th class="num" title="<?= e(t('Jugadas')) ?>"><?= $sl('playmaking', e(t('Jug'))) ?></th>
+            <th class="num" title="<?= e(t('Lateral')) ?>"><?= $sl('winger', e(t('Lat'))) ?></th>
+            <th class="num" title="<?= e(t('Pases')) ?>"><?= $sl('passing', e(t('Pas'))) ?></th>
+            <th class="num" title="<?= e(t('Anotación')) ?>"><?= $sl('scoring', e(t('Ano'))) ?></th>
+            <th class="num" title="<?= e(t('Balón parado')) ?>"><?= $sl('set_pieces', e(t('BP'))) ?></th>
+            <th class="num" title="<?= e(t('Experiencia')) ?>"><?= $sl('xp', e(t('Exp'))) ?></th>
+            <th><?= e(t('Esp.')) ?></th>
+            <th class="num"><?= $sl('wage', e(t('Salario'))) ?></th>
+            <th><?= e(t('Estado')) ?></th>
         </tr>
         </thead>
         <tbody>
         <?php foreach ($players as $p): ?>
             <tr>
-                <td class="nowrap"><?= avatar_img($p, 24) ?> <span title="<?= e($p['cname']) ?>"><?= NationService::flag($p['ccode']) ?></span> <?= player_link($p) ?></td>
-                <td><span class="tag" title="<?= e(ROLES[$p['role']] ?? '') ?>"><?= e($p['role']) ?></span></td>
+                <td class="nowrap"><?= avatar_img($p, 24) ?> <span title="<?= e(t($p['cname'])) ?>"><?= NationService::flag($p['ccode']) ?></span> <?= player_link($p) ?></td>
+                <td><span class="tag" title="<?= e(isset(ROLES[$p['role']]) ? role_name($p['role']) : '') ?>"><?= e($p['role']) ?></span></td>
                 <td class="nowrap"><?= (int)$p['age_years'] ?> <span class="muted small">(<?= (int)$p['age_days'] ?>)</span></td>
                 <td class="num"><?= num($p['tsi']) ?></td>
                 <td class="num" title="<?= e(form_name($p['form'])) ?>"><?= (int)floor((float)$p['form']) ?></td>
@@ -60,12 +60,12 @@ $sl = fn(string $k, string $label) => '<a href="' . e(url('players', ['sort' => 
                     <td class="num" title="<?= e(skill_label($p[$sk])) ?>"><?= (int)floor((float)$p[$sk]) ?></td>
                 <?php endforeach; ?>
                 <td class="num" title="<?= e(skill_name($p['experience'])) ?>"><?= (int)floor((float)$p['experience']) ?></td>
-                <td><?= $p['specialty'] ? '<span title="' . e(SPECIALTIES[$p['specialty']][0]) . '">' . SPECIALTIES[$p['specialty']][1] . '</span>' : '' ?></td>
+                <td><?= $p['specialty'] ? '<span title="' . e(specialty_name($p['specialty'])) . '">' . SPECIALTIES[$p['specialty']][1] . '</span>' : '' ?></td>
                 <td class="num"><?= e(money($p['wage'])) ?></td>
                 <td class="nowrap">
-                    <?php if ((float)$p['injury_weeks'] > 0.5): ?><span class="tag tag-injury" title="Lesionado">+<?= ceil((float)$p['injury_weeks']) ?></span><?php elseif ((float)$p['injury_weeks'] > 0): ?><span class="tag tag-bruise" title="Magullado">🩹</span><?php endif; ?>
-                    <?php if ((int)$p['suspended'] > 0): ?><span class="tag tag-red" title="Sancionado">Sanc.</span><?php elseif ((int)$p['yellow_cards'] > 0): ?><span class="tag tag-card" title="Tarjetas amarillas"><?= (int)$p['yellow_cards'] ?>🟨</span><?php endif; ?>
-                    <?php if ($p['listing_id']): ?><span class="tag tag-sale">En venta</span><?php endif; ?>
+                    <?php if ((float)$p['injury_weeks'] > 0.5): ?><span class="tag tag-injury" title="<?= e(t('Lesionado')) ?>">+<?= ceil((float)$p['injury_weeks']) ?></span><?php elseif ((float)$p['injury_weeks'] > 0): ?><span class="tag tag-bruise" title="<?= e(t('Magullado')) ?>">🩹</span><?php endif; ?>
+                    <?php if ((int)$p['suspended'] > 0): ?><span class="tag tag-red" title="<?= e(t('Sancionado')) ?>"><?= e(t('Sanc.')) ?></span><?php elseif ((int)$p['yellow_cards'] > 0): ?><span class="tag tag-card" title="<?= e(t('Tarjetas amarillas')) ?>"><?= (int)$p['yellow_cards'] ?>🟨</span><?php endif; ?>
+                    <?php if ($p['listing_id']): ?><span class="tag tag-sale"><?= e(t('En venta')) ?></span><?php endif; ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -73,4 +73,4 @@ $sl = fn(string $k, string $label) => '<a href="' . e(url('players', ['sort' => 
     </table>
     </div>
 </div>
-<p class="muted small">Las habilidades van de 0 (inexistente) a 20 (divino). Pasa el ratón por encima de un número para ver su denominación. Pulsa en el nombre de una columna para ordenar.</p>
+<p class="muted small"><?= e(t('Las habilidades van de 0 (inexistente) a 20 (divino). Pasa el ratón por encima de un número para ver su denominación. Pulsa en el nombre de una columna para ordenar.')) ?></p>

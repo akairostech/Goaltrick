@@ -1,4 +1,4 @@
-# GoalTrick v1.4 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.5 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -25,6 +25,9 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Entradas dinámicas** (v1.4): la asistencia depende de socios, ánimo, confianza, división, rival, importancia del partido y clima; aparece en la crónica. Mensajes automáticos al mánager cuando se llena el estadio (sugiere ampliarlo) o cuando queda por debajo del 50 % varios partidos (sugiere reducirlo).
 - **Perfil del personal** (v1.4): el entrenador y cada empleado tienen nombre, edad, nacionalidad, carácter (8 tipos con efectos del entrenador en entrenamiento, espíritu, confianza, afición o táctica) e imagen (120 caras, `assets/img/staff/`). Candidatos nuevos cada semana.
 - **Alineación con arrastrar y soltar** (v1.4): tarjetas con la cara y el nombre de cada jugador sobre el campo, intercambio, banquillo, clic + clic como alternativa, colores según el rendimiento en cada posición y ficha emergente con todas sus estadísticas.
+- **Idiomas** (v1.5): toda la web (menús, páginas, crónicas, noticias, mensajes del sistema, movimientos de finanzas) en **español** e **inglés**, con selector de idioma en la barra superior. El idioma se guarda en el perfil del usuario (y en una cookie para visitantes). Los textos que se guardan en la base de datos se almacenan como plantilla, así que cada usuario los lee en su idioma.
+- **Estadio ilustrado** (v1.5): dibujo caricaturesco generado al vuelo con seis modelos según la capacidad (campo de barrio, estadio municipal, moderno, gran estadio, de élite y coloso) y el tipo de localidades: gradas de pie en los fondos, asientos de colores, tribunas con techo y palcos VIP; además focos, marcador y grúas mientras hay obras. Vista previa de la ampliación antes de encargarla y miniatura en la página pública del club.
+- **Alineaciones guardadas** (v1.5): alineación **predeterminada**, que se usa automáticamente en los partidos para los que no envías alineación, y hasta **3 alineaciones guardadas** con nombre para cargarlas en el editor con un clic.
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos
@@ -50,13 +53,13 @@ Si prefieres importar tú las tablas (por ejemplo con phpMyAdmin): crea la base 
 php cron/run.php --install admin admin@correo.com MiContraseña "Mi Equipo FC"
 ```
 
-## Actualizar desde una versión anterior (1.0 – 1.3)
+## Actualizar desde una versión anterior (1.0 – 1.4)
 
 1. Copia los archivos nuevos encima de los antiguos **conservando tu `config.ini`** (o copia en él los datos de tu base de datos). Las opciones nuevas (`other_country_divisions` y la sección `[worldcup]`) tienen valores por defecto, así que no es obligatorio añadirlas.
 2. Abre la web: se te redirigirá a `upgrade.php`. Pulsa **Actualizar ahora**. (Por consola: `php cron/run.php --upgrade`.)
-3. El actualizador aplica todos los cambios pendientes en orden. De 1.3 a 1.4 crea las ligas de las 16 naciones nuevas (jugando las jornadas ya disputadas), da un perfil a todo el personal existente, envía ofertas de patrocinio a los clubes nuevos y sortea la Copa de cada país (puede tardar unos minutos). De 1.2 a 1.3 amplía las caras de jugador a 400, carga las empresas y envía las ofertas de patrocinio de la temporada en curso. De 1.1 a 1.2 añade la imagen de perfil de los jugadores. De 1.0 a 1.1 además añade las columnas y tablas nuevas, renombra Futbolandia a Panamá, crea las ligas de los demás países (jugando las jornadas que ya se hubieran disputado esta temporada), crea las selecciones y programa el Mundial. No se borra nada de tu partida.
+3. El actualizador aplica todos los cambios pendientes en orden. De 1.4 a 1.5 añade el idioma de cada usuario, las alineaciones guardadas y amplía algunas columnas de texto; además vuelve a sortear el Mundial de la temporada en curso con las 32 selecciones (si ya había empezado, se anulan sus partidos y empieza de nuevo; si ya no cabe en el calendario, el de la temporada siguiente tendrá las 32). De 1.3 a 1.4 crea las ligas de las 16 naciones nuevas (jugando las jornadas ya disputadas), da un perfil a todo el personal existente, envía ofertas de patrocinio a los clubes nuevos y sortea la Copa de cada país (puede tardar unos minutos). De 1.2 a 1.3 amplía las caras de jugador a 400, carga las empresas y envía las ofertas de patrocinio de la temporada en curso. De 1.1 a 1.2 añade la imagen de perfil de los jugadores. De 1.0 a 1.1 además añade las columnas y tablas nuevas, renombra Futbolandia a Panamá, crea las ligas de los demás países (jugando las jornadas que ya se hubieran disputado esta temporada), crea las selecciones y programa el Mundial. No se borra nada de tu partida.
 
-`sql/upgrade_v1.1.sql` … `sql/upgrade_v1.4.sql` contienen los mismos cambios de tablas por si prefieres aplicarlos a mano en phpMyAdmin (después abre igualmente `upgrade.php`).
+`sql/upgrade_v1.1.sql` … `sql/upgrade_v1.5.sql` contienen los mismos cambios de tablas por si prefieres aplicarlos a mano en phpMyAdmin (después abre igualmente `upgrade.php`).
 
 ## Tareas programadas (partidos, entrenamiento, economía)
 
@@ -75,6 +78,14 @@ php cron/run.php --status         # próximos eventos
 php cron/run.php --force-next 4   # ejecuta ya los 4 siguientes eventos (pruebas)
 ```
 Desde **Administración → Juego** también puedes forzar eventos o «Simular hasta la próxima jornada».
+
+## Idiomas
+
+Los textos se escriben en español en el código y pasan por `t('...')`. Cada idioma es un archivo `lang/<código>.php` con pares «texto en español» => «traducción»; si falta una traducción se muestra el texto en español.
+
+- **Añadir un idioma** (por ejemplo francés): `php cron/lang.php --new fr Français 🇫🇷` crea `lang/fr.php` con todos los textos listos para traducir (también puedes copiar `lang/en.php` a mano y cambiar `@name` y `@flag`). Aparece solo en el selector.
+- `php cron/lang.php` muestra cuánto está traducido cada idioma; `--missing en` lista lo que falta y `--sync en` añade los textos nuevos tras actualizar el juego.
+- Idioma por defecto: `language` en la sección `[app]` de `config.ini` (`es` o `en`).
 
 ## Configuración (`config.ini`)
 

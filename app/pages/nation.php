@@ -4,10 +4,10 @@ $my = current_team();
 $id = (int)get('id', $my['country_id'] ?? 1);
 $c = DB::row('SELECT * FROM countries WHERE id = ?', [$id]);
 if (!$c) {
-    flash('error', 'País no encontrado.');
+    flash('error', t('País no encontrado.'));
     redirect(url('nations'));
 }
-$pageTitle = $c['name'];
+$pageTitle = t($c['name']);
 $navActive = 'nations';
 $national = NationService::nationalTeam($id);
 $squad = NationService::squad($id, true);
@@ -30,38 +30,38 @@ $topScorers = DB::all('SELECT p.*, t.name AS club_name FROM players p LEFT JOIN 
 $roleOrder = array_flip(array_keys(NationService::QUOTA));
 ?>
 <div class="page-title">
-    <h1><?= flag($c['code']) ?> <?= e($c['name']) ?></h1>
-    <a href="<?= e(url('nations')) ?>">« Todas las naciones</a>
+    <h1><?= flag($c['code']) ?> <?= e(t($c['name'])) ?></h1>
+    <a href="<?= e(url('nations')) ?>">« <?= e(t('Todas las naciones')) ?></a>
 </div>
 
 <div class="stat-tiles">
-    <div class="tile"><div class="tv"><?= num($stats['teams']) ?></div><div class="tl">Equipos en su liga</div></div>
-    <div class="tile"><div class="tv"><?= num($stats['managers']) ?></div><div class="tl">Mánagers</div></div>
-    <div class="tile"><div class="tv"><?= num($players) ?></div><div class="tl">Jugadores <?= e($c['name']) ?></div></div>
-    <div class="tile"><div class="tv"><?= num($abroad) ?></div><div class="tl">Juegan en el extranjero</div></div>
+    <div class="tile"><div class="tv"><?= num($stats['teams']) ?></div><div class="tl"><?= e(t('Equipos en su liga')) ?></div></div>
+    <div class="tile"><div class="tv"><?= num($stats['managers']) ?></div><div class="tl"><?= e(t('Mánagers')) ?></div></div>
+    <div class="tile"><div class="tv"><?= num($players) ?></div><div class="tl"><?= e(t('Jugadores {country}', ['country' => t($c['name'])])) ?></div></div>
+    <div class="tile"><div class="tv"><?= num($abroad) ?></div><div class="tl"><?= e(t('Juegan en el extranjero')) ?></div></div>
 </div>
 
 <div class="box">
-    <div class="box-head">Liga de <?= e($c['name']) ?></div>
+    <div class="box-head"><?= e(t('Liga de {country}', ['country' => t($c['name'])])) ?></div>
     <div class="box-body">
         <?php foreach ($byLevel as $lvl => $list): ?>
-            <p><strong>División <?= LeagueService::roman($lvl) ?></strong> (<?= count($list) ?> serie<?= count($list) > 1 ? 's' : '' ?>):
-            <?php foreach ($list as $u): ?><a href="<?= e(url('league', ['unit' => $u['id']])) ?>"><?= e($u['name']) ?></a><?= (int)$u['humans'] ? '<sup class="small" title="mánagers">' . (int)$u['humans'] . '</sup>' : '' ?>&nbsp; <?php endforeach; ?></p>
+            <p><strong><?= e(t('División {n}', ['n' => LeagueService::roman($lvl)])) ?></strong> (<?= e(count($list) > 1 ? t('{n} series', ['n' => count($list)]) : t('{n} serie', ['n' => count($list)])) ?>):
+            <?php foreach ($list as $u): ?><a href="<?= e(url('league', ['unit' => $u['id']])) ?>"><?= e($u['name']) ?></a><?= (int)$u['humans'] ? '<sup class="small" title="' . e(t('mánagers')) . '">' . (int)$u['humans'] . '</sup>' : '' ?>&nbsp; <?php endforeach; ?></p>
         <?php endforeach; ?>
-        <?php if (!$byLevel): ?><p class="muted">Este país todavía no tiene liga.</p><?php endif; ?>
+        <?php if (!$byLevel): ?><p class="muted"><?= e(t('Este país todavía no tiene liga.')) ?></p><?php endif; ?>
     </div>
 </div>
 
 <div class="box">
-    <div class="box-head">Selección de <?= e($c['name']) ?> · Convocatoria actual
-        <span class="small">Fuerza: <?= num(array_sum(array_column($squad, 'tsi'))) ?> TSI</span></div>
+    <div class="box-head"><?= e(t('Selección de {country}', ['country' => t($c['name'])])) ?> · <?= e(t('Convocatoria actual')) ?>
+        <span class="small"><?= e(t('Fuerza: {n} TSI', ['n' => num(array_sum(array_column($squad, 'tsi')))])) ?></span></div>
     <div class="table-wrap">
     <table class="table compact">
-        <thead><tr><th>Pos</th><th>Jugador</th><th>Club</th><th>Edad</th><th class="num">TSI</th><th class="num">For</th><th class="num">Por</th><th class="num">Def</th><th class="num" title="Jugadas">Jug</th><th class="num" title="Lateral">Lat</th><th class="num">Pas</th><th class="num">Ano</th><th>Esp.</th><th class="num">Int.</th><th class="num">Goles</th></tr></thead>
+        <thead><tr><th><?= e(t('Pos')) ?></th><th><?= e(t('Jugador')) ?></th><th><?= e(t('Club')) ?></th><th><?= e(t('Edad')) ?></th><th class="num">TSI</th><th class="num"><?= e(t('For')) ?></th><th class="num"><?= e(t('Por')) ?></th><th class="num"><?= e(t('Def')) ?></th><th class="num" title="<?= e(t('Jugadas')) ?>"><?= e(t('Jug')) ?></th><th class="num" title="<?= e(t('Lateral')) ?>"><?= e(t('Lat')) ?></th><th class="num"><?= e(t('Pas')) ?></th><th class="num"><?= e(t('Ano')) ?></th><th><?= e(t('Esp.')) ?></th><th class="num"><?= e(t('Int.')) ?></th><th class="num"><?= e(t('Goles')) ?></th></tr></thead>
         <tbody>
         <?php foreach ($squad as $p): $mine = $my && (int)$p['team_id'] === (int)$my['id']; ?>
             <tr<?= $mine ? ' class="me"' : '' ?>>
-                <td><span class="tag" title="<?= e(ROLES[$p['squad_role']] ?? '') ?>"><?= e($p['squad_role']) ?></span></td>
+                <td><span class="tag" title="<?= e(isset(ROLES[$p['squad_role']]) ? role_name($p['squad_role']) : '') ?>"><?= e($p['squad_role']) ?></span></td>
                 <td class="nowrap"><?= avatar_img($p, 22) ?> <?= player_link($p) ?></td>
                 <td class="small"><?= team_link($p['team_id'], $p['club_name']) ?></td>
                 <td><?= (int)$p['age_years'] ?></td>
@@ -75,19 +75,19 @@ $roleOrder = array_flip(array_keys(NationService::QUOTA));
                 <td class="num"><?= (int)$p['goals_national'] ?></td>
             </tr>
         <?php endforeach; ?>
-        <?php if (!$squad): ?><tr><td colspan="15" class="muted">No hay jugadores disponibles de esta nacionalidad.</td></tr><?php endif; ?>
+        <?php if (!$squad): ?><tr><td colspan="15" class="muted"><?= e(t('No hay jugadores disponibles de esta nacionalidad.')) ?></td></tr><?php endif; ?>
         </tbody>
     </table>
     </div>
     <div class="box-body small muted">
-        Se convoca automáticamente a los jugadores disponibles con mayor TSI de cada posición: 2 porteros, 3 centrales, 3 laterales, 4 mediocampistas, 3 extremos y 3 delanteros. La convocatoria se recalcula antes de cada partido. Int. = partidos internacionales.
-        <?php if ($injured): ?><br>Bajas por lesión: <?php foreach ($injured as $i => $p): ?><?= $i ? ', ' : '' ?><?= player_link($p) ?> (TSI <?= num($p['tsi']) ?>)<?php endforeach; ?>.<?php endif; ?>
+        <?= e(t('Se convoca automáticamente a los jugadores disponibles con mayor TSI de cada posición: 2 porteros, 3 centrales, 3 laterales, 4 mediocampistas, 3 extremos y 3 delanteros. La convocatoria se recalcula antes de cada partido. Int. = partidos internacionales.')) ?>
+        <?php if ($injured): ?><br><?= e(t('Bajas por lesión:')) ?> <?php foreach ($injured as $i => $p): ?><?= $i ? ', ' : '' ?><?= player_link($p) ?> (TSI <?= num($p['tsi']) ?>)<?php endforeach; ?>.<?php endif; ?>
     </div>
 </div>
 
 <div class="grid-2">
     <div class="box">
-        <div class="box-head">Partidos de la selección</div>
+        <div class="box-head"><?= e(t('Partidos de la selección')) ?></div>
         <table class="table compact">
             <?php foreach ($matches as $m): ?>
                 <tr>
@@ -96,29 +96,29 @@ $roleOrder = array_flip(array_keys(NationService::QUOTA));
                     <td><a href="<?= e(url('match', ['id' => $m['id']])) ?>"><?= e($m['hn']) ?> <strong><?= $m['status'] === 'played' ? e(score_label($m)) : 'vs' ?></strong> <?= e($m['an']) ?></a></td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$matches): ?><tr><td class="muted">Sin partidos todavía.</td></tr><?php endif; ?>
+            <?php if (!$matches): ?><tr><td class="muted"><?= e(t('Sin partidos todavía.')) ?></td></tr><?php endif; ?>
         </table>
     </div>
     <div class="stack">
         <div class="box">
-            <div class="box-head">Historial en el Mundial</div>
+            <div class="box-head"><?= e(t('Historial en el Mundial')) ?></div>
             <table class="table compact">
                 <?php foreach ($history as $h):
                     $nid = (int)$national['id'];
-                    $res = $h['status'] !== 'finished' ? 'En juego' : ((int)$h['champion_team_id'] === $nid ? '🏆 Campeón' : ((int)$h['runnerup_team_id'] === $nid ? '🥈 Subcampeón' : ((int)$h['third_team_id'] === $nid ? '🥉 Tercero' : 'Participante')));
+                    $res = $h['status'] !== 'finished' ? t('En juego') : ((int)$h['champion_team_id'] === $nid ? '🏆 ' . t('Campeón') : ((int)$h['runnerup_team_id'] === $nid ? '🥈 ' . t('Subcampeón') : ((int)$h['third_team_id'] === $nid ? '🥉 ' . t('Tercero') : t('Participante'))));
                 ?>
-                    <tr><td>Temporada <?= (int)$h['season'] ?></td><td>Grupo <?= e(WorldCupService::letterLabel($h['group_letter'])) ?></td><td><a href="<?= e(url('worldcup', ['season' => $h['season']])) ?>"><?= e($res) ?></a></td></tr>
+                    <tr><td><?= e(t('Temporada {n}', ['n' => (int)$h['season']])) ?></td><td><?= e(t('Grupo {letter}', ['letter' => WorldCupService::letterLabel($h['group_letter'])])) ?></td><td><a href="<?= e(url('worldcup', ['season' => $h['season']])) ?>"><?= e($res) ?></a></td></tr>
                 <?php endforeach; ?>
-                <?php if (!$history): ?><tr><td class="muted">Aún no ha disputado ningún Mundial.</td></tr><?php endif; ?>
+                <?php if (!$history): ?><tr><td class="muted"><?= e(t('Aún no ha disputado ningún Mundial.')) ?></td></tr><?php endif; ?>
             </table>
         </div>
         <div class="box">
-            <div class="box-head">Máximos goleadores de la selección</div>
+            <div class="box-head"><?= e(t('Máximos goleadores de la selección')) ?></div>
             <table class="table compact">
                 <?php foreach ($topScorers as $p): ?>
-                    <tr><td><?= player_link($p) ?></td><td class="small muted"><?= e($p['club_name'] ?? 'retirado') ?></td><td class="num"><?= (int)$p['goals_national'] ?> goles</td><td class="num small"><?= (int)$p['caps'] ?> int.</td></tr>
+                    <tr><td><?= player_link($p) ?></td><td class="small muted"><?= e($p['club_name'] ?? t('retirado')) ?></td><td class="num"><?= e(t('{n} goles', ['n' => (int)$p['goals_national']])) ?></td><td class="num small"><?= e(t('{n} int.', ['n' => (int)$p['caps']])) ?></td></tr>
                 <?php endforeach; ?>
-                <?php if (!$topScorers): ?><tr><td class="muted">Todavía no hay goles.</td></tr><?php endif; ?>
+                <?php if (!$topScorers): ?><tr><td class="muted"><?= e(t('Todavía no hay goles.')) ?></td></tr><?php endif; ?>
             </table>
         </div>
     </div>

@@ -120,7 +120,7 @@ final class SponsorService
             self::sign($teamId, $ids[$r <= 50 ? 'stable' : ($r <= 80 ? 'long' : 'performance')], false);
         } else {
             DB::insert('team_events', ['team_id' => $teamId, 'created_at' => now(), 'type' => 'sponsor',
-                'message' => '💼 Tienes 3 ofertas de patrocinio para la temporada ' . $season . '. Elige una antes del ' . fdate($expires) . ' en «Patrocinio».']);
+                'message' => tx('💼 Tienes 3 ofertas de patrocinio para la temporada {season}. Elige una antes del {date} en «Patrocinio».', ['season' => $season, 'date' => fdate($expires)])]);
         }
     }
 
@@ -131,19 +131,19 @@ final class SponsorService
             $o = DB::row("SELECT sc.*, c.name AS company FROM sponsor_contracts sc JOIN companies c ON c.id = sc.company_id
                           WHERE sc.id = ? AND sc.team_id = ? AND sc.status = 'offer' FOR UPDATE", [$offerId, $teamId]);
             if (!$o) {
-                return 'La oferta ya no está disponible.';
+                return t('La oferta ya no está disponible.');
             }
             if (self::activeContract($teamId, (int)$o['season_from'])) {
-                return 'Ya tienes un patrocinador para esta temporada.';
+                return t('Ya tienes un patrocinador para esta temporada.');
             }
             DB::exec("UPDATE sponsor_contracts SET status = 'rejected' WHERE team_id = ? AND status = 'offer' AND id <> ?", [$teamId, $offerId]);
             DB::exec("UPDATE sponsor_contracts SET status = 'active', signed_at = ?, expires_at = NULL, total_paid = signing_bonus WHERE id = ?", [now(), $offerId]);
             if ((int)$o['signing_bonus'] > 0) {
-                Economy::transaction($teamId, (int)$o['signing_bonus'], 'sponsors', 'Prima de firma: ' . $o['company']);
+                Economy::transaction($teamId, (int)$o['signing_bonus'], 'sponsors', tx('Prima de firma: {company}', ['company' => $o['company']]));
             }
             if ($notify) {
                 DB::insert('team_events', ['team_id' => $teamId, 'created_at' => now(), 'type' => 'sponsor',
-                    'message' => '🤝 Contrato de patrocinio firmado con ' . $o['company'] . ' (' . self::TYPES[$o['type']][0] . ').']);
+                    'message' => tx('🤝 Contrato de patrocinio firmado con {company} ({type}).', ['company' => $o['company'], 'type' => tx(self::TYPES[$o['type']][0])])]);
             }
             return null;
         });
@@ -161,7 +161,7 @@ final class SponsorService
             }
             self::sign($tid, (int)$offers[0]['id'], false);
             DB::insert('team_events', ['team_id' => $tid, 'created_at' => now(), 'type' => 'sponsor',
-                'message' => '💼 No elegiste patrocinador a tiempo: se ha firmado automáticamente el contrato fijo con ' . $offers[0]['company'] . '.']);
+                'message' => tx('💼 No elegiste patrocinador a tiempo: se ha firmado automáticamente el contrato fijo con {company}.', ['company' => $offers[0]['company']])]);
         }
     }
 
@@ -180,7 +180,7 @@ final class SponsorService
                 return;
             }
         }
-        Economy::transaction($teamId, (int)$c['weekly_amount'], 'sponsors', 'Patrocinio: ' . $c['company'], $season, $week);
+        Economy::transaction($teamId, (int)$c['weekly_amount'], 'sponsors', tx('Patrocinio: {company}', ['company' => $c['company']]), $season, $week);
         DB::exec('UPDATE sponsor_contracts SET total_paid = total_paid + ? WHERE id = ?', [$c['weekly_amount'], $c['id']]);
     }
 
@@ -189,7 +189,7 @@ final class SponsorService
     {
         $c = self::activeContract($teamId, $season);
         if ($c && (int)$c['win_bonus'] > 0) {
-            Economy::transaction($teamId, (int)$c['win_bonus'], 'sponsors', 'Prima por victoria: ' . $c['company'], $season, $week);
+            Economy::transaction($teamId, (int)$c['win_bonus'], 'sponsors', tx('Prima por victoria: {company}', ['company' => $c['company']]), $season, $week);
             DB::exec('UPDATE sponsor_contracts SET total_paid = total_paid + ? WHERE id = ?', [$c['win_bonus'], $c['id']]);
         }
     }
@@ -200,12 +200,12 @@ final class SponsorService
         foreach ($champions as $teamId) {
             $c = self::activeContract((int)$teamId, $season);
             if ($c && (int)$c['title_bonus'] > 0) {
-                Economy::transaction((int)$teamId, (int)$c['title_bonus'], 'sponsors', 'Premio por el título: ' . $c['company'], $season);
+                Economy::transaction((int)$teamId, (int)$c['title_bonus'], 'sponsors', tx('Premio por el título: {company}', ['company' => $c['company']]), $season);
                 DB::exec('UPDATE sponsor_contracts SET total_paid = total_paid + ? WHERE id = ?', [$c['title_bonus'], $c['id']]);
                 $t = DB::row('SELECT is_bot FROM teams WHERE id = ?', [$teamId]);
                 if ($t && !(int)$t['is_bot']) {
                     DB::insert('team_events', ['team_id' => $teamId, 'created_at' => now(), 'type' => 'sponsor',
-                        'message' => '🏆 ' . $c['company'] . ' te paga ' . money($c['title_bonus']) . ' por ganar el título.']);
+                        'message' => tx('🏆 {company} te paga {amount} por ganar el título.', ['company' => $c['company'], 'amount' => money($c['title_bonus'])])]);
                 }
             }
         }

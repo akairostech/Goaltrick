@@ -68,7 +68,7 @@ final class MatchEngine
         $this->match = $match;
         $this->team = ['home' => $home, 'away' => $away];
         foreach (['home', 'away'] as $side) {
-            $plan = Lineup::forMatch($this->team[$side]);
+            $plan = Lineup::forMatch($this->team[$side], (int)($this->match['id'] ?? 0));
             $this->plan[$side] = $plan;
             $this->onPitch[$side] = $plan['starters'];
             $this->bench[$side] = $plan['bench'];
@@ -205,19 +205,19 @@ final class MatchEngine
     {
         $hn = $this->team['home']['name'];
         $an = $this->team['away']['name'];
-        $this->event(0, 'info', null, "Comienza el partido entre $hn y $an. ¡Rueda el balón!");
-        $this->event(0, 'info', null, sprintf(
-            '%s juega con táctica «%s» y %s con «%s».',
-            $hn, TACTICS[$this->plan['home']['tactic']] ?? 'Normal', $an, TACTICS[$this->plan['away']['tactic']] ?? 'Normal'
-        ));
+        $this->event(0, 'info', null, tx('Comienza el partido entre {home} y {away}. ¡Rueda el balón!', ['home' => $hn, 'away' => $an]));
+        $this->event(0, 'info', null, tx('{home} juega con táctica «{htactic}» y {away} con «{atactic}».', [
+            'home' => $hn, 'htactic' => tx(TACTICS[$this->plan['home']['tactic']] ?? 'Normal'),
+            'away' => $an, 'atactic' => tx(TACTICS[$this->plan['away']['tactic']] ?? 'Normal'),
+        ]));
         foreach (['home', 'away'] as $side) {
             if ($this->plan[$side]['attitude'] === 'mots') {
-                $this->event(0, 'info', $side, $this->team[$side]['name'] . ' se toma este encuentro como el partido del siglo.');
+                $this->event(0, 'info', $side, tx('{team} se toma este encuentro como el partido del siglo.', ['team' => $this->team[$side]['name']]));
             } elseif ($this->plan[$side]['attitude'] === 'pic') {
-                $this->event(0, 'info', $side, $this->team[$side]['name'] . ' parece tomarse el partido con mucha calma.');
+                $this->event(0, 'info', $side, tx('{team} parece tomarse el partido con mucha calma.', ['team' => $this->team[$side]['name']]));
             }
             if (count($this->onPitch[$side]) < 11) {
-                $this->event(0, 'info', $side, $this->team[$side]['name'] . ' sólo ha podido alinear ' . count($this->onPitch[$side]) . ' jugadores.');
+                $this->event(0, 'info', $side, tx('{team} sólo ha podido alinear {n} jugadores.', ['team' => $this->team[$side]['name'], 'n' => count($this->onPitch[$side])]));
             }
         }
 
@@ -273,7 +273,7 @@ final class MatchEngine
             $m = $ev['m'];
             switch ($ev['k']) {
                 case 'half':
-                    $this->event(45, 'half', null, sprintf('Descanso. %s %d - %d %s.', $hn, $this->score['home'], $this->score['away'], $an));
+                    $this->event(45, 'half', null, tx('Descanso. {home} {hg} - {ag} {away}.', ['home' => $hn, 'hg' => $this->score['home'], 'ag' => $this->score['away'], 'away' => $an]));
                     break;
                 case 'chance':
                     $this->sampleRatings($m);
@@ -298,7 +298,7 @@ final class MatchEngine
             }
         }
         $this->sampleRatings(90);
-        $this->event(90, 'end', null, sprintf('¡Final del partido! %s %d - %d %s.', $hn, $this->score['home'], $this->score['away'], $an));
+        $this->event(90, 'end', null, tx('¡Final del partido! {home} {hg} - {ag} {away}.', ['home' => $hn, 'hg' => $this->score['home'], 'ag' => $this->score['away'], 'away' => $an]));
         $knockout = ($this->match['type'] ?? '') === 'cup'
             || (($this->match['type'] ?? '') === 'worldcup' && in_array($this->match['cup_stage'] ?? '', ['R16', 'QF', 'SF', '3P', 'F'], true));
         if ($knockout && $this->score['home'] === $this->score['away']) {
@@ -309,7 +309,7 @@ final class MatchEngine
     /** Tanda de penaltis (sólo en eliminatorias del Mundial) */
     private function penalties(): void
     {
-        $this->event(90, 'info', null, 'Empate al final del tiempo reglamentario. ¡El partido se decide en la tanda de penaltis!');
+        $this->event(90, 'info', null, tx('Empate al final del tiempo reglamentario. ¡El partido se decide en la tanda de penaltis!'));
         $pens = ['home' => 0, 'away' => 0];
         $takers = [];
         foreach (['home', 'away'] as $side) {
@@ -328,9 +328,9 @@ final class MatchEngine
             $name = $p ? player_name($p) : $this->team[$side]['name'];
             if (rnd() < $prob) {
                 $pens[$side]++;
-                $this->event(120, 'pen', $side, "⚽ $name marca su penalti. ({$pens['home']}-{$pens['away']})");
+                $this->event(120, 'pen', $side, tx('⚽ {player} marca su penalti. ({h}-{a})', ['player' => $name, 'h' => $pens['home'], 'a' => $pens['away']]));
             } else {
-                $this->event(120, 'penmiss', $side, "❌ $name falla su penalti. ({$pens['home']}-{$pens['away']})");
+                $this->event(120, 'penmiss', $side, tx('❌ {player} falla su penalti. ({h}-{a})', ['player' => $name, 'h' => $pens['home'], 'a' => $pens['away']]));
             }
         };
         for ($i = 0; $i < 5; $i++) {
@@ -355,7 +355,7 @@ final class MatchEngine
         }
         $this->pens = $pens;
         $winner = $pens['home'] > $pens['away'] ? 'home' : 'away';
-        $this->event(120, 'end', $winner, sprintf('¡%s gana %d-%d en los penaltis!', $this->team[$winner]['name'], $pens['home'], $pens['away']));
+        $this->event(120, 'end', $winner, tx('¡{team} gana {h}-{a} en los penaltis!', ['team' => $this->team[$winner]['name'], 'h' => $pens['home'], 'a' => $pens['away']]));
     }
 
     private function sampleRatings(int $m): void
@@ -395,7 +395,7 @@ final class MatchEngine
             $def = 0.6 * $rd['cdef'] + 0.3 * ($keeper ? $this->effSkill($keeper, 'keeper', $m) : 1);
             $p = 0.75 * $this->prob($att * $bonus, $def);
             $scorer = mt_rand(1, 100) <= 45 && $taker ? $taker : $this->pickScorer($side, 'c', true);
-            $intro = mt_rand(0, 1) ? 'Falta peligrosa a favor de ' . $teamName . '.' : 'Saque de esquina para ' . $teamName . '.';
+            $intro = mt_rand(0, 1) ? tx('Falta peligrosa a favor de {team}.', ['team' => $teamName]) : tx('Saque de esquina para {team}.', ['team' => $teamName]);
         } elseif ($zone === 'ls') {
             $shooter = $this->pickScorer($side, 'ls');
             $keeper = $this->onPitch[$opp]['GK'] ?? null;
@@ -403,20 +403,20 @@ final class MatchEngine
             $def = ($keeper ? $this->effSkill($keeper, 'keeper', $m) * 0.9 : 1) + 2;
             $p = 0.6 * $this->prob($att * $bonus, $def);
             $scorer = $shooter;
-            $intro = ($shooter ? player_name($shooter) : $teamName) . ' prueba suerte con un disparo lejano.';
+            $intro = tx('{player} prueba suerte con un disparo lejano.', ['player' => $shooter ? player_name($shooter) : $teamName]);
         } else {
             $attKey = ['l' => 'latt', 'c' => 'catt', 'r' => 'ratt'][$zone];
             $defKey = ['l' => 'rdef', 'c' => 'cdef', 'r' => 'ldef'][$zone];
             $scorer = $this->pickScorer($side, $zone);
-            $where = ['l' => 'por la banda izquierda', 'c' => 'por el centro', 'r' => 'por la banda derecha'][$zone];
-            $intro = $isCounter ? "¡Contraataque de $teamName!" : "$teamName se acerca con peligro $where.";
+            $where = ['l' => tx('por la banda izquierda'), 'c' => tx('por el centro'), 'r' => tx('por la banda derecha')][$zone];
+            $intro = $isCounter ? tx('¡Contraataque de {team}!', ['team' => $teamName]) : tx('{team} se acerca con peligro {where}.', ['team' => $teamName, 'where' => $where]);
             // Lateral: el mejor regateador de esa banda desborda y pone el centro
             if ($zone !== 'c') {
                 $wg = $this->bestWinger($side, strtoupper($zone), $m);
                 if ($wg) {
                     $bonus *= clamp(1 + ($wg[1] - 6) * 0.03, 0.9, 1.3);
                     if ($wg[1] >= 7 && !$isCounter && (!$scorer || (int)$scorer['id'] !== (int)$wg[0]['id'])) {
-                        $intro = player_name($wg[0]) . ' desborda ' . $where . ' y pone un centro peligroso al área.';
+                        $intro = tx('{player} desborda {where} y pone un centro peligroso al área.', ['player' => player_name($wg[0]), 'where' => $where]);
                     }
                 }
             }
@@ -429,22 +429,24 @@ final class MatchEngine
             if ($scorer) {
                 $this->goalsBy[(int)$scorer['id']] = ($this->goalsBy[(int)$scorer['id']] ?? 0) + 1;
             }
+            $args = ['player' => $scorerName];
             $finish = [
-                "¡GOOOL! $scorerName la manda al fondo de la red.",
-                "¡Gol de $scorerName! Definición perfecta ante el portero.",
-                "¡$scorerName no perdona y marca!",
-                "¡Golazo de $scorerName!",
+                tx('¡GOOOL! {player} la manda al fondo de la red.', $args),
+                tx('¡Gol de {player}! Definición perfecta ante el portero.', $args),
+                tx('¡{player} no perdona y marca!', $args),
+                tx('¡Golazo de {player}!', $args),
             ][mt_rand(0, 3)];
-            $this->event($m, 'goal', $side, $intro . ' ' . $finish, $scorer ? (int)$scorer['id'] : null);
+            $this->event($m, 'goal', $side, tx_join($intro, $finish), $scorer ? (int)$scorer['id'] : null);
         } else {
+            $args = ['player' => $scorerName];
             $miss = [
-                "$scorerName remata, pero el portero rival despeja.",
-                "El disparo de $scorerName se marcha por encima del larguero.",
-                "La defensa rival corta la jugada a tiempo.",
-                "$scorerName estrella el balón en el poste.",
-                "$scorerName no consigue rematar con claridad.",
+                tx('{player} remata, pero el portero rival despeja.', $args),
+                tx('El disparo de {player} se marcha por encima del larguero.', $args),
+                tx('La defensa rival corta la jugada a tiempo.'),
+                tx('{player} estrella el balón en el poste.', $args),
+                tx('{player} no consigue rematar con claridad.', $args),
             ][mt_rand(0, 4)];
-            $this->event($m, 'miss', $side, $intro . ' ' . $miss);
+            $this->event($m, 'miss', $side, tx_join($intro, $miss));
             // Contraataque del rival
             if (!$isCounter && $this->plan[$opp]['tactic'] === 'counter') {
                 $defAvg = ($rd['rdef'] + $rd['cdef'] + $rd['ldef']) / 3;
@@ -557,27 +559,27 @@ final class MatchEngine
         $name = player_name($p);
         switch ($p['specialty']) {
             case 'quick':
-                $this->event($m, 'special', $side, "⚡ $name deja atrás a su marcador gracias a su velocidad...");
+                $this->event($m, 'special', $side, tx('⚡ {player} deja atrás a su marcador gracias a su velocidad...', ['player' => $name]));
                 $this->chance($side, $m, false, 1.3, mt_rand(0, 1) ? 'l' : 'r');
                 break;
             case 'powerful':
-                $this->event($m, 'special', $side, "💪 $name se impone físicamente en el área...");
+                $this->event($m, 'special', $side, tx('💪 {player} se impone físicamente en el área...', ['player' => $name]));
                 $this->chance($side, $m, false, 1.3, 'c');
                 break;
             case 'technical':
-                $this->event($m, 'special', $side, "🎯 Una genialidad técnica de $name abre la defensa...");
+                $this->event($m, 'special', $side, tx('🎯 Una genialidad técnica de {player} abre la defensa...', ['player' => $name]));
                 $this->chance($side, $m, false, 1.25, 'c');
                 break;
             case 'head':
-                $this->event($m, 'special', $side, "🗣 Centro al área buscando la cabeza de $name...");
+                $this->event($m, 'special', $side, tx('🗣 Centro al área buscando la cabeza de {player}...', ['player' => $name]));
                 $this->chance($side, $m, false, 1.25, 'sp');
                 break;
             case 'unpredictable':
                 if (mt_rand(1, 100) <= 70) {
-                    $this->event($m, 'special', $side, "🎲 Jugada imprevisible de $name que sorprende a todos...");
+                    $this->event($m, 'special', $side, tx('🎲 Jugada imprevisible de {player} que sorprende a todos...', ['player' => $name]));
                     $this->chance($side, $m, false, 1.2, ['l', 'c', 'r'][mt_rand(0, 2)]);
                 } else {
-                    $this->event($m, 'special', $side, "🎲 $name intenta algo imprevisible y pierde el balón en zona peligrosa...");
+                    $this->event($m, 'special', $side, tx('🎲 {player} intenta algo imprevisible y pierde el balón en zona peligrosa...', ['player' => $name]));
                     $this->chance($this->opp($side), $m, false, 1.1, 'c');
                 }
                 break;
@@ -613,12 +615,12 @@ final class MatchEngine
         if (!$straightRed) {
             $this->yellows[$pid] = ($this->yellows[$pid] ?? 0) + 1;
             if ($this->yellows[$pid] < 2) {
-                $this->event($m, 'yellow', $side, "🟨 Tarjeta amarilla para $name por una entrada dura.", $pid);
+                $this->event($m, 'yellow', $side, tx('🟨 Tarjeta amarilla para {player} por una entrada dura.', ['player' => $name]), $pid);
                 return;
             }
-            $this->event($m, 'red', $side, "🟥 Segunda amarilla para $name. ¡Expulsado!", $pid);
+            $this->event($m, 'red', $side, tx('🟥 Segunda amarilla para {player}. ¡Expulsado!', ['player' => $name]), $pid);
         } else {
-            $this->event($m, 'red', $side, "🟥 ¡Roja directa para $name tras una falta muy violenta!", $pid);
+            $this->event($m, 'red', $side, tx('🟥 ¡Roja directa para {player} tras una falta muy violenta!', ['player' => $name]), $pid);
         }
         $this->reds[$pid] = 1;
         $this->removeFromPitch($side, $pos, $m);
@@ -642,8 +644,10 @@ final class MatchEngine
             $weeks = max(0.5, round($weeks * 0.6, 1));
         }
         $this->injuries[$pid] = $weeks;
-        $txt = $weeks <= 0.5 ? 'sufre un golpe y necesita atención' : "se lesiona (aprox. " . ceil($weeks) . " semana(s) de baja)";
-        $this->event($m, 'injury', $side, "🩹 " . player_name($p) . " $txt.", $pid);
+        $txt = $weeks <= 0.5
+            ? tx('🩹 {player} sufre un golpe y necesita atención.', ['player' => player_name($p)])
+            : tx('🩹 {player} se lesiona (aprox. {weeks} semana(s) de baja).', ['player' => player_name($p), 'weeks' => ceil($weeks)]);
+        $this->event($m, 'injury', $side, $txt, $pid);
         if ($weeks <= 0.5) {
             return; // sigue jugando
         }
@@ -661,7 +665,7 @@ final class MatchEngine
             $this->entered[$side][(int)$sub['id']] = $m;
             $this->posOf[(int)$sub['id']] = $pos;
             $this->version[$side]++;
-            $this->event($m, 'sub', $side, '🔁 ' . player_name($sub) . ' entra en sustitución de ' . player_name($p) . '.', (int)$sub['id']);
+            $this->event($m, 'sub', $side, tx('🔁 {in} entra en sustitución de {out}.', ['in' => player_name($sub), 'out' => player_name($p)]), (int)$sub['id']);
         }
     }
 
@@ -733,13 +737,17 @@ final class MatchEngine
 
         // La crónica cuenta cuántos aficionados entraron al estadio
         if ($isCup) {
-            $crowdText = '🏟 ' . num($attendance) . ' espectadores llenan las gradas del estadio neutral para este partido del Mundial.';
+            $crowdText = tx('🏟 {n} espectadores llenan las gradas del estadio neutral para este partido del Mundial.', ['n' => num($attendance)]);
         } elseif ($attendance >= $capacity && $capacity > 0) {
-            $crowdText = "🏟 $weather. ¡Lleno absoluto en el {$home['stadium_name']}! " . num($attendance) . ' aficionados (100% del aforo)'
-                . ($demand > $capacity ? ' y unos ' . num($demand - $capacity) . ' se quedaron sin entrada.' : '.');
+            $crowdArgs = ['weather' => $weather, 'stadium' => $home['stadium_name'], 'n' => num($attendance)];
+            $crowdText = $demand > $capacity
+                ? tx('🏟 {weather}. ¡Lleno absoluto en el {stadium}! {n} aficionados (100% del aforo) y unos {left} se quedaron sin entrada.', $crowdArgs + ['left' => num($demand - $capacity)])
+                : tx('🏟 {weather}. ¡Lleno absoluto en el {stadium}! {n} aficionados (100% del aforo).', $crowdArgs);
         } else {
-            $crowdText = "🏟 $weather. " . num($attendance) . " aficionados en el {$home['stadium_name']} ("
-                . ($capacity ? (int)round($attendance / $capacity * 100) : 0) . '% del aforo de ' . num($capacity) . ').';
+            $crowdText = tx('🏟 {weather}. {n} aficionados en el {stadium} ({pct}% del aforo de {cap}).', [
+                'weather' => $weather, 'n' => num($attendance), 'stadium' => $home['stadium_name'],
+                'pct' => $capacity ? (int)round($attendance / $capacity * 100) : 0, 'cap' => num($capacity),
+            ]);
         }
         array_splice($this->events, 1, 0, [['m' => 0, 't' => 'crowd', 's' => null, 'x' => $crowdText, 'p' => null, 'sc' => '0-0']]);
 
@@ -762,7 +770,7 @@ final class MatchEngine
             $this->stadiumNotice($home, $attendance, $demand, $capacity);
         }
         if ($income > 0) {
-            Economy::transaction((int)$home['id'], $income, 'tickets', 'Entradas: ' . num($attendance) . ' espectadores', $season, $week);
+            Economy::transaction((int)$home['id'], $income, 'tickets', tx('Entradas: {n} espectadores', ['n' => num($attendance)]), $season, $week);
         }
 
         // Sanciones: los que estaban sancionados cumplen un partido de liga
@@ -882,18 +890,26 @@ final class MatchEngine
             ], 'id = ?', [$t['id']]);
 
             if (!(int)$t['is_bot']) {
-                $res = $diff > 0 ? 'Victoria' : ($diff === 0 ? 'Empate' : 'Derrota');
-                $kind = mb_strtolower(match_type_label($match));
+                $res = $diff > 0 ? tx('Victoria') : ($diff === 0 ? tx('Empate') : tx('Derrota'));
+                $stage = (string)($match['cup_stage'] ?? '');
+                $kind = match ($match['type']) {
+                    'league' => tx('Liga · Jornada {n}', ['n' => (int)$match['round']]),
+                    'cup'    => tx('Copa · {stage}', ['stage' => isset(CupService::STAGES[$stage]) ? tx(CupService::STAGES[$stage]) : $stage]),
+                    default  => tx('Amistoso'),
+                };
                 DB::insert('team_events', [
                     'team_id' => $t['id'], 'created_at' => $ts, 'type' => 'match',
-                    'message' => sprintf('%s (%s): %s %d - %d %s', $res, $kind, $home['name'], $this->score['home'], $this->score['away'], $this->team['away']['name']),
+                    'message' => tx('{result} ({kind}): {home} {hg} - {ag} {away}', [
+                        'result' => $res, 'kind' => $kind, 'home' => $home['name'], 'hg' => $this->score['home'],
+                        'ag' => $this->score['away'], 'away' => $this->team['away']['name'],
+                    ]),
                 ]);
                 foreach ($this->injuries as $pid => $w) {
                     if ($w > 0.5 && isset($this->entered[$s][$pid])) {
                         $pl = DB::row('SELECT first_name, last_name FROM players WHERE id = ?', [$pid]);
                         if ($pl) {
                             DB::insert('team_events', ['team_id' => $t['id'], 'created_at' => $ts, 'type' => 'injury',
-                                'message' => player_name($pl) . ' se ha lesionado. Baja estimada: ' . ceil($w) . ' semana(s).']);
+                                'message' => tx('{player} se ha lesionado. Baja estimada: {weeks} semana(s).', ['player' => player_name($pl), 'weeks' => ceil($w)])]);
                         }
                     }
                 }
@@ -911,13 +927,15 @@ final class MatchEngine
         }
         $bonus = Config::int('worldcup', 'club_bonus', 5000);
         if ($bonus > 0) {
-            Economy::transaction((int)$club['id'], $bonus, 'prizes', 'Prima por internacional: ' . player_name($p), (int)$this->match['season'], (int)$this->match['week']);
+            Economy::transaction((int)$club['id'], $bonus, 'prizes', tx('Prima por internacional: {player}', ['player' => player_name($p)]), (int)$this->match['season'], (int)$this->match['week']);
         }
         if (!(int)$club['is_bot']) {
             $country = $this->team['home']['country_id'] == $p['country_id'] ? $this->team['home']['name'] : $this->team['away']['name'];
-            $msg = '🌍 ' . player_name($p) . " ha jugado el Mundial con $country" . ($goals ? " y ha marcado $goals gol(es)" : '') . '.';
+            $msg = $goals
+                ? tx('🌍 {player} ha jugado el Mundial con {country} y ha marcado {goals} gol(es).', ['player' => player_name($p), 'country' => $country, 'goals' => $goals])
+                : tx('🌍 {player} ha jugado el Mundial con {country}.', ['player' => player_name($p), 'country' => $country]);
             if ($injury > 0.5) {
-                $msg .= ' Por desgracia se ha lesionado (' . ceil($injury) . ' semana(s)).';
+                $msg = tx_join($msg, tx('Por desgracia se ha lesionado ({weeks} semana(s)).', ['weeks' => ceil($injury)]));
             }
             DB::insert('team_events', ['team_id' => $club['id'], 'created_at' => now(), 'type' => 'national', 'message' => $msg]);
         }
@@ -944,7 +962,7 @@ final class MatchEngine
      * Afluencia dinámica de aficionados.
      * Depende de los socios, su ánimo, la confianza en el equipo, la división, el atractivo del rival,
      * la importancia del partido (final de liga, rondas de copa) y el tiempo que haga ese día.
-     * Devuelve [asistencia, demanda, aforo, texto del tiempo].
+     * Devuelve [asistencia, demanda, aforo, texto del tiempo (tx)].
      */
     private function crowd(array $home, array $away): array
     {
@@ -962,7 +980,7 @@ final class MatchEngine
             default => 0.5,
         };
         $r = mt_rand(1, 100);
-        [$weather, $wF] = $r <= 40 ? ['Día soleado', 1.05] : ($r <= 75 ? ['Cielo nublado', 1.0] : ($r <= 95 ? ['Tarde de lluvia', 0.88] : ['Tormenta', 0.75]));
+        [$weather, $wF] = $r <= 40 ? [tx('Día soleado'), 1.05] : ($r <= 75 ? [tx('Cielo nublado'), 1.0] : ($r <= 95 ? [tx('Tarde de lluvia'), 0.88] : [tx('Tormenta'), 0.75]));
         $demand = (int)round((int)$home['fans'] * 7.5 * $moodF * $confF * $levelF * $rival * $importance * $wF * rnd(0.95, 1.05));
         return [min($cap, max(0, $demand)), max(0, $demand), $cap, $weather];
     }
@@ -981,11 +999,12 @@ final class MatchEngine
                 return;
             }
             $left = max(0, $demand - $cap);
-            $subject = '🏟 ¡Estadio lleno! Piensa en ampliarlo';
-            $body = "¡Enhorabuena! En el último partido en casa ({$this->team['home']['name']} - {$this->team['away']['name']}) el {$home['stadium_name']} colgó el cartel de «no hay billetes»: "
-                . num($attendance) . " espectadores, el 100% del aforo.\n\n"
-                . ($left > 0 ? 'Calculamos que unos ' . num($left) . " aficionados más se quedaron sin entrada.\n\n" : '')
-                . "Te recomendamos ampliar el estadio en la sección «Estadio»: más localidades significan más ingresos por taquilla en cada partido en casa.\n\n— El departamento de taquillas de $site";
+            $subject = tx('🏟 ¡Estadio lleno! Piensa en ampliarlo');
+            $body = tx("¡Enhorabuena! En el último partido en casa ({home} - {away}) el {stadium} colgó el cartel de «no hay billetes»: {n} espectadores, el 100% del aforo.\n\n{extra}Te recomendamos ampliar el estadio en la sección «Estadio»: más localidades significan más ingresos por taquilla en cada partido en casa.\n\n— El departamento de taquillas de {site}", [
+                'home' => $this->team['home']['name'], 'away' => $this->team['away']['name'], 'stadium' => $home['stadium_name'],
+                'n' => num($attendance), 'site' => $site,
+                'extra' => $left > 0 ? tx("Calculamos que unos {n} aficionados más se quedaron sin entrada.\n\n", ['n' => num($left)]) : '',
+            ]);
         } else {
             if ($attendance >= $cap * 0.5 || ($last && strtotime((string)$last) > time() - 28 * 86400)) {
                 return;
@@ -1001,9 +1020,10 @@ final class MatchEngine
                 }
             }
             $avg = (int)round(array_sum(array_column($recent, 'attendance')) / 3);
-            $subject = '🏟 Demasiadas localidades vacías';
-            $body = "En tus últimos partidos en casa la media ha sido de " . num($avg) . ' espectadores para un aforo de ' . num($cap)
-                . ' (' . (int)round($avg / $cap * 100) . "%).\n\nCada asiento cuesta mantenimiento todas las semanas. Si la afición no crece, quizá te convenga reducir algunas localidades (sobre todo las más caras de mantener) en la sección «Estadio», o mejorar los resultados y la confianza del equipo para atraer a más público.\n\n— El departamento de taquillas de $site";
+            $subject = tx('🏟 Demasiadas localidades vacías');
+            $body = tx("En tus últimos partidos en casa la media ha sido de {avg} espectadores para un aforo de {cap} ({pct}%).\n\nCada asiento cuesta mantenimiento todas las semanas. Si la afición no crece, quizá te convenga reducir algunas localidades (sobre todo las más caras de mantener) en la sección «Estadio», o mejorar los resultados y la confianza del equipo para atraer a más público.\n\n— El departamento de taquillas de {site}", [
+                'avg' => num($avg), 'cap' => num($cap), 'pct' => (int)round($avg / $cap * 100), 'site' => $site,
+            ]);
         }
         DB::insert('messages', ['from_user_id' => null, 'to_user_id' => $home['user_id'], 'subject' => $subject, 'body' => $body, 'created_at' => $ts]);
         DB::exec('UPDATE teams SET stadium_notice_at = ? WHERE id = ?', [$ts, $home['id']]);

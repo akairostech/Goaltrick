@@ -8,7 +8,7 @@ final class Installer
 {
     public const LOCK = APP_ROOT . '/install.lock';
     /** Versión del esquema de la base de datos que espera este código */
-    public const DB_VERSION = 5;
+    public const DB_VERSION = 6;
 
     public static function isInstalled(): bool
     {
@@ -27,7 +27,7 @@ final class Installer
     {
         $name = (string)Config::get('database', 'name', 'goaltrick');
         if (!preg_match('/^[A-Za-z0-9_]+$/', $name)) {
-            throw new RuntimeException('El nombre de la base de datos sólo puede contener letras, números y _');
+            throw new RuntimeException(t('El nombre de la base de datos sólo puede contener letras, números y _'));
         }
         $pdo = DB::connect(false);
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$name` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
@@ -44,9 +44,9 @@ final class Installer
     public static function install(string $username, string $email, string $password, string $teamName, ?callable $progress = null): void
     {
         $say = $progress ?? fn(string $m) => null;
-        $say('Creando la base de datos...');
+        $say(t('Creando la base de datos...'));
         self::createDatabase();
-        $say('Creando tablas (sql/schema.sql)...');
+        $say(t('Creando tablas (sql/schema.sql)...'));
         self::runSqlFile(APP_ROOT . '/sql/schema.sql');
         self::runSqlFile(APP_ROOT . '/sql/seed.sql');
         self::runSqlFile(APP_ROOT . '/sql/companies.sql');
@@ -54,20 +54,20 @@ final class Installer
         DB::exec('UPDATE countries SET name = ? WHERE id = 1', [(string)Config::get('game', 'country_name', 'Panamá')]);
         GameState::set('db_version', self::DB_VERSION);
         if (!(int)DB::value('SELECT COUNT(*) FROM league_units')) {
-            $say('Generando ligas, equipos y jugadores de todas las naciones (puede tardar un poco)...');
+            $say(t('Generando ligas, equipos y jugadores de todas las naciones (puede tardar un poco)...'));
             @set_time_limit(0);
             LeagueService::createWorld($say);
-            $say('Creando el calendario de la temporada 1...');
+            $say(t('Creando el calendario de la temporada 1...'));
             LeagueService::createSeason(1, LeagueService::firstSeasonStart());
         }
-        $say('Creando la cuenta de administrador...');
+        $say(t('Creando la cuenta de administrador...'));
         $errors = Auth::validateRegistration($username, $email, $password, $password, $teamName);
         if ($errors) {
             throw new RuntimeException(implode(' ', $errors));
         }
         Auth::register($username, $email, $password, $teamName, true);
         file_put_contents(self::LOCK, 'Instalado el ' . date('Y-m-d H:i:s') . "\nBorra este archivo para volver a ejecutar el instalador.\n");
-        $say('¡Instalación completada!');
+        $say(t('¡Instalación completada!'));
     }
 
     /* ------------------------------------------------------------------
@@ -111,7 +111,7 @@ final class Installer
         $say = $progress ?? fn(string $m) => null;
         @set_time_limit(0);
         if (self::dbVersion() < 2) {
-            $say('Versión 1.1: añadiendo columnas nuevas...');
+            $say(t('Versión 1.1: añadiendo columnas nuevas...'));
             $pdo = DB::pdo();
             $pdo->exec('ALTER TABLE teams MODIFY league_unit_id INT UNSIGNED NULL');
             $alters = [
@@ -140,9 +140,9 @@ final class Installer
             if (!self::indexExists('matches', 'idx_matches_played')) {
                 $pdo->exec('ALTER TABLE matches ADD KEY idx_matches_played (played_at)');
             }
-            $say('Creando las tablas del Mundial...');
+            $say(t('Creando las tablas del Mundial...'));
             self::runSqlFile(APP_ROOT . '/sql/schema.sql');   // CREATE TABLE IF NOT EXISTS: sólo crea las nuevas
-            $say('Renombrando Futbolandia a Panamá y añadiendo Costa Rica...');
+            $say(t('Renombrando Futbolandia a Panamá y añadiendo Costa Rica...'));
             self::runSqlFile(APP_ROOT . '/sql/seed.sql');
             $name = (string)Config::get('game', 'country_name', 'Panamá');
             if ($name === '' || $name === 'Futbolandia') {
@@ -153,12 +153,12 @@ final class Installer
             self::addNewNationLeagues($say);
             $season = GameState::season();
             $seasonStart = strtotime(GameState::get('season_start') ?? date('Y-m-d', LeagueService::firstSeasonStart()));
-            $say('Programando el Mundial...');
+            $say(t('Programando el Mundial...'));
             WorldCupService::scheduleForSeason($season, $seasonStart, GameState::week() + 1);
             GameState::set('db_version', 2);
         }
         if (self::dbVersion() < 3) {
-            $say('Versión 1.2: añadiendo las imágenes de perfil de los jugadores...');
+            $say(t('Versión 1.2: añadiendo las imágenes de perfil de los jugadores...'));
             if (!self::columnExists('players', 'avatar')) {
                 DB::pdo()->exec('ALTER TABLE players ADD COLUMN avatar TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER last_name');
             }
@@ -166,17 +166,17 @@ final class Installer
             GameState::set('db_version', 3);
         }
         if (self::dbVersion() < 4) {
-            $say('Versión 1.3: 400 caras de jugador, empresas y contratos de patrocinio...');
+            $say(t('Versión 1.3: 400 caras de jugador, empresas y contratos de patrocinio...'));
             DB::pdo()->exec('ALTER TABLE players MODIFY avatar SMALLINT UNSIGNED NOT NULL DEFAULT 0');
             DB::exec('UPDATE players SET avatar = 1 + FLOOR(RAND() * ' . AVATAR_COUNT . ')');
             self::runSqlFile(APP_ROOT . '/sql/schema.sql');      // crea companies y sponsor_contracts
             self::runSqlFile(APP_ROOT . '/sql/companies.sql');
-            $say('Enviando las ofertas de patrocinio de esta temporada a todos los clubes...');
+            $say(t('Enviando las ofertas de patrocinio de esta temporada a todos los clubes...'));
             SponsorService::generateSeasonOffers(GameState::season());
             GameState::set('db_version', 4);
         }
         if (self::dbVersion() < 5) {
-            $say('Versión 1.4: personal con perfil, Copa, entradas dinámicas y 32 naciones...');
+            $say(t('Versión 1.4: personal con perfil, Copa, entradas dinámicas y 32 naciones...'));
             $pdo = DB::pdo();
             if (!self::columnExists('teams', 'stadium_notice_at')) {
                 $pdo->exec('ALTER TABLE teams ADD COLUMN stadium_notice_at DATETIME NULL AFTER negative_weeks');
@@ -184,21 +184,46 @@ final class Installer
             $pdo->exec('ALTER TABLE worldcup_teams MODIFY group_letter VARCHAR(2) NOT NULL');
             self::runSqlFile(APP_ROOT . '/sql/schema.sql');   // crea staff, league_cups y cup_entries
             self::runSqlFile(APP_ROOT . '/sql/seed.sql');     // añade las naciones nuevas
-            $say('Creando las ligas de las nuevas naciones (puede tardar uno o dos minutos)...');
+            $say(t('Creando las ligas de las nuevas naciones (puede tardar uno o dos minutos)...'));
             self::addNewNationLeagues($say);
             $season = GameState::season();
-            $say('Dando un perfil (nombre, edad, nacionalidad y carácter) al personal de todos los clubes...');
+            $say(t('Dando un perfil (nombre, edad, nacionalidad y carácter) al personal de todos los clubes...'));
             StaffService::backfill();
-            $say('Enviando ofertas de patrocinio a los clubes nuevos...');
+            $say(t('Enviando ofertas de patrocinio a los clubes nuevos...'));
             foreach (DB::all('SELECT t.id FROM teams t WHERE t.is_national = 0 AND t.league_unit_id IS NOT NULL
                               AND NOT EXISTS (SELECT 1 FROM sponsor_contracts sc WHERE sc.team_id = t.id)') as $t) {
                 SponsorService::generateOffers((int)$t['id'], $season);
             }
-            $say('Sorteando la Copa de cada país...');
+            $say(t('Sorteando la Copa de cada país...'));
             CupService::createForSeason($season);
             GameState::set('db_version', 5);
         }
-        $say('Base de datos actualizada a la versión ' . self::DB_VERSION . '.');
+        if (self::dbVersion() < 6) {
+            $say(t('Versión 1.5: idiomas, alineaciones guardadas y estadio ilustrado...'));
+            $pdo = DB::pdo();
+            if (!self::columnExists('users', 'language')) {
+                $pdo->exec('ALTER TABLE users ADD COLUMN language VARCHAR(8) NULL AFTER is_banned');
+            }
+            if (!self::columnExists('team_lineups', 'for_match_id')) {
+                $pdo->exec('ALTER TABLE team_lineups ADD COLUMN for_match_id INT UNSIGNED NULL AFTER setpieces_id');
+            }
+            // Los textos traducibles se guardan con su plantilla: hace falta algo más de espacio
+            $pdo->exec('ALTER TABLE game_state MODIFY v VARCHAR(1000) NOT NULL');
+            $pdo->exec('ALTER TABLE announcements MODIFY title VARCHAR(500) NOT NULL');
+            $pdo->exec('ALTER TABLE team_events MODIFY message VARCHAR(1500) NOT NULL');
+            $pdo->exec('ALTER TABLE player_events MODIFY message VARCHAR(1000) NOT NULL');
+            $pdo->exec('ALTER TABLE finances MODIFY description VARCHAR(600) NULL');
+            $pdo->exec('ALTER TABLE messages MODIFY subject VARCHAR(500) NOT NULL');
+            self::runSqlFile(APP_ROOT . '/sql/schema.sql');   // crea lineup_presets
+            $say(t('Volviendo a sortear el Mundial con las 32 selecciones...'));
+            WorldCupService::rebuild(GameState::season(), true);
+            $wc = WorldCupService::forSeason(GameState::season());
+            if ($wc && (int)DB::value('SELECT COUNT(*) FROM worldcup_teams WHERE cup_id = ?', [$wc['id']]) < 32) {
+                $say(t('El Mundial de esta temporada ya no cabe en el calendario: el de la próxima temporada tendrá todas las selecciones.'));
+            }
+            GameState::set('db_version', 6);
+        }
+        $say(t('Base de datos actualizada a la versión {v}.', ['v' => self::DB_VERSION]));
     }
 
     /**
@@ -215,13 +240,13 @@ final class Installer
         }
         $season = GameState::season();
         $seasonStart = strtotime(GameState::get('season_start') ?? date('Y-m-d', LeagueService::firstSeasonStart()));
-        $say('Creando el calendario de las nuevas ligas...');
+        $say(t('Creando el calendario de las nuevas ligas...'));
         DB::transaction(fn() => LeagueService::createFixtures($season, $seasonStart, $new));
         $done = array_map('intval', array_column(DB::all(
             "SELECT round FROM scheduled_events WHERE type = 'league_round' AND season = ? AND status = 'done'", [$season]
         ), 'round'));
         if ($done) {
-            $say('Poniendo al día las jornadas ya disputadas en las nuevas ligas...');
+            $say(t('Poniendo al día las jornadas ya disputadas en las nuevas ligas...'));
             $in = implode(',', $new);
             $rounds = implode(',', $done);
             foreach (DB::all("SELECT id FROM matches WHERE type = 'league' AND season = ? AND status = 'scheduled'
@@ -237,7 +262,7 @@ final class Installer
 
     /** Tablas con datos de la partida (no se tocan users, countries ni la sesión) */
     private const GAME_TABLES = [
-        'cup_entries', 'league_cups', 'staff', 'sponsor_contracts', 'worldcup_teams', 'worldcups', 'transfer_bids', 'transfer_listings', 'friendly_requests', 'match_players', 'matches',
+        'lineup_presets', 'cup_entries', 'league_cups', 'staff', 'sponsor_contracts', 'worldcup_teams', 'worldcups', 'transfer_bids', 'transfer_listings', 'friendly_requests', 'match_players', 'matches',
         'finances', 'player_events', 'players', 'team_events', 'season_history', 'team_lineups', 'teams', 'league_units',
         'scheduled_events', 'announcements', 'game_state',
     ];
@@ -254,7 +279,7 @@ final class Installer
         // Guardar el equipo de cada usuario para devolvérselo
         $owners = DB::all('SELECT u.id, t.name, t.country_id FROM users u LEFT JOIN teams t ON t.user_id = u.id ORDER BY (u.id = ?) DESC, u.id', [$adminId]);
         $pdo = DB::pdo();
-        $say('Borrando la partida actual...');
+        $say(t('Borrando la partida actual...'));
         $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
         try {
             foreach (self::GAME_TABLES as $t) {
@@ -281,11 +306,11 @@ final class Installer
         self::runSqlFile(APP_ROOT . '/sql/seed.sql');
         GameState::set('db_version', self::DB_VERSION);
         GameState::set('installed_at', now());
-        $say('Generando ligas, equipos y jugadores de todas las naciones...');
+        $say(t('Generando ligas, equipos y jugadores de todas las naciones...'));
         LeagueService::createWorld($say);
-        $say('Creando el calendario de la temporada 1...');
+        $say(t('Creando el calendario de la temporada 1...'));
         LeagueService::createSeason(1, LeagueService::firstSeasonStart());
-        $say('Asignando equipos nuevos a los mánagers...');
+        $say(t('Asignando equipos nuevos a los mánagers...'));
         foreach ($owners as $o) {
             if (!$keepUsers && (int)$o['id'] !== $adminId) {
                 continue;
@@ -300,8 +325,8 @@ final class Installer
             }
             DB::transaction(fn() => TeamService::assignToUser($teamId, (int)$o['id'], $name));
         }
-        DB::insert('announcements', ['user_id' => $adminId, 'title' => '🔄 ¡Nueva partida!',
-            'body' => 'El administrador ha reiniciado el juego. Empieza la temporada 1: ¡mucha suerte con tu nuevo equipo!', 'created_at' => now()]);
-        $say('¡Partida reiniciada!');
+        DB::insert('announcements', ['user_id' => $adminId, 'title' => tx('🔄 ¡Nueva partida!'),
+            'body' => tx('El administrador ha reiniciado el juego. Empieza la temporada 1: ¡mucha suerte con tu nuevo equipo!'), 'created_at' => now()]);
+        $say(t('¡Partida reiniciada!'));
     }
 }

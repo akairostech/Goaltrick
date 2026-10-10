@@ -1,6 +1,6 @@
 <?php
 $team = require_team();
-$pageTitle = 'Entrenamiento';
+$pageTitle = t('Entrenamiento');
 $navActive = 'club';
 
 if (is_post()) {
@@ -9,14 +9,14 @@ if (is_post()) {
     $int = (int)post('intensity');
     $sta = (int)post('stamina_share');
     if (!isset(TRAINING_TYPES[$type])) {
-        flash('error', 'Tipo de entrenamiento no válido.');
+        flash('error', t('Tipo de entrenamiento no válido.'));
     } else {
         DB::update('teams', [
             'training_type' => $type,
             'training_intensity' => max(0, min(100, $int)),
             'stamina_share' => max(5, min(50, $sta)),
         ], 'id = ?', [$team['id']]);
-        flash('success', 'Entrenamiento actualizado.');
+        flash('success', t('Entrenamiento actualizado.'));
     }
     redirect(url('training'));
 }
@@ -48,70 +48,70 @@ $desc = [
     'scoring'    => 'Mejora la anotación de los delanteros.',
     'set_pieces' => 'Mejora el balón parado de todos los que jueguen (el lanzador recibe un extra).',
 ];
-$posNames = ['GK' => 'Porteros', 'CD' => 'Centrales', 'WB' => 'Laterales', 'IM' => 'Medios', 'W' => 'Extremos', 'FW' => 'Delanteros'];
+$posNames = ['GK' => 'Porteros', 'CD' => 'Centrales', 'WB' => 'Laterales', 'IM' => 'Medios##posición', 'W' => 'Extremos', 'FW' => 'Delanteros'];
 ?>
-<div class="page-title"><h1>Entrenamiento</h1>
-    <?php if ($next): ?><span class="muted">Próxima actualización: <strong><?= e(fdate_long($next['run_at'])) ?></strong></span><?php endif; ?>
+<div class="page-title"><h1><?= e(t('Entrenamiento')) ?></h1>
+    <?php if ($next): ?><span class="muted"><?= e(t('Próxima actualización')) ?>: <strong><?= e(fdate_long($next['run_at'])) ?></strong></span><?php endif; ?>
 </div>
 
 <div class="grid-2">
     <div class="box">
-        <div class="box-head">Configuración</div>
+        <div class="box-head"><?= e(t('Configuración')) ?></div>
         <div class="box-body">
             <form method="post">
                 <?= csrf_field() ?>
                 <div class="field">
-                    <label for="training_type">Tipo de entrenamiento</label>
+                    <label for="training_type"><?= e(t('Tipo de entrenamiento')) ?></label>
                     <select name="training_type" id="training_type">
-                        <?php foreach (TRAINING_TYPES as $k => $v): ?><option value="<?= e($k) ?>"<?= $type === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?>
+                        <?php foreach (TRAINING_TYPES as $k => $v): ?><option value="<?= e($k) ?>"<?= $type === $k ? ' selected' : '' ?>><?= e(skill_title($k)) ?></option><?php endforeach; ?>
                     </select>
                 </div>
                 <div class="field">
-                    <label for="intensity">Intensidad (%)</label>
+                    <label for="intensity"><?= e(t('Intensidad (%)')) ?></label>
                     <input type="number" id="intensity" name="intensity" min="0" max="100" value="<?= (int)$team['training_intensity'] ?>">
-                    <div class="hint">Más intensidad = más progreso, pero el espíritu del equipo sufre.</div>
+                    <div class="hint"><?= e(t('Más intensidad = más progreso, pero el espíritu del equipo sufre.')) ?></div>
                 </div>
                 <div class="field">
-                    <label for="stamina_share">Parte dedicada a condición física (%)</label>
+                    <label for="stamina_share"><?= e(t('Parte dedicada a condición física (%)')) ?></label>
                     <input type="number" id="stamina_share" name="stamina_share" min="5" max="50" value="<?= (int)$team['stamina_share'] ?>">
-                    <div class="hint">La condición evita que tus jugadores rindan menos al final del partido. Lo que dediques a condición se resta del entrenamiento principal.</div>
+                    <div class="hint"><?= e(t('La condición evita que tus jugadores rindan menos al final del partido. Lo que dediques a condición se resta del entrenamiento principal.')) ?></div>
                 </div>
-                <button class="btn btn-block" type="submit">Guardar</button>
+                <button class="btn btn-block" type="submit"><?= e(t('Guardar')) ?></button>
             </form>
         </div>
     </div>
     <div class="box">
-        <div class="box-head">¿Quién entrena?</div>
+        <div class="box-head"><?= e(t('¿Quién entrena?')) ?></div>
         <div class="box-body">
-            <p><strong><?= e(TRAINING_TYPES[$type]) ?>:</strong> <?= e($desc[$type]) ?></p>
+            <p><strong><?= e(skill_title($type)) ?>:</strong> <?= e(t($desc[$type])) ?></p>
             <table class="table compact">
-                <thead><tr><th>Posición en el partido</th><th class="num">Entrenamiento</th></tr></thead>
+                <thead><tr><th><?= e(t('Posición en el partido')) ?></th><th class="num"><?= e(t('Entrenamiento')) ?></th></tr></thead>
                 <tbody>
                 <?php foreach ($posNames as $k => $n): ?>
-                    <tr><td><?= e($n) ?></td><td class="num"><?= isset($eligible[$k]) ? (int)($eligible[$k] * 100) . '%' : '<span class="muted">—</span>' ?></td></tr>
+                    <tr><td><?= e(t($n)) ?></td><td class="num"><?= isset($eligible[$k]) ? (int)($eligible[$k] * 100) . '%' : '<span class="muted">—</span>' ?></td></tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>
-            <p class="muted small">Sólo entrenan los jugadores que jueguen partidos en esas posiciones durante la semana (liga o amistosos; con 90 minutos basta). Los jóvenes progresan mucho más rápido que los veteranos, y cuesta más subir en niveles altos.</p>
+            <p class="muted small"><?= e(t('Sólo entrenan los jugadores que jueguen partidos en esas posiciones durante la semana (liga o amistosos; con 90 minutos basta). Los jóvenes progresan mucho más rápido que los veteranos, y cuesta más subir en niveles altos.')) ?></p>
             <table class="kv">
-                <tr><th>Entrenador</th><td>Nivel <?= (int)$team['trainer_level'] ?>/5 (×<?= num(Training::trainerFactor((int)$team['trainer_level']), 2) ?>)</td></tr>
-                <tr><th>Asistentes</th><td><?= (int)$team['assistants'] ?> (+<?= (int)$team['assistants'] * 2.5 ?>%)</td></tr>
+                <tr><th><?= e(t('Entrenador')) ?></th><td><?= e(t('Nivel {n}/5', ['n' => (int)$team['trainer_level']])) ?> (×<?= num(Training::trainerFactor((int)$team['trainer_level']), 2) ?>)</td></tr>
+                <tr><th><?= e(t('Asistentes')) ?></th><td><?= (int)$team['assistants'] ?> (+<?= (int)$team['assistants'] * 2.5 ?>%)</td></tr>
             </table>
         </div>
     </div>
 </div>
 <br>
 <div class="box">
-    <div class="box-head">Jugadores que entrenarán en la próxima actualización</div>
+    <div class="box-head"><?= e(t('Jugadores que entrenarán en la próxima actualización')) ?></div>
     <?php if ($will): ?>
     <table class="table compact">
-        <thead><tr><th>Jugador</th><th>Edad</th><th>Posición jugada</th><th>Nivel actual</th><th class="num">Entrenamiento</th></tr></thead>
+        <thead><tr><th><?= e(t('Jugador')) ?></th><th><?= e(t('Edad')) ?></th><th><?= e(t('Posición jugada')) ?></th><th><?= e(t('Nivel actual')) ?></th><th class="num"><?= e(t('Entrenamiento')) ?></th></tr></thead>
         <tbody>
         <?php foreach ($will as $w): ?>
             <tr>
                 <td><?= player_link($w) ?></td>
                 <td><?= (int)$w['age_years'] ?></td>
-                <td><?= e(Lineup::POSITIONS[$w['position']][2] ?? $w['position']) ?></td>
+                <td><?= e(isset(Lineup::POSITIONS[$w['position']][2]) ? t(Lineup::POSITIONS[$w['position']][2]) : $w['position']) ?></td>
                 <td><?= e(skill_label($w['sk'])) ?></td>
                 <td class="num"><?= $w['factor'] > 0 ? '<span class="pos">' . (int)round($w['factor'] * 100) . '%</span>' : '<span class="muted">0%</span>' ?></td>
             </tr>
@@ -119,6 +119,6 @@ $posNames = ['GK' => 'Porteros', 'CD' => 'Centrales', 'WB' => 'Laterales', 'IM' 
         </tbody>
     </table>
     <?php else: ?>
-        <div class="box-body muted">Ningún jugador ha jugado todavía esta semana.</div>
+        <div class="box-body muted"><?= e(t('Ningún jugador ha jugado todavía esta semana.')) ?></div>
     <?php endif; ?>
 </div>

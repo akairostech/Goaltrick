@@ -1,6 +1,6 @@
 <?php
 require_login();
-$pageTitle = 'Mundo';
+$pageTitle = t('Mundo');
 $navActive = 'world';
 $q = trim((string)get('q'));
 $results = [];
@@ -16,32 +16,32 @@ $rankTsi = DB::all('SELECT t.id, t.name, t.is_bot, SUM(p.tsi) s FROM teams t JOI
 $rankFans = DB::all('SELECT id, name, is_bot, fans FROM teams WHERE is_national = 0 ORDER BY fans DESC LIMIT 10');
 $stats = DB::row('SELECT (SELECT COUNT(*) FROM users) u, (SELECT COUNT(*) FROM teams WHERE user_id IS NOT NULL) h, (SELECT COUNT(*) FROM teams WHERE is_national = 0) t, (SELECT COUNT(*) FROM players WHERE retired = 0) p');
 ?>
-<div class="page-title"><h1>Mundo</h1><span class="muted"><?= num($stats['h']) ?> mánagers · <?= num($stats['t']) ?> equipos · <?= num($stats['p']) ?> jugadores</span></div>
+<div class="page-title"><h1><?= e(t('Mundo')) ?></h1><span class="muted"><?= e(t('{managers} mánagers · {teams} equipos · {players} jugadores', ['managers' => num($stats['h']), 'teams' => num($stats['t']), 'players' => num($stats['p'])])) ?></span></div>
 
-<div class="box"><div class="box-head">Buscar equipos o mánagers</div><div class="box-body">
-    <form method="get" class="inline-form"><input type="hidden" name="page" value="world"><input type="text" name="q" value="<?= e($q) ?>" placeholder="Nombre del equipo o usuario" style="min-width:260px"><button class="btn" type="submit">Buscar</button></form>
+<div class="box"><div class="box-head"><?= e(t('Buscar equipos o mánagers')) ?></div><div class="box-body">
+    <form method="get" class="inline-form"><input type="hidden" name="page" value="world"><input type="text" name="q" value="<?= e($q) ?>" placeholder="<?= e(t('Nombre del equipo o usuario')) ?>" style="min-width:260px"><button class="btn" type="submit"><?= e(t('Buscar')) ?></button></form>
     <?php if ($q !== ''): ?>
         <table class="table compact" style="margin-top:10px">
-            <?php foreach ($results as $r): ?><tr><td><?= team_link($r['id'], $r['name']) ?></td><td><?= e($r['username'] ?? '—') ?></td><td>Serie <?= e($r['unit']) ?></td></tr><?php endforeach; ?>
-            <?php if (!$results): ?><tr><td class="muted">Sin resultados.</td></tr><?php endif; ?>
+            <?php foreach ($results as $r): ?><tr><td><?= team_link($r['id'], $r['name']) ?></td><td><?= e($r['username'] ?? '—') ?></td><td><?= e(t('Serie {name}', ['name' => $r['unit']])) ?></td></tr><?php endforeach; ?>
+            <?php if (!$results): ?><tr><td class="muted"><?= e(t('Sin resultados.')) ?></td></tr><?php endif; ?>
         </table>
     <?php endif; ?>
 </div></div>
 
-<div class="box"><div class="box-head">Ligas del mundo</div><div class="box-body">
-    <p>Consulta también las <a href="<?= e(url('companies')) ?>">400 empresas patrocinadoras</a> del mundo.</p>
-    <p>Hay <?= count($countryList) ?> países con liga propia. Consulta su estructura, su selección nacional y el Mundial en <a href="<?= e(url('nations')) ?>">Naciones</a>.</p>
+<div class="box"><div class="box-head"><?= e(t('Ligas del mundo')) ?></div><div class="box-body">
+    <p><?= t('Consulta también las {link} del mundo.', ['link' => '<a href="' . e(url('companies')) . '">' . e(t('400 empresas patrocinadoras')) . '</a>']) ?></p>
+    <p><?= t('Hay {n} países con liga propia. Consulta su estructura, su selección nacional y el Mundial en {link}.', ['n' => count($countryList), 'link' => '<a href="' . e(url('nations')) . '">' . e(t('Naciones')) . '</a>']) ?></p>
     <p><?php foreach ($countryList as $cl): ?><span class="nowrap"><?= nation_link($cl['id'], $cl['name'], $cl['code']) ?></span> &nbsp; <?php endforeach; ?></p>
 </div></div>
 
 <div class="grid-3">
-    <div class="box"><div class="box-head">Conectados (<?= count($online) ?>)</div>
+    <div class="box"><div class="box-head"><?= e(t('Conectados ({n})', ['n' => count($online)])) ?></div>
         <table class="table compact"><?php foreach ($online as $o): ?><tr><td><?= e($o['username']) ?></td><td class="small"><?= $o['tid'] ? team_link($o['tid'], $o['name']) : '' ?></td></tr><?php endforeach; ?></table>
     </div>
-    <div class="box"><div class="box-head">Ranking por TSI</div>
+    <div class="box"><div class="box-head"><?= e(t('Ranking por TSI')) ?></div>
         <table class="table compact"><?php foreach ($rankTsi as $i => $r): ?><tr><td><?= $i + 1 ?></td><td><?= team_link($r['id'], $r['name']) ?></td><td class="num"><?= num($r['s']) ?></td></tr><?php endforeach; ?></table>
     </div>
-    <div class="box"><div class="box-head">Ranking por socios</div>
+    <div class="box"><div class="box-head"><?= e(t('Ranking por socios')) ?></div>
         <table class="table compact"><?php foreach ($rankFans as $i => $r): ?><tr><td><?= $i + 1 ?></td><td><?= team_link($r['id'], $r['name']) ?></td><td class="num"><?= num($r['fans']) ?></td></tr><?php endforeach; ?></table>
     </div>
 </div>

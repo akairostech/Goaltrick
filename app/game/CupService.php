@@ -22,7 +22,13 @@ final class CupService
 
     public static function stageName(?string $code): string
     {
-        return self::STAGES[$code ?? ''] ?? (string)$code;
+        return isset(self::STAGES[$code ?? '']) ? t(self::STAGES[$code]) : (string)$code;
+    }
+
+    /** Nombre de la ronda para guardar en la base de datos */
+    private static function stageTx(?string $code): string
+    {
+        return isset(self::STAGES[$code ?? '']) ? tx(self::STAGES[$code]) : (string)$code;
     }
 
     private static function stageFor(int $teams): string
@@ -32,8 +38,15 @@ final class CupService
 
     public static function cupName(array $cup): string
     {
-        $country = DB::value('SELECT name FROM countries WHERE id = ?', [$cup['country_id']]);
-        return 'Copa de ' . $country;
+        $country = (string)DB::value('SELECT name FROM countries WHERE id = ?', [$cup['country_id']]);
+        return t('Copa de {country}', ['country' => t($country)]);
+    }
+
+    /** Nombre de la copa para guardar en la base de datos (se traduce al mostrarlo) */
+    public static function cupNameTx(array $cup): string
+    {
+        $country = (string)DB::value('SELECT name FROM countries WHERE id = ?', [$cup['country_id']]);
+        return tx('Copa de {country}', ['country' => tx($country)]);
     }
 
     /** ¿Sigue el equipo en una copa en juego? */
@@ -157,17 +170,17 @@ final class CupService
                 $round = (int)$cup['current_round'];
                 $played = DB::all("SELECT * FROM matches WHERE type = 'cup' AND cup_id = ? AND round = ? AND status = 'played'", [$cupId, $round]);
                 $prize = Config::int('cup', 'round_prize', 8000);
-                $name = self::cupName($cup);
+                $name = self::cupNameTx($cup);
                 foreach ($played as $m) {
                     $w = WorldCupService::winner($m);
                     $l = WorldCupService::loser($m);
                     DB::exec('UPDATE cup_entries SET eliminated_round = ? WHERE cup_id = ? AND team_id = ?', [$round, $cupId, $l]);
                     if ($prize > 0) {
-                        Economy::transaction($w, $prize, 'prizes', "$name: prima por pasar de ronda", (int)$cup['season'], (int)$m['week']);
+                        Economy::transaction($w, $prize, 'prizes', tx('{cup}: prima por pasar de ronda', ['cup' => $name]), (int)$cup['season'], (int)$m['week']);
                     }
-                    self::notify($l, "🏆 Tu equipo ha quedado eliminado de la $name (" . self::stageName($m['cup_stage']) . ').');
+                    self::notify($l, tx('🏆 Tu equipo ha quedado eliminado de la {cup} ({stage}).', ['cup' => $name, 'stage' => self::stageTx($m['cup_stage'])]));
                     if ($m['cup_stage'] !== 'F') {
-                        self::notify($w, "🏆 ¡Pasas de ronda en la $name! Ganaste en " . mb_strtolower(self::stageName($m['cup_stage'])) . '.');
+                        self::notify($w, tx('🏆 ¡Pasas de ronda en la {cup}! Ganaste en la ronda: {stage}.', ['cup' => $name, 'stage' => self::stageTx($m['cup_stage'])]));
                     }
                 }
                 $alive = (int)DB::value('SELECT COUNT(*) FROM cup_entries WHERE cup_id = ? AND eliminated_round IS NULL', [$cupId]);
@@ -182,11 +195,11 @@ final class CupService
                     $runner = $final ? WorldCupService::loser($final) : null;
                     DB::update('league_cups', ['status' => 'finished', 'winner_team_id' => $winner ?: null, 'runnerup_team_id' => $runner], 'id = ?', [$cupId]);
                     if ($winner) {
-                        Economy::transaction($winner, Config::int('cup', 'winner_prize', 150000), 'prizes', "Campeón de la $name", (int)$cup['season']);
-                        self::notify($winner, "🏆 ¡CAMPEONES de la $name! El trofeo ya está en tu vitrina.");
+                        Economy::transaction($winner, Config::int('cup', 'winner_prize', 150000), 'prizes', tx('Campeón de la {cup}', ['cup' => $name]), (int)$cup['season']);
+                        self::notify($winner, tx('🏆 ¡CAMPEONES de la {cup}! El trofeo ya está en tu vitrina.', ['cup' => $name]));
                     }
                     if ($runner) {
-                        Economy::transaction($runner, Config::int('cup', 'runnerup_prize', 60000), 'prizes', "Subcampeón de la $name", (int)$cup['season']);
+                        Economy::transaction($runner, Config::int('cup', 'runnerup_prize', 60000), 'prizes', tx('Subcampeón de la {cup}', ['cup' => $name]), (int)$cup['season']);
                     }
                     $finished++;
                     return;
@@ -201,7 +214,8 @@ final class CupService
                 self::drawRound($cup, $next[0]);
             });
         }
-        return 'Copa: ' . count($matches) . ' partidos' . ($finished ? " · $finished copa(s) terminada(s)" : '');
+        $log = tx('Copa: {n} partidos', ['n' => count($matches)]);
+        return $finished ? tx_join($log, tx('· {n} copa(s) terminada(s)', ['n' => $finished])) : $log;
     }
 
     private static function notify(int $teamId, string $msg): void

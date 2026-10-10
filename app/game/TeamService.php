@@ -151,6 +151,7 @@ final class TeamService
         DB::exec("UPDATE transfer_listings SET status = 'cancelled', closed_at = ? WHERE seller_team_id = ? AND status = 'active'", [now(), $teamId]);
         DB::exec('UPDATE players SET team_id = NULL, retired = 1 WHERE team_id = ?', [$teamId]);
         DB::exec('DELETE FROM team_lineups WHERE team_id = ?', [$teamId]);
+        DB::exec('DELETE FROM lineup_presets WHERE team_id = ?', [$teamId]);
         // Es un club nuevo: no hereda los títulos ni las noticias del equipo de la máquina
         DB::exec('DELETE FROM season_history WHERE team_id = ?', [$teamId]);
         DB::exec('DELETE FROM team_events WHERE team_id = ?', [$teamId]);
@@ -184,13 +185,13 @@ final class TeamService
         StaffService::resetTeam($teamId);
         SponsorService::resetForNewOwner($teamId);
         DB::insert('team_events', ['team_id' => $teamId, 'created_at' => now(), 'type' => 'welcome',
-            'message' => "🎉 ¡Bienvenido a $teamName! Revisa tu plantilla, prepara la alineación y elige el entrenamiento."]);
+            'message' => tx('🎉 ¡Bienvenido a {team}! Revisa tu plantilla, prepara la alineación y elige el entrenamiento.', ['team' => $teamName])]);
         DB::insert('messages', [
-            'from_user_id' => null, 'to_user_id' => $userId, 'subject' => '¡Bienvenido a ' . Config::get('app', 'site_name', 'GoalTrick') . '!',
-            'body' => "Hola,\n\nAcabas de hacerte cargo de $teamName. Algunos consejos para empezar:\n\n"
+            'from_user_id' => null, 'to_user_id' => $userId, 'subject' => tx('¡Bienvenido a {site}!', ['site' => Config::get('app', 'site_name', 'GoalTrick')]),
+            'body' => tx("Hola,\n\nAcabas de hacerte cargo de {team}. Algunos consejos para empezar:\n\n"
                 . "1. Revisa tu plantilla en «Jugadores».\n2. Prepara la alineación antes de cada partido de liga.\n"
                 . "3. Elige un tipo de entrenamiento: sólo entrenan los jugadores que juegan en las posiciones adecuadas.\n"
-                . "4. Controla las finanzas: los salarios se pagan cada semana.\n5. Usa el mercado de fichajes para mejorar el equipo.\n\n¡Mucha suerte!",
+                . "4. Controla las finanzas: los salarios se pagan cada semana.\n5. Usa el mercado de fichajes para mejorar el equipo.\n\n¡Mucha suerte!", ['team' => $teamName]),
             'created_at' => now(),
         ]);
     }

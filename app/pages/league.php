@@ -6,7 +6,7 @@ $unitId = (int)(get('unit') ?: ($my['league_unit_id'] ?? 0));
 $unit = DB::row('SELECT * FROM league_units WHERE id = ?', [$unitId]) ?? DB::row('SELECT * FROM league_units ORDER BY level, number LIMIT 1');
 $unitId = (int)$unit['id'];
 $season = (int)(get('season') ?: GameState::season());
-$pageTitle = 'Serie ' . $unit['name'];
+$pageTitle = t('Serie {name}', ['name' => $unit['name']]);
 $countryRow = DB::row('SELECT * FROM countries WHERE id = ?', [$unit['country_id']]);
 $country = $countryRow['name'];
 $parent = $unit['parent_id'] ? DB::row('SELECT * FROM league_units WHERE id = ?', [$unit['parent_id']]) : null;
@@ -26,34 +26,34 @@ $seasons = array_column(DB::all('SELECT DISTINCT season FROM matches WHERE leagu
 $n = count($table);
 ?>
 <div class="page-title">
-    <h1><?= flag($countryRow['code']) ?> Serie <?= e($unit['name']) ?> <span class="muted small"><a href="<?= e(url('nation', ['id' => $countryRow['id']])) ?>"><?= e($country) ?></a> · División <?= LeagueService::roman((int)$unit['level']) ?></span></h1>
+    <h1><?= flag($countryRow['code']) ?> <?= e(t('Serie {name}', ['name' => $unit['name']])) ?> <span class="muted small"><a href="<?= e(url('nation', ['id' => $countryRow['id']])) ?>"><?= e(t($country)) ?></a> · <?= e(t('División {n}', ['n' => LeagueService::roman((int)$unit['level'])])) ?></span></h1>
     <form class="inline-form" method="get">
         <input type="hidden" name="page" value="league"><input type="hidden" name="unit" value="<?= $unitId ?>">
         <select name="season" onchange="this.form.submit()">
-            <?php foreach ($seasons ?: [$season] as $s): ?><option value="<?= (int)$s ?>"<?= (int)$s === $season ? ' selected' : '' ?>>Temporada <?= (int)$s ?></option><?php endforeach; ?>
+            <?php foreach ($seasons ?: [$season] as $s): ?><option value="<?= (int)$s ?>"<?= (int)$s === $season ? ' selected' : '' ?>><?= e(t('Temporada {n}', ['n' => (int)$s])) ?></option><?php endforeach; ?>
         </select>
     </form>
 </div>
 
 <div class="box">
     <div class="box-body small">
-        <?php if ($parent): ?>⬆️ Serie superior: <a href="<?= e(url('league', ['unit' => $parent['id']])) ?>"><?= e($parent['name']) ?></a> &nbsp; <?php endif; ?>
-        <?php if ($children): ?>⬇️ Series inferiores:
+        <?php if ($parent): ?>⬆️ <?= e(t('Serie superior:')) ?> <a href="<?= e(url('league', ['unit' => $parent['id']])) ?>"><?= e($parent['name']) ?></a> &nbsp; <?php endif; ?>
+        <?php if ($children): ?>⬇️ <?= e(t('Series inferiores:')) ?>
             <?php foreach ($children as $c): ?><a href="<?= e(url('league', ['unit' => $c['id']])) ?>"><?= e($c['name']) ?></a> <?php endforeach; ?>
         <?php endif; ?>
-        <br>Otras series de la división:
+        <br><?= e(t('Otras series de la división:')) ?>
         <?php foreach ($siblings as $s): ?>
             <?= (int)$s['id'] === $unitId ? '<strong>' . e($s['name']) . '</strong>' : '<a href="' . e(url('league', ['unit' => $s['id']])) . '">' . e($s['name']) . '</a>' ?>
         <?php endforeach; ?>
-        <br>🏆 <a href="<?= e(url('cup', ['country' => $countryRow['id'], 'season' => $season])) ?>">Copa de <?= e($country) ?></a>
+        <br>🏆 <a href="<?= e(url('cup', ['country' => $countryRow['id'], 'season' => $season])) ?>"><?= e(t('Copa de {country}', ['country' => t($country)])) ?></a>
     </div>
 </div>
 
 <div class="box">
-    <div class="box-head">Clasificación · Temporada <?= $season ?></div>
+    <div class="box-head"><?= e(t('Clasificación')) ?> · <?= e(t('Temporada {n}', ['n' => $season])) ?></div>
     <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>#</th><th>Equipo</th><th class="num">PJ</th><th class="num">G</th><th class="num">E</th><th class="num">P</th><th class="num">GF</th><th class="num">GC</th><th class="num">DG</th><th class="num">Pts</th><th>Racha</th></tr></thead>
+        <thead><tr><th>#</th><th><?= e(t('Equipo')) ?></th><th class="num"><?= e(t('PJ')) ?></th><th class="num"><?= e(t('G##ganados')) ?></th><th class="num"><?= e(t('E##empatados')) ?></th><th class="num"><?= e(t('P##perdidos')) ?></th><th class="num"><?= e(t('GF')) ?></th><th class="num"><?= e(t('GC')) ?></th><th class="num"><?= e(t('DG')) ?></th><th class="num"><?= e(t('Pts')) ?></th><th><?= e(t('Racha')) ?></th></tr></thead>
         <tbody>
         <?php foreach ($table as $r):
             $cls = [];
@@ -63,28 +63,28 @@ $n = count($table);
         ?>
             <tr class="<?= implode(' ', $cls) ?>">
                 <td><?= $r['pos'] ?></td>
-                <td><?= team_link($r['team_id'], $r['name']) ?> <?= $r['is_bot'] ? '' : '<span class="tag tag-user" title="Equipo de un mánager">M</span>' ?></td>
+                <td><?= team_link($r['team_id'], $r['name']) ?> <?= $r['is_bot'] ? '' : '<span class="tag tag-user" title="' . e(t('Equipo de un mánager')) . '">' . e(t('M##mánager')) . '</span>' ?></td>
                 <td class="num"><?= $r['pj'] ?></td><td class="num"><?= $r['g'] ?></td><td class="num"><?= $r['e'] ?></td><td class="num"><?= $r['p'] ?></td>
                 <td class="num"><?= $r['gf'] ?></td><td class="num"><?= $r['gc'] ?></td><td class="num"><?= $r['gf'] - $r['gc'] ?></td>
                 <td class="num"><strong><?= $r['pts'] ?></strong></td>
-                <td class="nowrap"><?php foreach ($r['form'] as $f): ?><span class="form-badge form-<?= $f ?>"><?= $f ?></span><?php endforeach; ?></td>
+                <td class="nowrap"><?php foreach ($r['form'] as $f): ?><span class="form-badge form-<?= $f ?>"><?= e(t($f . '##racha')) ?></span><?php endforeach; ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
     </div>
     <div class="box-body small muted">
-        <?php if ((int)$unit['level'] > 1): ?>El campeón puede ascender (asciende si está entre los 2 mejores campeones de las series hermanas). <?php endif; ?>
-        <?php if ((int)$unit['level'] < $maxLevel): ?>Los dos últimos descienden.<?php endif; ?>
+        <?php if ((int)$unit['level'] > 1): ?><?= e(t('El campeón puede ascender (asciende si está entre los 2 mejores campeones de las series hermanas).')) ?> <?php endif; ?>
+        <?php if ((int)$unit['level'] < $maxLevel): ?><?= e(t('Los dos últimos descienden.')) ?><?php endif; ?>
     </div>
 </div>
 
 <div class="grid-2">
     <div class="box">
-        <div class="box-head">Jornada <?= $round ?>
+        <div class="box-head"><?= e(t('Jornada {n}', ['n' => $round])) ?>
             <span>
-                <?php if ($round > 1): ?><a href="<?= e(url('league', ['unit' => $unitId, 'season' => $season, 'round' => $round - 1])) ?>">« Anterior</a><?php endif; ?>
-                <?php if ($round < LeagueService::LEAGUE_ROUNDS): ?> <a href="<?= e(url('league', ['unit' => $unitId, 'season' => $season, 'round' => $round + 1])) ?>">Siguiente »</a><?php endif; ?>
+                <?php if ($round > 1): ?><a href="<?= e(url('league', ['unit' => $unitId, 'season' => $season, 'round' => $round - 1])) ?>">« <?= e(t('Anterior')) ?></a><?php endif; ?>
+                <?php if ($round < LeagueService::LEAGUE_ROUNDS): ?> <a href="<?= e(url('league', ['unit' => $unitId, 'season' => $season, 'round' => $round + 1])) ?>"><?= e(t('Siguiente')) ?> »</a><?php endif; ?>
             </span>
         </div>
         <table class="table compact">
@@ -98,12 +98,12 @@ $n = count($table);
         </table>
     </div>
     <div class="box">
-        <div class="box-head">Máximos goleadores</div>
+        <div class="box-head"><?= e(t('Máximos goleadores')) ?></div>
         <table class="table compact">
             <?php foreach ($scorers as $i => $s): ?>
                 <tr><td><?= $i + 1 ?></td><td><?= player_link($s) ?></td><td class="muted small"><?= e($s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
             <?php endforeach; ?>
-            <?php if (!$scorers): ?><tr><td class="muted">Todavía no hay goles.</td></tr><?php endif; ?>
+            <?php if (!$scorers): ?><tr><td class="muted"><?= e(t('Todavía no hay goles.')) ?></td></tr><?php endif; ?>
         </table>
     </div>
 </div>

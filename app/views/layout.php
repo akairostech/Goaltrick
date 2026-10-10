@@ -28,7 +28,7 @@ $clubMenu = [
     'friendlies' => ['🤝', 'Amistosos'],
 ];
 ?><!doctype html>
-<html lang="es">
+<html lang="<?= e(Lang::code()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,30 +41,40 @@ $clubMenu = [
     <div class="wrap topbar-inner">
         <a class="logo" href="<?= e(url()) ?>"><span class="logo-ball">⚽</span><span class="logo-text"><?= e($site) ?></span></a>
         <div class="topbar-right">
+            <?php $langs = Lang::available(); if (count($langs) > 1): $cur = Lang::code(); ?>
+            <details class="lang-switch">
+                <summary title="<?= e(t('Idioma')) ?>"><?= e($langs[$cur][1] ?? '🌐') ?> <span class="lang-code"><?= e(strtoupper($cur)) ?></span></summary>
+                <div class="lang-menu">
+                    <?php foreach ($langs as $code => [$lname, $lflag]): ?>
+                        <a href="<?= e(lang_url($code)) ?>" class="<?= $code === $cur ? 'active' : '' ?>" hreflang="<?= e($code) ?>"><?= e($lflag) ?> <?= e($lname) ?></a>
+                    <?php endforeach; ?>
+                </div>
+            </details>
+            <?php endif; ?>
             <?php if ($user): ?>
                 <span class="tb-user">👤 <a href="<?= e(url('profile')) ?>"><?= e($user['username']) ?></a></span>
-                <a class="tb-mail<?= $unread ? ' has-unread' : '' ?>" href="<?= e(url('messages')) ?>" title="Mensajes">✉️<?php if ($unread): ?><span class="badge"><?= $unread ?></span><?php endif; ?></a>
-                <span class="tb-season">Temporada <?= $season ?> · Semana <?= $week ?></span>
-                <a class="btn btn-small btn-ghost" href="<?= e(url('logout', ['t' => csrf_token()])) ?>">Salir</a>
+                <a class="tb-mail<?= $unread ? ' has-unread' : '' ?>" href="<?= e(url('messages')) ?>" title="<?= e(t('Mensajes')) ?>">✉️<?php if ($unread): ?><span class="badge"><?= $unread ?></span><?php endif; ?></a>
+                <span class="tb-season"><?= e(t('Temporada {s} · Semana {w}', ['s' => $season, 'w' => $week])) ?></span>
+                <a class="btn btn-small btn-ghost" href="<?= e(url('logout', ['t' => csrf_token()])) ?>"><?= e(t('Salir')) ?></a>
             <?php else: ?>
-                <a class="btn btn-small btn-ghost" href="<?= e(url('login')) ?>">Iniciar sesión</a>
-                <a class="btn btn-small btn-accent" href="<?= e(url('register')) ?>">Regístrate gratis</a>
+                <a class="btn btn-small btn-ghost" href="<?= e(url('login')) ?>"><?= e(t('Iniciar sesión')) ?></a>
+                <a class="btn btn-small btn-accent" href="<?= e(url('register')) ?>"><?= e(t('Regístrate gratis')) ?></a>
             <?php endif; ?>
         </div>
     </div>
     <?php if ($user): ?>
     <nav class="mainnav">
         <div class="wrap">
-            <a class="<?= $navActive === 'club' ? 'active' : '' ?>" href="<?= e(url()) ?>">Mi club</a>
-            <a class="<?= $navActive === 'league' ? 'active' : '' ?>" href="<?= e(url('league')) ?>">Liga</a>
-            <a class="<?= $navActive === 'transfers' ? 'active' : '' ?>" href="<?= e(url('transfers')) ?>">Mercado</a>
-            <a class="<?= $navActive === 'nations' ? 'active' : '' ?>" href="<?= e(url('nations')) ?>">Naciones</a>
-            <a class="<?= $navActive === 'worldcup' ? 'active' : '' ?>" href="<?= e(url('worldcup')) ?>">Mundial</a>
-            <a class="<?= $navActive === 'world' ? 'active' : '' ?>" href="<?= e(url('world')) ?>">Mundo</a>
-            <a class="<?= $navActive === 'community' ? 'active' : '' ?>" href="<?= e(url('messages')) ?>">Comunidad<?php if ($unread): ?> <span class="badge"><?= $unread ?></span><?php endif; ?></a>
-            <a class="<?= $navActive === 'help' ? 'active' : '' ?>" href="<?= e(url('help')) ?>">Ayuda</a>
+            <a class="<?= $navActive === 'club' ? 'active' : '' ?>" href="<?= e(url()) ?>"><?= e(t('Mi club')) ?></a>
+            <a class="<?= $navActive === 'league' ? 'active' : '' ?>" href="<?= e(url('league')) ?>"><?= e(t('Liga')) ?></a>
+            <a class="<?= $navActive === 'transfers' ? 'active' : '' ?>" href="<?= e(url('transfers')) ?>"><?= e(t('Mercado')) ?></a>
+            <a class="<?= $navActive === 'nations' ? 'active' : '' ?>" href="<?= e(url('nations')) ?>"><?= e(t('Naciones')) ?></a>
+            <a class="<?= $navActive === 'worldcup' ? 'active' : '' ?>" href="<?= e(url('worldcup')) ?>"><?= e(t('Mundial')) ?></a>
+            <a class="<?= $navActive === 'world' ? 'active' : '' ?>" href="<?= e(url('world')) ?>"><?= e(t('Mundo')) ?></a>
+            <a class="<?= $navActive === 'community' ? 'active' : '' ?>" href="<?= e(url('messages')) ?>"><?= e(t('Comunidad')) ?><?php if ($unread): ?> <span class="badge"><?= $unread ?></span><?php endif; ?></a>
+            <a class="<?= $navActive === 'help' ? 'active' : '' ?>" href="<?= e(url('help')) ?>"><?= e(t('Ayuda')) ?></a>
             <?php if ((int)$user['is_admin']): ?>
-                <a class="nav-admin <?= $navActive === 'admin' ? 'active' : '' ?>" href="<?= e(url('admin')) ?>">Administración</a>
+                <a class="nav-admin <?= $navActive === 'admin' ? 'active' : '' ?>" href="<?= e(url('admin')) ?>"><?= e(t('Administración')) ?></a>
             <?php endif; ?>
         </div>
     </nav>
@@ -78,18 +88,18 @@ $clubMenu = [
             <div class="box-head"><?= e($team['name']) ?></div>
             <ul class="menu">
                 <?php foreach ($clubMenu as $p => [$icon, $label]): ?>
-                    <li><a class="<?= $currentPage === $p ? 'active' : '' ?>" href="<?= e(url($p)) ?>"><span class="mi"><?= $icon ?></span><?= e($label) ?></a></li>
+                    <li><a class="<?= $currentPage === $p ? 'active' : '' ?>" href="<?= e(url($p)) ?>"><span class="mi"><?= $icon ?></span><?= e(t($label)) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         </div>
         <div class="box">
-            <div class="box-head">Accesos rápidos</div>
+            <div class="box-head"><?= e(t('Accesos rápidos')) ?></div>
             <ul class="menu">
-                <li><a href="<?= e(url('nation', ['id' => $team['country_id']])) ?>"><span class="mi">🌎</span>Mi nación</a></li>
-                <li><a href="<?= e(url('worldcup')) ?>"><span class="mi">🏅</span>Mundial</a></li>
-                <li><a href="<?= e(url('transfers')) ?>"><span class="mi">🔎</span>Buscar fichajes</a></li>
-                <li><a href="<?= e(url('transfers', ['tab' => 'mine'])) ?>"><span class="mi">📑</span>Mis ventas y pujas</a></li>
-                <li><a href="<?= e(url('team', ['id' => $team['id']])) ?>"><span class="mi">👁</span>Vista pública</a></li>
+                <li><a href="<?= e(url('nation', ['id' => $team['country_id']])) ?>"><span class="mi">🌎</span><?= e(t('Mi nación')) ?></a></li>
+                <li><a href="<?= e(url('worldcup')) ?>"><span class="mi">🏅</span><?= e(t('Mundial')) ?></a></li>
+                <li><a href="<?= e(url('transfers')) ?>"><span class="mi">🔎</span><?= e(t('Buscar fichajes')) ?></a></li>
+                <li><a href="<?= e(url('transfers', ['tab' => 'mine'])) ?>"><span class="mi">📑</span><?= e(t('Mis ventas y pujas')) ?></a></li>
+                <li><a href="<?= e(url('team', ['id' => $team['id']])) ?>"><span class="mi">👁</span><?= e(t('Vista pública')) ?></a></li>
             </ul>
         </div>
     </aside>
@@ -114,34 +124,34 @@ $clubMenu = [
     ?>
     <aside class="sidebar-right">
         <div class="box">
-            <div class="box-head">Próximo partido</div>
+            <div class="box-head"><?= e(t('Próximo partido')) ?></div>
             <div class="box-body">
                 <?php if ($next): ?>
                     <div class="next-match">
                         <div class="nm-type"><?= e(match_type_label($next)) ?></div>
-                        <div class="nm-teams"><?= e($next['home_name']) ?><br><span class="muted">vs</span><br><?= e($next['away_name']) ?></div>
+                        <div class="nm-teams"><?= e($next['home_name']) ?><br><span class="muted"><?= e(t('vs')) ?></span><br><?= e($next['away_name']) ?></div>
                         <div class="nm-date"><?= e(fdate_long($next['scheduled_at'])) ?></div>
                         <div class="countdown" data-deadline="<?= e(date('c', strtotime($next['scheduled_at']))) ?>"><?= e(time_left($next['scheduled_at'])) ?></div>
-                        <a class="btn btn-block" href="<?= e(url('lineup')) ?>">Preparar alineación</a>
+                        <a class="btn btn-block" href="<?= e(url('lineup')) ?>"><?= e(t('Preparar alineación')) ?></a>
                     </div>
                 <?php else: ?>
-                    <p class="muted">No hay partidos programados.</p>
+                    <p class="muted"><?= e(t('No hay partidos programados.')) ?></p>
                 <?php endif; ?>
             </div>
         </div>
         <div class="box">
-            <div class="box-head">Mi equipo</div>
+            <div class="box-head"><?= e(t('Mi equipo')) ?></div>
             <table class="kv">
-                <tr><th>Caja</th><td class="<?= (int)$team['cash'] < 0 ? 'neg' : '' ?>"><?= e(money($team['cash'])) ?></td></tr>
-                <tr><th>Serie</th><td><a href="<?= e(url('league', ['unit' => $unit['id']])) ?>"><?= e(NationService::flag((string)DB::value('SELECT code FROM countries WHERE id = ?', [$team['country_id']]))) ?> <?= e($unit['name']) ?></a></td></tr>
-                <?php if ($pos): ?><tr><th>Posición</th><td><?= $pos['pos'] ?>º (<?= $pos['pts'] ?> pts)</td></tr><?php endif; ?>
-                <tr><th>Socios</th><td><?= num($team['fans']) ?></td></tr>
-                <tr><th>Espíritu</th><td><?= e(mood_name($team['team_spirit'])) ?></td></tr>
-                <tr><th>Confianza</th><td><?= e(mood_name($team['confidence'], 'confidence')) ?></td></tr>
+                <tr><th><?= e(t('Caja')) ?></th><td class="<?= (int)$team['cash'] < 0 ? 'neg' : '' ?>"><?= e(money($team['cash'])) ?></td></tr>
+                <tr><th><?= e(t('Serie')) ?></th><td><a href="<?= e(url('league', ['unit' => $unit['id']])) ?>"><?= e(NationService::flag((string)DB::value('SELECT code FROM countries WHERE id = ?', [$team['country_id']]))) ?> <?= e($unit['name']) ?></a></td></tr>
+                <?php if ($pos): ?><tr><th><?= e(t('Posición')) ?></th><td><?= e(t('{pos}º ({pts} pts)', ['pos' => $pos['pos'], 'pts' => $pos['pts']])) ?></td></tr><?php endif; ?>
+                <tr><th><?= e(t('Socios')) ?></th><td><?= num($team['fans']) ?></td></tr>
+                <tr><th><?= e(t('Espíritu')) ?></th><td><?= e(mood_name($team['team_spirit'])) ?></td></tr>
+                <tr><th><?= e(t('Confianza')) ?></th><td><?= e(mood_name($team['confidence'], 'confidence')) ?></td></tr>
             </table>
         </div>
         <div class="box">
-            <div class="box-head">Hora del servidor</div>
+            <div class="box-head"><?= e(t('Hora del servidor')) ?></div>
             <div class="box-body center"><span class="clock" id="server-clock" data-ts="<?= time() * 1000 ?>"><?= date('H:i:s') ?></span><br><span class="muted small"><?= e(date_default_timezone_get()) ?></span></div>
         </div>
     </aside>
@@ -150,10 +160,11 @@ $clubMenu = [
 
 <footer class="footer">
     <div class="wrap">
-        <?= e($site) ?> · Juego de gestión de fútbol · v<?= APP_VERSION ?>
-        <?php $le = GameState::get('last_event'); if ($le): ?><span class="muted"> · Última actualización: <?= e($le) ?></span><?php endif; ?>
+        <?= e($site) ?> · <?= e(t('Juego de gestión de fútbol')) ?> · v<?= APP_VERSION ?>
+        <?php $le = GameState::get('last_event'); if ($le): ?><span class="muted"> · <?= e(t('Última actualización: {x}', ['x' => tdb($le)])) ?></span><?php endif; ?>
     </div>
 </footer>
+<script>window.GT_I18N = <?= json_encode(Lang::code() === 'es' ? new stdClass() : Lang::jsDictionary(JS_STRINGS), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
 <script src="<?= e(asset('js/app.js')) ?>"></script>
 </body>
 </html>

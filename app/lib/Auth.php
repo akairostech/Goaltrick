@@ -40,30 +40,30 @@ final class Auth
     {
         $errors = [];
         if (!preg_match('/^[A-Za-z0-9_\-\.]{3,30}$/', $username)) {
-            $errors[] = 'El nombre de usuario debe tener entre 3 y 30 caracteres (letras, números, _ - .).';
+            $errors[] = t('El nombre de usuario debe tener entre 3 y 30 caracteres (letras, números, _ - .).');
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
-            $errors[] = 'El correo electrónico no es válido.';
+            $errors[] = t('El correo electrónico no es válido.');
         }
         if (strlen($password) < 8) {
-            $errors[] = 'La contraseña debe tener al menos 8 caracteres.';
+            $errors[] = t('La contraseña debe tener al menos 8 caracteres.');
         }
         if ($password !== $password2) {
-            $errors[] = 'Las contraseñas no coinciden.';
+            $errors[] = t('Las contraseñas no coinciden.');
         }
         $tn = trim($teamName);
         if (mb_strlen($tn) < 3 || mb_strlen($tn) > 40) {
-            $errors[] = 'El nombre del equipo debe tener entre 3 y 40 caracteres.';
+            $errors[] = t('El nombre del equipo debe tener entre 3 y 40 caracteres.');
         }
         if (!$errors) {
             if (DB::value('SELECT COUNT(*) FROM users WHERE username = ?', [$username])) {
-                $errors[] = 'Ese nombre de usuario ya está en uso.';
+                $errors[] = t('Ese nombre de usuario ya está en uso.');
             }
             if (DB::value('SELECT COUNT(*) FROM users WHERE email = ?', [$email])) {
-                $errors[] = 'Ya existe una cuenta con ese correo electrónico.';
+                $errors[] = t('Ya existe una cuenta con ese correo electrónico.');
             }
             if (DB::value('SELECT COUNT(*) FROM teams WHERE name = ?', [$tn])) {
-                $errors[] = 'Ya existe un equipo con ese nombre.';
+                $errors[] = t('Ya existe un equipo con ese nombre.');
             }
         }
         return $errors;
@@ -78,7 +78,7 @@ final class Auth
         return DB::transaction(function () use ($username, $email, $password, $teamName, $admin, $countryId) {
             $teamId = TeamService::findFreeTeam($countryId) ?? ($countryId ? null : TeamService::findFreeTeam());
             if (!$teamId) {
-                throw new RuntimeException('No quedan equipos libres en ese país. Elige otro país o pide al administrador que amplíe las divisiones.');
+                throw new RuntimeException(t('No quedan equipos libres en ese país. Elige otro país o pide al administrador que amplíe las divisiones.'));
             }
             $userId = DB::insert('users', [
                 'username'      => $username,
@@ -110,16 +110,16 @@ final class Auth
             DB::exec('DELETE FROM login_attempts WHERE attempted_at < ?', [date('Y-m-d H:i:s', time() - 86400)]);
         }
         if (self::tooManyAttempts($ip)) {
-            return 'Demasiados intentos fallidos. Espera ' . Config::int('security', 'lockout_minutes', 15) . ' minutos.';
+            return t('Demasiados intentos fallidos. Espera {n} minutos.', ['n' => Config::int('security', 'lockout_minutes', 15)]);
         }
         $u = DB::row('SELECT * FROM users WHERE username = ? OR email = ?', [$login, strtolower($login)]);
         $ok = $u && password_verify($password, $u['password_hash']);
         DB::insert('login_attempts', ['ip' => $ip, 'username' => mb_substr($login, 0, 190), 'success' => $ok ? 1 : 0, 'attempted_at' => now()]);
         if (!$ok) {
-            return 'Usuario o contraseña incorrectos.';
+            return t('Usuario o contraseña incorrectos.');
         }
         if ((int)$u['is_banned']) {
-            return 'Esta cuenta ha sido suspendida.';
+            return t('Esta cuenta ha sido suspendida.');
         }
         if (password_needs_rehash($u['password_hash'], PASSWORD_DEFAULT)) {
             DB::exec('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($password, PASSWORD_DEFAULT), $u['id']]);
@@ -199,13 +199,13 @@ final class Auth
     {
         $u = DB::row('SELECT * FROM users WHERE id = ?', [$userId]);
         if (!$u || !password_verify($current, $u['password_hash'])) {
-            return 'La contraseña actual no es correcta.';
+            return t('La contraseña actual no es correcta.');
         }
         if (strlen($new) < 8) {
-            return 'La nueva contraseña debe tener al menos 8 caracteres.';
+            return t('La nueva contraseña debe tener al menos 8 caracteres.');
         }
         if ($new !== $new2) {
-            return 'Las contraseñas nuevas no coinciden.';
+            return t('Las contraseñas nuevas no coinciden.');
         }
         DB::exec('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($new, PASSWORD_DEFAULT), $userId]);
         DB::exec('DELETE FROM remember_tokens WHERE user_id = ?', [$userId]);
@@ -229,14 +229,14 @@ final class Auth
     public static function resetPassword(string $token, string $new, string $new2): ?string
     {
         if (strlen($new) < 8) {
-            return 'La contraseña debe tener al menos 8 caracteres.';
+            return t('La contraseña debe tener al menos 8 caracteres.');
         }
         if ($new !== $new2) {
-            return 'Las contraseñas no coinciden.';
+            return t('Las contraseñas no coinciden.');
         }
         $u = DB::row('SELECT id FROM users WHERE reset_token_hash = ? AND reset_expires_at > ?', [hash('sha256', $token), now()]);
         if (!$u) {
-            return 'El enlace de recuperación no es válido o ha caducado.';
+            return t('El enlace de recuperación no es válido o ha caducado.');
         }
         DB::exec('UPDATE users SET password_hash = ?, reset_token_hash = NULL, reset_expires_at = NULL WHERE id = ?', [
             password_hash($new, PASSWORD_DEFAULT), $u['id'],

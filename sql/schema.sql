@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash     VARCHAR(255) NOT NULL,
     is_admin          TINYINT(1)   NOT NULL DEFAULT 0,
     is_banned         TINYINT(1)   NOT NULL DEFAULT 0,
+    language          VARCHAR(8)   NULL,          -- idioma elegido (lang/<código>.php)
     created_at        DATETIME     NOT NULL,
     last_login_at     DATETIME     NULL,
     last_activity_at  DATETIME     NULL,
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS login_attempts (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS game_state (
     k VARCHAR(64)  NOT NULL,
-    v VARCHAR(255) NOT NULL,
+    v VARCHAR(1000) NOT NULL,
     PRIMARY KEY (k)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -160,9 +161,26 @@ CREATE TABLE IF NOT EXISTS team_lineups (
     attitude       VARCHAR(10) NOT NULL DEFAULT 'normal', -- pic | normal | mots
     captain_id     INT UNSIGNED NULL,
     setpieces_id   INT UNSIGNED NULL,
+    for_match_id   INT UNSIGNED NULL,      -- partido para el que se envió (si no, se usa la predeterminada)
     updated_at     DATETIME NOT NULL,
     PRIMARY KEY (team_id),
     CONSTRAINT fk_lineup_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Alineaciones guardadas: slot 0 = predeterminada, 1..3 = alineaciones libres del mánager
+CREATE TABLE IF NOT EXISTS lineup_presets (
+    team_id        INT UNSIGNED NOT NULL,
+    slot           TINYINT UNSIGNED NOT NULL,
+    name           VARCHAR(40)  NOT NULL,
+    positions      TEXT NOT NULL,
+    orders         TEXT NULL,
+    tactic         VARCHAR(20) NOT NULL DEFAULT 'normal',
+    attitude       VARCHAR(10) NOT NULL DEFAULT 'normal',
+    captain_id     INT UNSIGNED NULL,
+    setpieces_id   INT UNSIGNED NULL,
+    updated_at     DATETIME NOT NULL,
+    PRIMARY KEY (team_id, slot),
+    CONSTRAINT fk_preset_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Noticias del club (subidas de habilidad, lesiones, fichajes...)
@@ -171,7 +189,7 @@ CREATE TABLE IF NOT EXISTS team_events (
     team_id     INT UNSIGNED NOT NULL,
     created_at  DATETIME NOT NULL,
     type        VARCHAR(20) NOT NULL,
-    message     VARCHAR(500) NOT NULL,
+    message     VARCHAR(1500) NOT NULL,
     PRIMARY KEY (id),
     KEY idx_tevents_team (team_id, created_at),
     CONSTRAINT fk_tevents_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
@@ -245,7 +263,7 @@ CREATE TABLE IF NOT EXISTS player_events (
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     player_id   INT UNSIGNED NOT NULL,
     created_at  DATETIME NOT NULL,
-    message     VARCHAR(300) NOT NULL,
+    message     VARCHAR(1000) NOT NULL,
     PRIMARY KEY (id),
     KEY idx_pevents_player (player_id),
     CONSTRAINT fk_pevents_player FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
@@ -364,7 +382,7 @@ CREATE TABLE IF NOT EXISTS finances (
     week        TINYINT UNSIGNED NOT NULL,
     category    VARCHAR(20) NOT NULL,   -- tickets | sponsors | transfers_in | transfers_out | wages | staff | stadium | construction | youth | prizes | other
     amount      BIGINT NOT NULL,        -- positivo = ingreso, negativo = gasto
-    description VARCHAR(200) NULL,
+    description VARCHAR(600) NULL,
     created_at  DATETIME NOT NULL,
     PRIMARY KEY (id),
     KEY idx_fin_team (team_id, season, week),
@@ -378,7 +396,7 @@ CREATE TABLE IF NOT EXISTS messages (
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT,
     from_user_id       INT UNSIGNED NULL,
     to_user_id         INT UNSIGNED NOT NULL,
-    subject            VARCHAR(120) NOT NULL,
+    subject            VARCHAR(500) NOT NULL,
     body               TEXT NOT NULL,
     created_at         DATETIME NOT NULL,
     read_at            DATETIME NULL,
@@ -394,7 +412,7 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE TABLE IF NOT EXISTS announcements (
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id     INT UNSIGNED NULL,
-    title       VARCHAR(150) NOT NULL,
+    title       VARCHAR(500) NOT NULL,
     body        TEXT NOT NULL,
     created_at  DATETIME NOT NULL,
     PRIMARY KEY (id)

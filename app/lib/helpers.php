@@ -5,6 +5,40 @@ declare(strict_types=1);
  *  Funciones de ayuda generales
  * ===================================================================== */
 
+/* ----------------------------- Idiomas ------------------------------ */
+
+/** Traduce un texto escrito en español al idioma del usuario. t('Hola, {name}', ['name' => 'Ana']) */
+function t(string $text, array $args = []): string
+{
+    return Lang::tr($text, $args);
+}
+
+/** Igual que t() pero para textos que se GUARDAN en la base de datos: se traducen al mostrarlos con tdb() */
+function tx(string $text, array $args = []): string
+{
+    return Lang::encode($text, $args);
+}
+
+/** Une varios textos de tx() en uno solo */
+function tx_join(string ...$parts): string
+{
+    return Lang::join(...$parts);
+}
+
+/** Muestra (traducido) un texto guardado en la base de datos */
+function tdb(?string $stored): string
+{
+    return Lang::stored($stored);
+}
+
+/** URL de la página actual cambiando el idioma */
+function lang_url(string $code): string
+{
+    $q = $_GET;
+    $q['lang'] = $code;
+    return 'index.php?' . http_build_query($q);
+}
+
 function e(mixed $s): string
 {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -18,7 +52,8 @@ function now(): string
 function money(int|float|string|null $amount, bool $sign = false): string
 {
     $amount = (float)$amount;
-    $txt = number_format(abs($amount), 0, ',', '.');
+    [$dp, $tp] = num_separators();
+    $txt = number_format(abs($amount), 0, $dp, $tp);
     $cur = (string)Config::get('app', 'currency', '€');
     $prefix = $amount < 0 ? '-' : ($sign && $amount > 0 ? '+' : '');
     return $prefix . $txt . ' ' . $cur;
@@ -26,7 +61,20 @@ function money(int|float|string|null $amount, bool $sign = false): string
 
 function num(int|float|string|null $n, int $dec = 0): string
 {
-    return number_format((float)$n, $dec, ',', '.');
+    [$dp, $tp] = num_separators();
+    return number_format((float)$n, $dec, $dp, $tp);
+}
+
+/** Separadores decimal y de miles del idioma actual (se pueden definir en lang/xx.php con @decimal y @thousands) */
+function num_separators(): array
+{
+    static $cache = [];
+    $code = Lang::code();
+    if (!isset($cache[$code])) {
+        $f = Lang::file($code);
+        $cache[$code] = [(string)($f['@decimal'] ?? ','), (string)($f['@thousands'] ?? '.')];
+    }
+    return $cache[$code];
 }
 
 function base_url(): string
@@ -116,7 +164,7 @@ function csrf_check(): void
     $t = $_POST['_csrf'] ?? '';
     if (!is_string($t) || !hash_equals(csrf_token(), $t)) {
         http_response_code(400);
-        flash('error', 'La sesión del formulario ha caducado. Inténtalo de nuevo.');
+        flash('error', t('La sesión del formulario ha caducado. Inténtalo de nuevo.'));
         redirect($_SERVER['HTTP_REFERER'] ?? url());
     }
 }
@@ -142,7 +190,7 @@ function require_login(): array
 {
     $u = current_user();
     if (!$u) {
-        flash('info', 'Debes iniciar sesión para ver esta página.');
+        flash('info', t('Debes iniciar sesión para ver esta página.'));
         redirect(url('login'));
     }
     return $u;
@@ -153,7 +201,7 @@ function require_team(): array
     require_login();
     $t = current_team();
     if (!$t) {
-        flash('error', 'Tu usuario no tiene un equipo asignado.');
+        flash('error', t('Tu usuario no tiene un equipo asignado.'));
         redirect(url('home'));
     }
     return $t;
@@ -164,7 +212,7 @@ function require_admin(): array
     $u = require_login();
     if (!(int)$u['is_admin']) {
         http_response_code(403);
-        flash('error', 'Acceso restringido a administradores.');
+        flash('error', t('Acceso restringido a administradores.'));
         redirect(url('home'));
     }
     return $u;
@@ -174,7 +222,7 @@ function require_admin(): array
 
 function weekday_name(int $d): string
 {
-    return [1 => 'lunes', 2 => 'martes', 3 => 'miércoles', 4 => 'jueves', 5 => 'viernes', 6 => 'sábado', 7 => 'domingo'][$d] ?? '';
+    return t([1 => 'lunes', 2 => 'martes', 3 => 'miércoles', 4 => 'jueves', 5 => 'viernes', 6 => 'sábado', 7 => 'domingo'][$d] ?? '');
 }
 
 function fdate(?string $dt, bool $time = true): string
@@ -199,7 +247,7 @@ function time_left(string $dt): string
 {
     $diff = strtotime($dt) - time();
     if ($diff <= 0) {
-        return 'finalizado';
+        return t('finalizado');
     }
     $d = intdiv($diff, 86400);
     $h = intdiv($diff % 86400, 3600);
@@ -243,7 +291,7 @@ const SPECIALTIES = [
 
 const ROLES = [
     'GK' => 'Portero',
-    'WB' => 'Lateral',
+    'WB' => 'Lateral##posición',
     'CD' => 'Defensa central',
     'W'  => 'Extremo',
     'IM' => 'Mediocampista',
@@ -275,16 +323,34 @@ const TRAINING_TYPES = [
     'set_pieces' => 'Balón parado',
 ];
 
+/** Nombre traducido de una posición natural (GK, CD, WB...) */
+function role_name(?string $code): string
+{
+    return isset(ROLES[$code ?? '']) ? t(ROLES[$code]) : (string)$code;
+}
+
+/** Nombre traducido de una habilidad (keeper, defending...) */
+function skill_title(string $key): string
+{
+    return isset(SKILLS[$key]) ? t(SKILLS[$key]) : (TRAINING_TYPES[$key] ?? $key);
+}
+
+/** Nombre traducido de una especialidad */
+function specialty_name(?string $s): string
+{
+    return isset(SPECIALTIES[$s ?? '']) ? t(SPECIALTIES[$s][0]) : '';
+}
+
 function skill_name(float|int|string|null $v): string
 {
     $i = max(0, min(20, (int)floor((float)$v)));
-    return SKILL_LEVELS[$i];
+    return t(SKILL_LEVELS[$i]);
 }
 
 function skill_label(float|int|string|null $v): string
 {
     $i = max(0, min(20, (int)floor((float)$v)));
-    return SKILL_LEVELS[$i] . ' (' . $i . ')';
+    return t(SKILL_LEVELS[$i]) . ' (' . $i . ')';
 }
 
 function skill_bar(float|int|string|null $v, int $max = 20): string
@@ -299,7 +365,7 @@ function skill_bar(float|int|string|null $v, int $max = 20): string
 function form_name(float|int|string|null $v): string
 {
     $i = max(1, min(8, (int)floor((float)$v)));
-    return SKILL_LEVELS[$i];
+    return t(SKILL_LEVELS[$i]);
 }
 
 function mood_name(float|int|string|null $v, string $kind = 'spirit'): string
@@ -313,7 +379,7 @@ function mood_name(float|int|string|null $v, string $kind = 'spirit'): string
         'fans' => ['asesinos', 'furiosos', 'enfadados', 'irritados', 'decepcionados', 'tranquilos',
                    'contentos', 'satisfechos', 'encantados', 'enamorados', 'en éxtasis'],
     ];
-    return $lists[$kind][$i] ?? '';
+    return t($lists[$kind][$i] ?? '');
 }
 
 function specialty_badge(?string $s): string
@@ -322,6 +388,7 @@ function specialty_badge(?string $s): string
         return '';
     }
     [$name, $icon] = SPECIALTIES[$s];
+    $name = t($name);
     return '<span class="spec" title="' . e($name) . '">' . $icon . ' ' . e($name) . '</span>';
 }
 
@@ -342,7 +409,7 @@ function team_link(int|string $id, string $name): string
 
 function age_label(array $p): string
 {
-    return $p['age_years'] . ' años y ' . $p['age_days'] . ' días';
+    return t('{y} años y {d} días', ['y' => $p['age_years'], 'd' => $p['age_days']]);
 }
 
 function stars(float|int|string|null $s): string
@@ -353,7 +420,7 @@ function stars(float|int|string|null $s): string
     }
     $full = (int)floor($s);
     $half = ($s - $full) >= 0.5;
-    return '<span class="stars" title="' . num($s, 1) . ' estrellas">' . str_repeat('★', $full) . ($half ? '½' : '') . '</span>';
+    return '<span class="stars" title="' . e(t('{n} estrellas', ['n' => num($s, 1)])) . '">' . str_repeat('★', $full) . ($half ? '½' : '') . '</span>';
 }
 
 /** Nombre de la valoración de un sector (estilo "débil (bajo)") */
@@ -365,7 +432,7 @@ function rating_name(float $r): string
     $sub = $r - $lvl;
     $subs = ['muy bajo', 'bajo', 'alto', 'muy alto'];
     $s = $subs[min(3, (int)floor($sub * 4))];
-    return SKILL_LEVELS[min(20, $lvl)] . ' (' . $s . ')';
+    return t(SKILL_LEVELS[min(20, $lvl)]) . ' (' . t($s) . ')';
 }
 
 function paginate(int $total, int $perPage, int $current, string $page, array $params = []): string
@@ -415,10 +482,10 @@ function clamp(float $v, float $min, float $max): float
 function match_type_label(array $m): string
 {
     return match ($m['type']) {
-        'league'   => 'Liga · Jornada ' . (int)$m['round'],
-        'worldcup' => 'Mundial · ' . WorldCupService::stageName($m['cup_stage'] ?? ''),
-        'cup'      => 'Copa · ' . CupService::stageName($m['cup_stage'] ?? ''),
-        default    => 'Amistoso',
+        'league'   => t('Liga · Jornada {n}', ['n' => (int)$m['round']]),
+        'worldcup' => t('Mundial') . ' · ' . WorldCupService::stageName($m['cup_stage'] ?? ''),
+        'cup'      => t('Copa') . ' · ' . CupService::stageName($m['cup_stage'] ?? ''),
+        default    => t('Amistoso'),
     };
 }
 
@@ -427,7 +494,7 @@ function score_label(array $m): string
 {
     $t = (int)$m['home_goals'] . ' - ' . (int)$m['away_goals'];
     if (isset($m['home_pens']) && $m['home_pens'] !== null) {
-        $t .= ' (' . (int)$m['home_pens'] . '-' . (int)$m['away_pens'] . ' pen.)';
+        $t .= ' (' . (int)$m['home_pens'] . '-' . (int)$m['away_pens'] . ' ' . t('pen.') . ')';
     }
     return $t;
 }
@@ -439,7 +506,7 @@ function flag(?string $code): string
 
 function nation_link(int|string $countryId, string $name, ?string $code = null): string
 {
-    return ($code ? flag($code) . ' ' : '') . '<a href="' . e(url('nation', ['id' => $countryId])) . '">' . e($name) . '</a>';
+    return ($code ? flag($code) . ' ' : '') . '<a href="' . e(url('nation', ['id' => $countryId])) . '">' . e(t($name)) . '</a>';
 }
 
 /* --------------------------- Imágenes --------------------------------- */
@@ -480,32 +547,61 @@ function trophy_cabinet(int $teamId, bool $own = false): string
         [$teamId]
     );
     $count = count($titles) + count($cups);
-    $h = '<div class="box cabinet"><div class="box-head">🏆 Vitrina de trofeos <span class="small">' . $count . ' título(s)</span></div>';
+    $h = '<div class="box cabinet"><div class="box-head">🏆 ' . e(t('Vitrina de trofeos')) . ' <span class="small">' . e(t('{n} título(s)', ['n' => $count])) . '</span></div>';
     $h .= '<div class="cabinet-inner"><div class="shelf">';
     foreach ($cups as $c) {
-        $h .= '<div class="trophy trophy-cup" title="Copa de ' . e($c['country']) . '">'
-            . '<img src="' . e(asset('img/trophies/trophy-cup.svg')) . '" alt="Copa">'
-            . '<div class="trophy-label"><strong>Campeón de la Copa</strong><br>'
-            . e(NationService::flag($c['code'])) . ' ' . e($c['country']) . ' · Temp. ' . (int)$c['season'] . '</div></div>';
+        $h .= '<div class="trophy trophy-cup" title="' . e(t('Copa de {country}', ['country' => t($c['country'])])) . '">'
+            . '<img src="' . e(asset('img/trophies/trophy-cup.svg')) . '" alt="">'
+            . '<div class="trophy-label"><strong>' . e(t('Campeón de la Copa')) . '</strong><br>'
+            . e(NationService::flag($c['code'])) . ' ' . e(t($c['country'])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$c['season']])) . '</div></div>';
     }
     if (!$count) {
         foreach ([1, 2, 3] as $lvl) {
-            $h .= '<div class="trophy empty" title="Aún sin conquistar"><img src="' . e(trophy_url($lvl)) . '" alt=""><div class="trophy-label">Campeón de División ' . LeagueService::roman($lvl) . '</div></div>';
+            $h .= '<div class="trophy empty" title="' . e(t('Aún sin conquistar')) . '"><img src="' . e(trophy_url($lvl)) . '" alt=""><div class="trophy-label">' . e(t('Campeón de División {n}', ['n' => LeagueService::roman($lvl)])) . '</div></div>';
         }
     } else {
         foreach ($titles as $t) {
-            $h .= '<div class="trophy" title="' . e("{$t['points']} puntos · {$t['goals_for']}:{$t['goals_against']} goles") . '">'
-                . '<img src="' . e(trophy_url((int)$t['level'])) . '" alt="Trofeo de campeón">'
-                . '<div class="trophy-label"><strong>Campeón División ' . LeagueService::roman((int)$t['level']) . '</strong><br>'
-                . e(NationService::flag($t['code'])) . ' Serie ' . e($t['unit']) . ' · Temp. ' . (int)$t['season'] . '</div></div>';
+            $h .= '<div class="trophy" title="' . e(t('{p} puntos · {gf}:{ga} goles', ['p' => $t['points'], 'gf' => $t['goals_for'], 'ga' => $t['goals_against']])) . '">'
+                . '<img src="' . e(trophy_url((int)$t['level'])) . '" alt="">'
+                . '<div class="trophy-label"><strong>' . e(t('Campeón División {n}', ['n' => LeagueService::roman((int)$t['level'])])) . '</strong><br>'
+                . e(NationService::flag($t['code'])) . ' ' . e(t('Serie {name}', ['name' => $t['unit']])) . ' · ' . e(t('Temp. {n}', ['n' => (int)$t['season']])) . '</div></div>';
         }
     }
     if (!$count) {
-        $h .= '<div class="trophy empty" title="Aún sin conquistar"><img src="' . e(asset('img/trophies/trophy-cup.svg')) . '" alt=""><div class="trophy-label">Campeón de Copa</div></div>';
+        $h .= '<div class="trophy empty" title="' . e(t('Aún sin conquistar')) . '"><img src="' . e(asset('img/trophies/trophy-cup.svg')) . '" alt=""><div class="trophy-label">' . e(t('Campeón de Copa')) . '</div></div>';
     }
     $h .= '</div></div>';
     if (!$count) {
-        $h .= '<div class="box-body small muted center">' . ($own ? 'Tu vitrina está vacía. ¡Gana tu serie para conseguir el primer trofeo!' : 'Este club todavía no ha ganado ningún título.') . '</div>';
+        $h .= '<div class="box-body small muted center">' . e($own ? t('Tu vitrina está vacía. ¡Gana tu serie para conseguir el primer trofeo!') : t('Este club todavía no ha ganado ningún título.')) . '</div>';
     }
     return $h . '</div>';
 }
+
+/** Textos que usa assets/js/app.js (con L('...')); se envían traducidos a la página */
+const JS_STRINGS = [
+    'Alineación cargada. Revísala y pulsa «Enviar» para usarla en el próximo partido.',
+    'Condición',
+    'En tu plantilla hay jugadores que rinden bastante más en esta posición',
+    'Especialidad:',
+    'Exp.',
+    'Forma',
+    'F{f} · C{c}',
+    'Goles',
+    'Lesionado {n} sem.',
+    'Lesionado: {n} semana(s)',
+    'Liderazgo',
+    'Magullado',
+    'Mejor posición:',
+    'No hay jugadores en este filtro.',
+    'Quitar',
+    'Sancionado',
+    'Sancionado para el próximo partido',
+    'Tarjetas amarillas: {n}',
+    'Ya tienes 11 titulares. Suelta al jugador sobre un titular para sustituirlo o quita antes a otro.',
+    'aquí rinde al {pct}% del mejor de tu plantilla',
+    'finalizado',
+    'sin portero',
+    '{age} años · TSI {tsi} · forma {form}',
+    '{n} amarillas',
+    '{y} años y {d} días',
+];

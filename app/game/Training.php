@@ -111,7 +111,8 @@ final class Training
                 $new = round(min(20.0, $cur + self::gain($type, $cur, $age, $team) * $factor * $pf), 2);
                 $upd[$type] = $new;
                 if (floor($new) > floor($cur)) {
-                    $msgs[] = sprintf('⬆️ %s ha mejorado %s a %s.', player_name($p), SKILLS[$type], skill_label($new));
+                    $lvl = max(0, min(20, (int)floor((float)$new)));
+                    $msgs[] = tx('⬆️ {player} ha mejorado {skill} a {level} ({n}).', ['player' => player_name($p), 'skill' => tx(SKILLS[$type]), 'level' => tx(SKILL_LEVELS[$lvl]), 'n' => $lvl]);
                 }
             }
 
@@ -126,7 +127,8 @@ final class Training
                     $new = round(max(0, $cur - $dec * (1 + $cur / 20)), 2);
                     $upd[$sk] = $new;
                     if (floor($new) < floor($cur)) {
-                        $msgs[] = sprintf('⬇️ %s ha empeorado %s a %s.', player_name($p), SKILLS[$sk], skill_label($new));
+                        $lvl = max(0, min(20, (int)floor((float)$new)));
+                        $msgs[] = tx('⬇️ {player} ha empeorado {skill} a {level} ({n}).', ['player' => player_name($p), 'skill' => tx(SKILLS[$sk]), 'level' => tx(SKILL_LEVELS[$lvl]), 'n' => $lvl]);
                     }
                 }
             }
@@ -146,7 +148,7 @@ final class Training
                 $inj = max(0, round((float)$p['injury_weeks'] - $heal, 1));
                 $upd['injury_weeks'] = $inj;
                 if ($inj == 0) {
-                    $msgs[] = '✅ ' . player_name($p) . ' se ha recuperado de su lesión.';
+                    $msgs[] = tx('✅ {player} se ha recuperado de su lesión.', ['player' => player_name($p)]);
                 }
             }
 
@@ -156,7 +158,7 @@ final class Training
             if ($days >= 112) {
                 $days -= 112;
                 $years++;
-                $msgs[] = '🎂 ' . player_name($p) . " cumple $years años.";
+                $msgs[] = tx('🎂 {player} cumple {years} años.', ['player' => player_name($p), 'years' => $years]);
             }
             $upd['age_days'] = $days;
             $upd['age_years'] = $years;
@@ -187,7 +189,7 @@ final class Training
 
         if ($isUser) {
             DB::insert('team_events', ['team_id' => $teamId, 'created_at' => $ts, 'type' => 'training',
-                'message' => '🏋️ Entrenamiento semanal completado: ' . (TRAINING_TYPES[$type] ?? $type) . ' (' . $trainedCount . ' jugadores entrenaron).']);
+                'message' => tx('🏋️ Entrenamiento semanal completado: {type} ({n} jugadores entrenaron).', ['type' => isset(TRAINING_TYPES[$type]) ? tx(TRAINING_TYPES[$type]) : $type, 'n' => $trainedCount])]);
         }
     }
 }
