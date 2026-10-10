@@ -27,7 +27,7 @@ const PAGES = [
     'youth' => 'youth', 'friendlies' => 'friendlies', 'messages' => 'messages', 'world' => 'world',
     'profile' => 'profile', 'admin' => 'admin',
     'nations' => 'nations', 'nation' => 'nation', 'worldcup' => 'worldcup',
-    'sponsors' => 'sponsors', 'companies' => 'companies', 'staff_member' => 'staff_member', 'cup' => 'cup', 'stadium_art' => 'stadium_art',
+    'sponsors' => 'sponsors', 'companies' => 'companies', 'club' => 'club', 'staff_member' => 'staff_member', 'cup' => 'cup', 'stadium_art' => 'stadium_art',
     'admin_team' => 'admin_team', 'admin_player' => 'admin_player', 'admin_reset' => 'admin_reset',
 ];
 

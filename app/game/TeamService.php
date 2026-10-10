@@ -183,6 +183,13 @@ final class TeamService
         PlayerFactory::squad($teamId, self::levelStrength($level) - 0.3);
         Lineup::save($teamId, Lineup::auto($teamId));
         StaffService::resetTeam($teamId);
+        // Las imágenes subidas por el mánager anterior no pasan al nuevo
+        $art = DB::row('SELECT kit_custom, crest_custom FROM teams WHERE id = ?', [$teamId]);
+        if ($art && ($art['kit_custom'] || $art['crest_custom'])) {
+            ClubArt::deleteUpload($art['kit_custom']);
+            ClubArt::deleteUpload($art['crest_custom']);
+            DB::update('teams', ['kit_custom' => null, 'crest_custom' => null], 'id = ?', [$teamId]);
+        }
         SponsorService::resetForNewOwner($teamId);
         DB::insert('team_events', ['team_id' => $teamId, 'created_at' => now(), 'type' => 'welcome',
             'message' => tx('🎉 ¡Bienvenido a {team}! Revisa tu plantilla, prepara la alineación y elige el entrenamiento.', ['team' => $teamName])]);

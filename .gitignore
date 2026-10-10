@@ -3,3 +3,8 @@ install.lock
 *.log
 .DS_Store
 Thumbs.db
+# Imágenes subidas por los clubes
+assets/uploads/kits/*
+assets/uploads/crests/*
+!assets/uploads/kits/.gitkeep
+!assets/uploads/crests/.gitkeep

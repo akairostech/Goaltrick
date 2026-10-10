@@ -1,18 +1,22 @@
 <?php
 $team = require_team();
-$pageTitle = t('Mercado de fichajes');
+$pageTitle = t('Transferencias');
 $navActive = 'transfers';
 $tab = (string)get('tab', 'search');
+if (!in_array($tab, ['search', 'mine', 'history', 'latest'], true)) {
+    $tab = 'search';
+}
 $teamId = (int)$team['id'];
 ?>
 <div class="page-title">
-    <h1><?= e(t('Mercado de fichajes')) ?></h1>
+    <h1>🔁 <?= e(t('Transferencias')) ?></h1>
     <span class="muted"><?= e(t('Caja')) ?>: <strong><?= e(money($team['cash'])) ?></strong> · <?= e(t('Comprometido en pujas')) ?>: <strong><?= e(money(TransferService::committed($teamId))) ?></strong></span>
 </div>
 <div class="tabs">
     <a class="<?= $tab === 'search' ? 'active' : '' ?>" href="<?= e(url('transfers')) ?>"><?= e(t('Buscar jugadores')) ?></a>
     <a class="<?= $tab === 'mine' ? 'active' : '' ?>" href="<?= e(url('transfers', ['tab' => 'mine'])) ?>"><?= e(t('Mis ventas y pujas')) ?></a>
-    <a class="<?= $tab === 'history' ? 'active' : '' ?>" href="<?= e(url('transfers', ['tab' => 'history'])) ?>"><?= e(t('Últimos traspasos')) ?></a>
+    <a class="<?= $tab === 'history' ? 'active' : '' ?>" href="<?= e(url('transfers', ['tab' => 'history'])) ?>"><?= e(t('Historial de transferencias')) ?></a>
+    <a class="<?= $tab === 'latest' ? 'active' : '' ?>" href="<?= e(url('transfers', ['tab' => 'latest'])) ?>"><?= e(t('Últimos traspasos del mundo')) ?></a>
 </div>
 
 <?php if ($tab === 'search'):
@@ -159,6 +163,81 @@ $teamId = (int)$team['id'];
     </table>
 </div>
 
+<?php elseif ($tab === 'history'):
+    $kind = (string)get('kind', 'all');
+    $kind = in_array($kind, ['all', 'buy', 'sell'], true) ? $kind : 'all';
+    $sum = DB::row("SELECT
+            SUM(highest_bidder_id = ?) AS buys, COALESCE(SUM(CASE WHEN highest_bidder_id = ? THEN highest_bid END), 0) AS spent,
+            SUM(seller_team_id = ?) AS sells, COALESCE(SUM(CASE WHEN seller_team_id = ? THEN highest_bid END), 0) AS earned
+        FROM transfer_listings WHERE status = 'sold' AND (seller_team_id = ? OR highest_bidder_id = ?)", array_fill(0, 6, $teamId));
+    $buys = (int)$sum['buys'];
+    $sells = (int)$sum['sells'];
+    $spent = (int)$sum['spent'];
+    $earned = (int)$sum['earned'];
+    $count = $buys + $sells;
+    $diff = $earned - $spent;
+    $where = match ($kind) {
+        'buy' => 'l.highest_bidder_id = ?',
+        'sell' => 'l.seller_team_id = ?',
+        default => '(l.seller_team_id = ? OR l.highest_bidder_id = ?)',
+    };
+    $wp = $kind === 'all' ? [$teamId, $teamId] : [$teamId];
+    $total = (int)DB::value("SELECT COUNT(*) FROM transfer_listings l WHERE l.status = 'sold' AND $where", $wp);
+    $per = 25;
+    $pg = max(1, (int)get('p', 1));
+    $rows = DB::all("SELECT l.*, p.first_name, p.last_name, p.id AS pid, p.avatar,
+            s.id AS sid, s.name AS seller, s.crest_id AS s_crest_id, s.crest_custom AS s_crest_custom,
+            b.id AS bid, b.name AS buyer, b.crest_id AS b_crest_id, b.crest_custom AS b_crest_custom
+        FROM transfer_listings l JOIN players p ON p.id = l.player_id JOIN teams s ON s.id = l.seller_team_id LEFT JOIN teams b ON b.id = l.highest_bidder_id
+        WHERE l.status = 'sold' AND $where ORDER BY l.closed_at DESC LIMIT " . $per . ' OFFSET ' . (($pg - 1) * $per), $wp);
+    $crestOf = fn(array $r, string $x) => ['id' => $r[$x . 'id'], 'crest_id' => $r[$x . '_crest_id'], 'crest_custom' => $r[$x . '_crest_custom']];
+    $avg = fn(int $amount, int $n) => $n > 0 ? (int)round($amount / $n) : 0;
+?>
+<div class="stat-tiles">
+    <div class="tile"><div class="tv neg"><?= e(money($spent)) ?></div><div class="tl"><?= e(t('Total en compras')) ?></div><div class="small muted"><?= e(t('{n} compras · media {avg}', ['n' => $buys, 'avg' => money($avg($spent, $buys))])) ?></div></div>
+    <div class="tile"><div class="tv pos"><?= e(money($earned)) ?></div><div class="tl"><?= e(t('Total en ventas')) ?></div><div class="small muted"><?= e(t('{n} ventas · media {avg}', ['n' => $sells, 'avg' => money($avg($earned, $sells))])) ?></div></div>
+    <div class="tile"><div class="tv <?= $diff >= 0 ? 'pos' : 'neg' ?>"><?= e(money($diff, true)) ?></div><div class="tl"><?= e(t('Diferencia (ventas − compras)')) ?></div><div class="small muted"><?= e(t('media por traspaso: {avg}', ['avg' => money($avg($diff, $count), true)])) ?></div></div>
+    <div class="tile"><div class="tv"><?= num($count) ?></div><div class="tl"><?= e(t('Transferencias realizadas')) ?></div><div class="small muted"><?= e(t('{b} compras · {s} ventas', ['b' => $buys, 's' => $sells])) ?></div></div>
+</div>
+<div class="box">
+    <div class="box-head"><?= e(t('Promedios')) ?></div>
+    <table class="table compact">
+        <thead><tr><th></th><th class="num"><?= e(t('Total')) ?></th><th class="num"><?= e(t('Operaciones')) ?></th><th class="num"><?= e(t('Promedio')) ?></th></tr></thead>
+        <tr><td>🛒 <?= e(t('Compras')) ?></td><td class="num"><?= e(money($spent)) ?></td><td class="num"><?= $buys ?></td><td class="num"><?= e(money($avg($spent, $buys))) ?></td></tr>
+        <tr><td>💰 <?= e(t('Ventas')) ?></td><td class="num"><?= e(money($earned)) ?></td><td class="num"><?= $sells ?></td><td class="num"><?= e(money($avg($earned, $sells))) ?></td></tr>
+        <tr><td>⚖️ <?= e(t('Diferencia')) ?></td><td class="num <?= $diff >= 0 ? 'pos' : 'neg' ?>"><?= e(money($diff, true)) ?></td><td class="num"><?= $count ?></td><td class="num <?= $diff >= 0 ? 'pos' : 'neg' ?>"><?= e(money($avg($diff, $count), true)) ?></td></tr>
+    </table>
+</div>
+<div class="box">
+    <div class="box-head"><?= e(t('Historial de transferencias')) ?>
+        <span class="small">
+            <?php foreach (['all' => t('Todas'), 'buy' => t('Compras'), 'sell' => t('Ventas')] as $k => $label): ?>
+                <a class="btn btn-small <?= $kind === $k ? '' : 'btn-grey' ?>" href="<?= e(url('transfers', ['tab' => 'history', 'kind' => $k])) ?>"><?= e($label) ?></a>
+            <?php endforeach; ?>
+        </span>
+    </div>
+    <div class="table-wrap">
+    <table class="table compact">
+        <thead><tr><th><?= e(t('Fecha')) ?></th><th><?= e(t('Jugador')) ?></th><th></th><th><?= e(t('Procedencia')) ?></th><th></th><th><?= e(t('Destino')) ?></th><th class="num"><?= e(t('Precio')) ?></th><th class="num" title="<?= e(t('TSI del jugador en el momento del traspaso')) ?>">TSI</th><th class="num"><?= e(t('Edad')) ?></th></tr></thead>
+        <?php foreach ($rows as $r): $isBuy = (int)$r['highest_bidder_id'] === $teamId; ?>
+            <tr>
+                <td class="nowrap"><?= e(fdate($r['closed_at'], false)) ?></td>
+                <td class="nowrap"><?= avatar_img(['id' => $r['pid'], 'avatar' => $r['avatar']], 22) ?> <a href="<?= e(url('player', ['id' => $r['pid']])) ?>"><?= e(player_name($r)) ?></a></td>
+                <td><span class="tag <?= $isBuy ? 'tag-buy' : 'tag-sell' ?>"><?= e($isBuy ? t('Compra') : t('Venta')) ?></span></td>
+                <td class="nowrap"><?= crest_img($crestOf($r, 's'), 18) ?> <?= team_link($r['sid'], $r['seller']) ?></td>
+                <td class="center muted">→</td>
+                <td class="nowrap"><?php if ($r['bid']): ?><?= crest_img($crestOf($r, 'b'), 18) ?> <?= team_link($r['bid'], $r['buyer']) ?><?php else: ?>–<?php endif; ?></td>
+                <td class="num <?= $isBuy ? 'neg' : 'pos' ?>"><?= e(money($isBuy ? -(int)$r['highest_bid'] : (int)$r['highest_bid'], true)) ?></td>
+                <td class="num"><?= $r['tsi_at_sale'] !== null ? num($r['tsi_at_sale']) : '–' ?></td>
+                <td class="num"><?= $r['age_at_sale'] !== null ? (int)$r['age_at_sale'] : '–' ?></td>
+            </tr>
+        <?php endforeach; ?>
+        <?php if (!$rows): ?><tr><td colspan="9" class="muted"><?= e(t('Todavía no has comprado ni vendido ningún jugador.')) ?></td></tr><?php endif; ?>
+    </table>
+    </div>
+    <?= paginate($total, $per, $pg, 'transfers', ['tab' => 'history', 'kind' => $kind]) ?>
+</div>
+
 <?php else:
     $hist = DB::all("SELECT l.*, p.first_name, p.last_name, p.id AS pid, p.age_years, p.tsi, s.name AS seller, b.name AS buyer FROM transfer_listings l JOIN players p ON p.id = l.player_id
         JOIN teams s ON s.id = l.seller_team_id LEFT JOIN teams b ON b.id = l.highest_bidder_id WHERE l.status = 'sold' ORDER BY l.closed_at DESC LIMIT 40");
@@ -168,7 +247,7 @@ $teamId = (int)$team['id'];
     <table class="table compact">
         <thead><tr><th><?= e(t('Fecha')) ?></th><th><?= e(t('Jugador')) ?></th><th><?= e(t('Edad')) ?></th><th class="num">TSI</th><th><?= e(t('De')) ?></th><th><?= e(t('A##destino')) ?></th><th class="num"><?= e(t('Precio')) ?></th></tr></thead>
         <?php foreach ($hist as $d): ?>
-            <tr><td class="nowrap"><?= e(fdate($d['closed_at'])) ?></td><td><a href="<?= e(url('player', ['id' => $d['pid']])) ?>"><?= e(player_name($d)) ?></a></td><td><?= (int)$d['age_years'] ?></td><td class="num"><?= num($d['tsi']) ?></td><td><?= e($d['seller']) ?></td><td><?= e($d['buyer']) ?></td><td class="num"><?= e(money($d['highest_bid'])) ?></td></tr>
+            <tr><td class="nowrap"><?= e(fdate($d['closed_at'])) ?></td><td><a href="<?= e(url('player', ['id' => $d['pid']])) ?>"><?= e(player_name($d)) ?></a></td><td><?= (int)($d['age_at_sale'] ?? $d['age_years']) ?></td><td class="num"><?= num($d['tsi_at_sale'] ?? $d['tsi']) ?></td><td><?= e($d['seller']) ?></td><td><?= e($d['buyer']) ?></td><td class="num"><?= e(money($d['highest_bid'])) ?></td></tr>
         <?php endforeach; ?>
         <?php if (!$hist): ?><tr><td colspan="7" class="muted"><?= e(t('Todavía no se ha realizado ningún traspaso.')) ?></td></tr><?php endif; ?>
     </table>

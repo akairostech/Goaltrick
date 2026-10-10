@@ -23,7 +23,7 @@ $capacity = (int)$t['seats_terraces'] + (int)$t['seats_basic'] + (int)$t['seats_
 $resultNames = ['champion' => '🏆 ' . t('Campeón'), 'promoted' => '⬆️ ' . t('Ascenso'), 'relegated' => '⬇️ ' . t('Descenso'), 'stay' => ''];
 ?>
 <div class="page-title">
-    <h1><?= e($t['name']) ?></h1>
+    <h1 class="club-h1"><?= crest_img($t, 36) ?> <?= e($t['name']) ?></h1>
     <span>
         <?php if ($my && (int)$my['id'] !== $id): ?>
             <a class="btn btn-small" href="<?= e(url('friendlies', ['to' => $id])) ?>">🤝 <?= e(t('Invitar a amistoso')) ?></a>
@@ -38,6 +38,7 @@ $resultNames = ['champion' => '🏆 ' . t('Campeón'), 'promoted' => '⬆️ ' .
             <tr><th><?= e(t('Mánager')) ?></th><td><?= $t['username'] ? e($t['username']) : '<span class="tag tag-bot">' . e(t('Controlado por la máquina')) . '</span>' ?></td></tr>
             <?php if ($t['username']): ?><tr><th><?= e(t('Última conexión')) ?></th><td><?= e(fdate($t['last_activity_at'])) ?></td></tr><?php endif; ?>
             <tr><th><?= e(t('Liga')) ?></th><td><?= nation_link($t['country_id'], $t['country'], $t['ccode']) ?> · <a href="<?= e(url('league', ['unit' => $t['league_unit_id']])) ?>"><?= e(t('Serie {name}', ['name' => $t['unit_name']])) ?></a></td></tr>
+            <tr><th><?= e(t('Escudo y uniforme')) ?></th><td class="club-art-cell"><?= crest_img($t, 52, 'crest') ?> <?= kit_img($t, 56) ?></td></tr>
             <tr><th><?= e(t('Fundado')) ?></th><td><?= e(fdate($t['founded_at'], false)) ?></td></tr>
             <tr><th><?= e(t('Estadio')) ?></th><td><?= e($t['stadium_name']) ?> (<?= num($capacity) ?>)</td></tr>
             <tr><th><?= e(t('Socios')) ?></th><td><?= num($t['fans']) ?></td></tr>

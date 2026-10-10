@@ -14,12 +14,14 @@ $week = GameState::week();
 
 $clubMenu = [
     'home'       => ['🏠', 'Resumen del club'],
+    'club'       => ['🛡', 'Club'],
     'players'    => ['👥', 'Jugadores'],
     'lineup'     => ['📋', 'Alineación'],
     'matches'    => ['⚽', 'Partidos'],
     'league'     => ['🏆', 'Liga'],
     'cup'        => ['🥇', 'Copa'],
     'training'   => ['🏋️', 'Entrenamiento'],
+    'transfers'  => ['🔁', 'Transferencias'],
     'finances'   => ['💰', 'Finanzas'],
     'sponsors'   => ['💼', 'Patrocinio'],
     'stadium'    => ['🏟', 'Estadio'],
@@ -67,7 +69,7 @@ $clubMenu = [
         <div class="wrap">
             <a class="<?= $navActive === 'club' ? 'active' : '' ?>" href="<?= e(url()) ?>"><?= e(t('Mi club')) ?></a>
             <a class="<?= $navActive === 'league' ? 'active' : '' ?>" href="<?= e(url('league')) ?>"><?= e(t('Liga')) ?></a>
-            <a class="<?= $navActive === 'transfers' ? 'active' : '' ?>" href="<?= e(url('transfers')) ?>"><?= e(t('Mercado')) ?></a>
+            <a class="<?= $navActive === 'transfers' ? 'active' : '' ?>" href="<?= e(url('transfers')) ?>"><?= e(t('Transferencias')) ?></a>
             <a class="<?= $navActive === 'nations' ? 'active' : '' ?>" href="<?= e(url('nations')) ?>"><?= e(t('Naciones')) ?></a>
             <a class="<?= $navActive === 'worldcup' ? 'active' : '' ?>" href="<?= e(url('worldcup')) ?>"><?= e(t('Mundial')) ?></a>
             <a class="<?= $navActive === 'world' ? 'active' : '' ?>" href="<?= e(url('world')) ?>"><?= e(t('Mundo')) ?></a>
@@ -85,7 +87,7 @@ $clubMenu = [
     <?php if ($layout === 'game' && $team): ?>
     <aside class="sidebar-left">
         <div class="box">
-            <div class="box-head"><?= e($team['name']) ?></div>
+            <div class="box-head side-team"><?= crest_img($team, 20) ?> <?= e($team['name']) ?></div>
             <ul class="menu">
                 <?php foreach ($clubMenu as $p => [$icon, $label]): ?>
                     <li><a class="<?= $currentPage === $p ? 'active' : '' ?>" href="<?= e(url($p)) ?>"><span class="mi"><?= $icon ?></span><?= e(t($label)) ?></a></li>
@@ -97,8 +99,6 @@ $clubMenu = [
             <ul class="menu">
                 <li><a href="<?= e(url('nation', ['id' => $team['country_id']])) ?>"><span class="mi">🌎</span><?= e(t('Mi nación')) ?></a></li>
                 <li><a href="<?= e(url('worldcup')) ?>"><span class="mi">🏅</span><?= e(t('Mundial')) ?></a></li>
-                <li><a href="<?= e(url('transfers')) ?>"><span class="mi">🔎</span><?= e(t('Buscar fichajes')) ?></a></li>
-                <li><a href="<?= e(url('transfers', ['tab' => 'mine'])) ?>"><span class="mi">📑</span><?= e(t('Mis ventas y pujas')) ?></a></li>
                 <li><a href="<?= e(url('team', ['id' => $team['id']])) ?>"><span class="mi">👁</span><?= e(t('Vista pública')) ?></a></li>
             </ul>
         </div>

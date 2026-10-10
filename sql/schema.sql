@@ -144,6 +144,10 @@ CREATE TABLE IF NOT EXISTS teams (
     founded_at          DATETIME NOT NULL,
     negative_weeks      TINYINT UNSIGNED NOT NULL DEFAULT 0,
     stadium_notice_at   DATETIME NULL,               -- último aviso sobre el aforo del estadio
+    kit_id              SMALLINT UNSIGNED NOT NULL DEFAULT 0,   -- uniforme elegido (1..1000; 0 = el de por defecto)
+    kit_custom          VARCHAR(120) NULL,                     -- uniforme subido por el club (assets/uploads/...)
+    crest_id            SMALLINT UNSIGNED NOT NULL DEFAULT 0,   -- escudo elegido (1..1000; 0 = el de por defecto)
+    crest_custom        VARCHAR(120) NULL,                     -- escudo subido por el club
     PRIMARY KEY (id),
     UNIQUE KEY uq_team_user (user_id),
     KEY idx_team_unit (league_unit_id),
@@ -352,6 +356,8 @@ CREATE TABLE IF NOT EXISTS transfer_listings (
     status             VARCHAR(10) NOT NULL DEFAULT 'active', -- active | sold | unsold | cancelled
     created_at         DATETIME NOT NULL,
     closed_at          DATETIME NULL,
+    tsi_at_sale        INT UNSIGNED NULL,       -- TSI del jugador en el momento del traspaso
+    age_at_sale        TINYINT UNSIGNED NULL,
     PRIMARY KEY (id),
     KEY idx_tl_status (status, deadline),
     KEY idx_tl_player (player_id),

@@ -8,7 +8,7 @@ final class Installer
 {
     public const LOCK = APP_ROOT . '/install.lock';
     /** Versión del esquema de la base de datos que espera este código */
-    public const DB_VERSION = 6;
+    public const DB_VERSION = 7;
 
     public static function isInstalled(): bool
     {
@@ -222,6 +222,27 @@ final class Installer
                 $say(t('El Mundial de esta temporada ya no cabe en el calendario: el de la próxima temporada tendrá todas las selecciones.'));
             }
             GameState::set('db_version', 6);
+        }
+        if (self::dbVersion() < 7) {
+            $say(t('Versión 1.6: uniformes, escudos e historial de transferencias...'));
+            $pdo = DB::pdo();
+            $alters = [
+                ['teams', 'kit_id', 'ALTER TABLE teams ADD COLUMN kit_id SMALLINT UNSIGNED NOT NULL DEFAULT 0 AFTER stadium_notice_at'],
+                ['teams', 'kit_custom', 'ALTER TABLE teams ADD COLUMN kit_custom VARCHAR(120) NULL AFTER kit_id'],
+                ['teams', 'crest_id', 'ALTER TABLE teams ADD COLUMN crest_id SMALLINT UNSIGNED NOT NULL DEFAULT 0 AFTER kit_custom'],
+                ['teams', 'crest_custom', 'ALTER TABLE teams ADD COLUMN crest_custom VARCHAR(120) NULL AFTER crest_id'],
+                ['transfer_listings', 'tsi_at_sale', 'ALTER TABLE transfer_listings ADD COLUMN tsi_at_sale INT UNSIGNED NULL AFTER closed_at'],
+                ['transfer_listings', 'age_at_sale', 'ALTER TABLE transfer_listings ADD COLUMN age_at_sale TINYINT UNSIGNED NULL AFTER tsi_at_sale'],
+            ];
+            foreach ($alters as [$table, $col, $sql]) {
+                if (!self::columnExists($table, $col)) {
+                    $pdo->exec($sql);
+                }
+            }
+            // Traspasos antiguos: se toma el TSI y la edad actuales del jugador como mejor aproximación
+            DB::exec("UPDATE transfer_listings l JOIN players p ON p.id = l.player_id SET l.tsi_at_sale = p.tsi, l.age_at_sale = p.age_years
+                      WHERE l.status = 'sold' AND l.tsi_at_sale IS NULL");
+            GameState::set('db_version', 7);
         }
         $say(t('Base de datos actualizada a la versión {v}.', ['v' => self::DB_VERSION]));
     }

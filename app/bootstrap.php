@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 
 define('APP_ROOT', dirname(__DIR__));
-define('APP_VERSION', '1.5.0');
+define('APP_VERSION', '1.6.0');
 
 spl_autoload_register(function (string $class): void {
     foreach (['lib', 'game'] as $dir) {
@@ -33,7 +33,7 @@ if (Config::bool('app', 'debug', false)) {
     ini_set('display_errors', '0');
 }
 
-if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
+if (PHP_SAPI !== 'cli' && !defined('GT_NO_SESSION') && session_status() === PHP_SESSION_NONE) {
     session_name((string)Config::get('app', 'session_name', 'GTSESSID'));
     session_set_cookie_params([
         'lifetime' => 0,

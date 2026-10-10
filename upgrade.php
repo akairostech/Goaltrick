@@ -53,6 +53,12 @@ $pending = Installer::needsUpgrade();
                 <a class="btn btn-accent" href="index.php"><?= e(t('Ir al juego')) ?></a>
             <?php else: ?>
                 <p><?= e(t('Has instalado una versión nueva del juego. Hay que actualizar la base de datos (versión {from} → {to}).', ['from' => Installer::dbVersion(), 'to' => Installer::DB_VERSION])) ?> <strong><?= e(t('No se borra nada de tu partida.')) ?></strong></p>
+                <p><?= e(t('Novedades de la versión {v}:', ['v' => '1.6'])) ?></p>
+                <ul>
+                    <li><?= e(t('Nueva sección «Club»: resumen general, 1000 uniformes y 1000 escudos para elegir, o sube los tuyos.')) ?></li>
+                    <li><?= e(t('Nueva sección «Transferencias» con el historial de compras y ventas, totales y promedios.')) ?></li>
+                    <li><?= e(t('Previa de los partidos: escudos, índice de rendimiento estimado, resumen de los equipos, pronóstico y opinión de los socios.')) ?></li>
+                </ul>
                 <p><?= e(t('Novedades de la versión {v}:', ['v' => '1.5'])) ?></p>
                 <ul>
                     <li><?= e(t('Idiomas: español e inglés, con un selector en la barra superior. Se pueden añadir más idiomas copiando un archivo de la carpeta lang.')) ?></li>

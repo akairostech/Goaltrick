@@ -89,7 +89,7 @@ $friendlyReq = (int)DB::value("SELECT COUNT(*) FROM friendly_requests WHERE to_t
 $capacity = (int)$team['seats_terraces'] + (int)$team['seats_basic'] + (int)$team['seats_roof'] + (int)$team['seats_vip'];
 ?>
 <div class="page-title">
-    <h1><?= e($team['name']) ?></h1>
+    <h1 class="club-h1"><a href="<?= e(url('club')) ?>" title="<?= e(t('Club')) ?>"><?= crest_img($team, 36) ?></a> <?= e($team['name']) ?> <a href="<?= e(url('club', ['tab' => 'kit'])) ?>" title="<?= e(t('Uniforme')) ?>"><?= kit_img($team, 34, 'kit kit-mini') ?></a></h1>
     <span class="muted"><?= t('Mánager: {user} · Serie {unit}', ['user' => '<strong>' . e($user['username']) . '</strong>', 'unit' => '<a href="' . e(url('league', ['unit' => $unit['id']])) . '">' . e($unit['name']) . '</a>']) ?></span>
 </div>
 

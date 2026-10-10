@@ -137,7 +137,7 @@ final class TransferService
                     $price = (int)$l['highest_bid'];
                     if ($buyer && (int)$buyer['cash'] >= $price && TeamService::squadCount((int)$buyer['id']) < Config::int('game', 'max_players', 40)) {
                         self::executeTransfer($p, (int)$l['seller_team_id'], $buyer, $price);
-                        DB::exec("UPDATE transfer_listings SET status = 'sold', closed_at = ? WHERE id = ?", [now(), $l['id']]);
+                        DB::exec("UPDATE transfer_listings SET status = 'sold', closed_at = ?, tsi_at_sale = ?, age_at_sale = ? WHERE id = ?", [now(), (int)$p['tsi'], (int)$p['age_years'], $l['id']]);
                         $sold = true;
                         $n++;
                     }

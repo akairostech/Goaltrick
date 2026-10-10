@@ -63,6 +63,22 @@ final class MatchEngine
         return $engine->ratings('away', 0);
     }
 
+    /**
+     * Valoraciones estimadas de los dos equipos para un partido concreto (con factor campo).
+     * Si $ownLineup[side] es false se usa la mejor alineación automática en lugar de la que el
+     * mánager haya enviado (así la previa no revela la alineación del rival).
+     */
+    public static function estimate(array $match, array $home, array $away, array $ownLineup = ['home' => false, 'away' => false]): array
+    {
+        foreach (['home', 'away'] as $side) {
+            if (empty($ownLineup[$side])) {
+                ${$side}['is_bot'] = 1;
+            }
+        }
+        $engine = new self($match, $home, $away);
+        return ['home' => $engine->ratings('home', 0), 'away' => $engine->ratings('away', 0)];
+    }
+
     private function __construct(array $match, array $home, array $away)
     {
         $this->match = $match;

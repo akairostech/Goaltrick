@@ -605,3 +605,39 @@ const JS_STRINGS = [
     '{n} amarillas',
     '{y} años y {d} días',
 ];
+
+/* ------------------------- Uniformes y escudos -------------------------- */
+
+/** Número de diseño (1..1000) del uniforme o escudo de un club */
+function team_art_n(array $t, string $what): int
+{
+    $n = (int)($t[$what . '_id'] ?? 0);
+    return $n >= 1 && $n <= ClubArt::COUNT ? $n : ClubArt::defaultFor((int)($t['id'] ?? 0), $what);
+}
+
+/** URL de la imagen del uniforme ('kit') o del escudo ('crest') de un club */
+function team_art_url(array $t, string $what): string
+{
+    $custom = $t[$what . '_custom'] ?? null;
+    if ($custom) {
+        return asset('uploads/' . $custom);
+    }
+    return base_url() . '/art.php?k=' . $what . '&n=' . team_art_n($t, $what) . '&v=' . APP_VERSION;
+}
+
+function art_url(string $what, int $n): string
+{
+    return base_url() . '/art.php?k=' . $what . '&n=' . $n . '&v=' . APP_VERSION;
+}
+
+/** <img> con el escudo de un club */
+function crest_img(array $t, int $size = 24, string $class = 'crest'): string
+{
+    return '<img class="' . e($class) . '" src="' . e(team_art_url($t, 'crest')) . '" width="' . $size . '" height="' . round($size * 1.15) . '" alt="" loading="lazy">';
+}
+
+/** <img> con el uniforme de un club */
+function kit_img(array $t, int $size = 80, string $class = 'kit'): string
+{
+    return '<img class="' . e($class) . '" src="' . e(team_art_url($t, 'kit')) . '" width="' . $size . '" height="' . round($size * 1.15) . '" alt="" loading="lazy">';
+}
