@@ -22,6 +22,14 @@ CREATE TABLE IF NOT EXISTS users (
     banned_until      DATETIME     NULL,            -- NULL = expulsión permanente (si is_banned = 1)
     banned_at         DATETIME     NULL,
     language          VARCHAR(8)   NULL,          -- idioma elegido (lang/<código>.php)
+    avatar            SMALLINT UNSIGNED NOT NULL DEFAULT 0,  -- cara de presidente del perfil público (1-1000; 0 = automática)
+    country_id        INT UNSIGNED NULL,           -- país del mánager (perfil público)
+    city              VARCHAR(60)  NULL,
+    birth_year        SMALLINT UNSIGNED NULL,
+    motto             VARCHAR(140) NULL,           -- lema que se muestra bajo el nombre
+    bio               TEXT         NULL,           -- presentación del mánager
+    fav_club          VARCHAR(60)  NULL,           -- club favorito de la vida real
+    profile_views     INT UNSIGNED NOT NULL DEFAULT 0,
     created_at        DATETIME     NOT NULL,
     last_login_at     DATETIME     NULL,
     last_activity_at  DATETIME     NULL,

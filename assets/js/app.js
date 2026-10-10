@@ -338,3 +338,20 @@
         render();
     }
 })();
+
+/* Menús desplegables de la barra superior (idioma y usuario): se cierran al pulsar fuera o con Esc (v1.10) */
+(function () {
+    var menus = document.querySelectorAll('.topbar details');
+    if (!menus.length) { return; }
+    document.addEventListener('click', function (ev) {
+        menus.forEach(function (d) { if (d.open && !d.contains(ev.target)) { d.open = false; } });
+    });
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape') { menus.forEach(function (d) { d.open = false; }); }
+    });
+    menus.forEach(function (d) {
+        d.addEventListener('toggle', function () {
+            if (d.open) { menus.forEach(function (o) { if (o !== d) { o.open = false; } }); }
+        });
+    });
+})();

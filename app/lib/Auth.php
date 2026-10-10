@@ -91,6 +91,8 @@ final class Auth
                 'created_at'    => now(),
             ]);
             TeamService::assignToUser($teamId, $userId, trim($teamName));
+            // El perfil público parte del país del club asignado
+            DB::exec('UPDATE users u JOIN teams t ON t.id = ? SET u.country_id = t.country_id WHERE u.id = ?', [$teamId, $userId]);
             return $userId;
         });
     }

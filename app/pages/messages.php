@@ -86,7 +86,7 @@ $compose = (bool)get('compose');
 <div class="box">
     <div class="box-head"><?= e(tdb($m['subject'])) ?> <span class="small muted"><?= e(fdate($m['created_at'])) ?></span></div>
     <div class="box-body">
-        <p class="small"><?= e(t('De')) ?>: <strong><?= e($m['from_name'] ?? t('Sistema')) ?></strong> · <?= e(t('Para')) ?>: <strong><?= e($m['to_name']) ?></strong></p>
+        <p class="small"><?= e(t('De')) ?>: <strong><?= $m['from_user_id'] ? manager_link($m['from_user_id'], $m['from_name'], true) : e(t('Sistema')) ?></strong> · <?= e(t('Para')) ?>: <strong><?= manager_link($m['to_user_id'], $m['to_name'], true) ?></strong></p>
         <div class="msg-body"><?= e(tdb($m['body'])) ?></div>
         <br>
         <?php if ((int)$m['to_user_id'] === $uid && $m['from_user_id']): ?><a class="btn" href="<?= e(url('messages', ['compose' => 1, 'reply' => $m['id']])) ?>"><?= e(t('Responder')) ?></a>
@@ -97,9 +97,9 @@ $compose = (bool)get('compose');
 
 <?php else:
     if ($box === 'sent') {
-        $rows = DB::all('SELECT m.*, u.username AS other FROM messages m JOIN users u ON u.id = m.to_user_id WHERE m.from_user_id = ? AND m.deleted_by_sender = 0 ORDER BY m.id DESC LIMIT 100', [$uid]);
+        $rows = DB::all('SELECT m.*, u.username AS other, u.id AS other_id FROM messages m JOIN users u ON u.id = m.to_user_id WHERE m.from_user_id = ? AND m.deleted_by_sender = 0 ORDER BY m.id DESC LIMIT 100', [$uid]);
     } else {
-        $rows = DB::all('SELECT m.*, u.username AS other FROM messages m LEFT JOIN users u ON u.id = m.from_user_id WHERE m.to_user_id = ? AND m.deleted_by_recipient = 0 ORDER BY m.id DESC LIMIT 100', [$uid]);
+        $rows = DB::all('SELECT m.*, u.username AS other, u.id AS other_id FROM messages m LEFT JOIN users u ON u.id = m.from_user_id WHERE m.to_user_id = ? AND m.deleted_by_recipient = 0 ORDER BY m.id DESC LIMIT 100', [$uid]);
     }
 ?>
 <div class="box">
@@ -107,7 +107,7 @@ $compose = (bool)get('compose');
         <thead><tr><th><?= e($box === 'sent' ? t('Para') : t('De')) ?></th><th><?= e(t('Asunto')) ?></th><th><?= e(t('Fecha')) ?></th></tr></thead>
         <?php foreach ($rows as $r): ?>
             <tr class="<?= $box !== 'sent' && !$r['read_at'] ? 'msg-unread' : '' ?>">
-                <td><?= e($r['other'] ?? t('Sistema')) ?></td>
+                <td><?= $r['other_id'] ? manager_link($r['other_id'], $r['other'], true) : e(t('Sistema')) ?></td>
                 <td><a href="<?= e(url('messages', ['id' => $r['id']])) ?>"><?= e(tdb($r['subject'])) ?></a></td>
                 <td class="nowrap small"><?= e(fdate($r['created_at'])) ?></td>
             </tr>

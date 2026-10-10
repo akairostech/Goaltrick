@@ -511,7 +511,7 @@ function nation_link(int|string $countryId, string $name, ?string $code = null):
 
 /* --------------------------- Imágenes --------------------------------- */
 
-const AVATAR_COUNT = 400;
+const AVATAR_COUNT = 5000;
 
 /** Número de uniforme (1..1000) de cada club, cargado una sola vez por petición */
 function team_kit_n(int $teamId): ?int
@@ -603,6 +603,63 @@ function trophy_cabinet(int $teamId, bool $own = false): string
         $h .= '<div class="box-body small muted center">' . e($own ? t('Tu vitrina está vacía. ¡Gana tu división para conseguir el primer trofeo!') : t('Este club todavía no ha ganado ningún título.')) . '</div>';
     }
     return $h . '</div>';
+}
+
+/** Caras de presidente para el perfil público del mánager (assets/img/presidents/0001-1000.svg), 125 por tono de piel */
+const PRESIDENT_COUNT = 1000;
+const PRESIDENT_PER_SKIN = 125;
+const PRESIDENT_SKINS = [
+    ['Porcelana', '#ffe3cf'], ['Marfil', '#f9d7bd'], ['Miel', '#f1c27d'], ['Arena', '#e0ac69'],
+    ['Canela', '#c68642'], ['Avellana', '#a0673b'], ['Cacao', '#7a4a2a'], ['Ébano', '#5a3520'],
+];
+
+/** Número de cara de un usuario: la elegida o, si no eligió ninguna, una fija según su id */
+function president_n(array $u): int
+{
+    $n = (int)($u['avatar'] ?? 0);
+    if ($n >= 1 && $n <= PRESIDENT_COUNT) {
+        return $n;
+    }
+    return ((int)($u['id'] ?? $u['uid'] ?? 0) * 389) % PRESIDENT_COUNT + 1;
+}
+
+function president_url(int $n): string
+{
+    return asset(sprintf('img/presidents/%04d.svg', max(1, min(PRESIDENT_COUNT, $n))));
+}
+
+/** Tono de piel (0..7) de una cara de presidente */
+function president_skin(int $n): int
+{
+    return intdiv(max(1, $n) - 1, PRESIDENT_PER_SKIN);
+}
+
+function president_img(array $u, int $size = 32, string $class = 'avatar president'): string
+{
+    return '<img class="' . e($class) . '" src="' . e(president_url(president_n($u))) . '" width="' . $size . '" height="' . $size . '" alt="" loading="lazy">';
+}
+
+/** Enlace al perfil público de un mánager */
+function manager_link(int|string|null $uid, ?string $name, bool $face = false): string
+{
+    if (!$uid || $name === null || $name === '') {
+        return '<span class="muted">—</span>';
+    }
+    $img = $face ? president_img(['id' => (int)$uid, 'avatar' => manager_avatar((int)$uid)], 20) . ' ' : '';
+    return '<a class="manager-link" href="' . e(url('manager', ['id' => $uid])) . '">' . $img . e($name) . '</a>';
+}
+
+/** Cara elegida por cada mánager, cargada una sola vez por petición */
+function manager_avatar(int $uid): int
+{
+    static $map = null;
+    if ($map === null) {
+        $map = [];
+        foreach (DB::all('SELECT id, avatar FROM users WHERE avatar > 0') as $r) {
+            $map[(int)$r['id']] = (int)$r['avatar'];
+        }
+    }
+    return $map[$uid] ?? 0;
 }
 
 /** Textos que usa assets/js/app.js (con L('...')); se envían traducidos a la página */

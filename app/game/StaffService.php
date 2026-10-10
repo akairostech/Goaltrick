@@ -30,9 +30,12 @@ final class StaffService
         'temperamental' => ['Temperamental', 'Entrenamientos intensos (+4%), pero el espíritu sube y baja sin avisar.'],
     ];
 
+    /** Caras disponibles para el personal (assets/img/staff/NNN.svg) */
+    public const AVATAR_COUNT = 5000;
+
     public static function avatarUrl(array $s): string
     {
-        $n = max(1, min(120, (int)($s['avatar'] ?? 1)));
+        $n = max(1, min(self::AVATAR_COUNT, (int)($s['avatar'] ?? 1)));
         return asset(sprintf('img/staff/%03d.svg', $n));
     }
 
@@ -63,7 +66,7 @@ final class StaffService
             'country_id'  => $nat,
             'personality' => $keys[mt_rand(0, count($keys) - 1)],
             'level'       => $level ?? mt_rand(2, 4),
-            'avatar'      => mt_rand(1, 120),
+            'avatar'      => mt_rand(1, self::AVATAR_COUNT),
         ];
         if ($seed !== null) {
             mt_srand(); // volver a una semilla aleatoria

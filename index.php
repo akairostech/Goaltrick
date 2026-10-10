@@ -30,7 +30,7 @@ const PAGES = [
     'matches' => 'matches', 'match' => 'match', 'league' => 'league', 'team' => 'team',
     'transfers' => 'transfers', 'finances' => 'finances', 'stadium' => 'stadium', 'staff' => 'staff',
     'youth' => 'youth', 'friendlies' => 'friendlies', 'messages' => 'messages', 'world' => 'world',
-    'profile' => 'profile', 'admin' => 'admin',
+    'profile' => 'profile', 'admin' => 'admin', 'manager' => 'manager', 'manager_edit' => 'manager_edit',
     'nations' => 'nations', 'nation' => 'nation', 'worldcup' => 'worldcup',
     'sponsors' => 'sponsors', 'companies' => 'companies', 'club' => 'club', 'staff_member' => 'staff_member', 'cup' => 'cup', 'stadium_art' => 'stadium_art',
     'admin_team' => 'admin_team', 'admin_tickets' => 'admin_tickets', 'admin_user' => 'admin_user', 'support' => 'support', 'admin_player' => 'admin_player', 'admin_reset' => 'admin_reset',

@@ -8,7 +8,7 @@ final class Installer
 {
     public const LOCK = APP_ROOT . '/install.lock';
     /** Versión del esquema de la base de datos que espera este código */
-    public const DB_VERSION = 9;
+    public const DB_VERSION = 10;
 
     public static function isInstalled(): bool
     {
@@ -272,6 +272,28 @@ final class Installer
             }
             self::runSqlFile(APP_ROOT . '/sql/schema.sql');   // crea user_sanctions, user_logins, support_tickets y support_replies
             GameState::set('db_version', 9);
+        }
+        if (self::dbVersion() < 10) {
+            $say(t('Versión 1.10: perfil público del mánager...'));
+            $pdo = DB::pdo();
+            $alters = [
+                ['users', 'avatar', 'ALTER TABLE users ADD COLUMN avatar SMALLINT UNSIGNED NOT NULL DEFAULT 0 AFTER `language`'],
+                ['users', 'country_id', 'ALTER TABLE users ADD COLUMN country_id INT UNSIGNED NULL AFTER avatar'],
+                ['users', 'city', 'ALTER TABLE users ADD COLUMN city VARCHAR(60) NULL AFTER country_id'],
+                ['users', 'birth_year', 'ALTER TABLE users ADD COLUMN birth_year SMALLINT UNSIGNED NULL AFTER city'],
+                ['users', 'motto', 'ALTER TABLE users ADD COLUMN motto VARCHAR(140) NULL AFTER birth_year'],
+                ['users', 'bio', 'ALTER TABLE users ADD COLUMN bio TEXT NULL AFTER motto'],
+                ['users', 'fav_club', 'ALTER TABLE users ADD COLUMN fav_club VARCHAR(60) NULL AFTER bio'],
+                ['users', 'profile_views', 'ALTER TABLE users ADD COLUMN profile_views INT UNSIGNED NOT NULL DEFAULT 0 AFTER fav_club'],
+            ];
+            foreach ($alters as [$table, $col, $sql]) {
+                if (!self::columnExists($table, $col)) {
+                    $pdo->exec($sql);
+                }
+            }
+            // El país del mánager parte del país de su club
+            DB::exec('UPDATE users u JOIN teams t ON t.user_id = u.id SET u.country_id = t.country_id WHERE u.country_id IS NULL AND t.is_national = 0');
+            GameState::set('db_version', 10);
         }
         $say(t('Base de datos actualizada a la versión {v}.', ['v' => self::DB_VERSION]));
     }

@@ -54,8 +54,9 @@ $tab = isset($tabs[$tab]) ? $tab : 'summary';
 $link = fn(string $tb) => url('admin_user', array_filter(['id' => $id, 'tab' => $tb, 'ticket' => $ticketId]));
 $userLink = fn($uid, $name) => $uid ? '<a href="' . e(url('admin_user', ['id' => $uid])) . '">' . e($name) . '</a>' : '<span class="muted">' . e($name ?? '–') . '</span>';
 ?>
-<div class="page-title"><h1>🔎 <?= e($u['username']) ?> <?php if ((int)$u['is_banned']): ?><span class="tag tag-red"><?= e($u['banned_until'] ? t('Suspendido') : t('Expulsado')) ?></span><?php endif; ?></h1>
+<div class="page-title"><h1>🔎 <?= president_img($u, 32, 'tb-face') ?> <?= e($u['username']) ?> <?php if ((int)$u['is_banned']): ?><span class="tag tag-red"><?= e($u['banned_until'] ? t('Suspendido') : t('Expulsado')) ?></span><?php endif; ?></h1>
     <span><?php if ($ticketId): ?><a class="btn btn-small btn-grey" href="<?= e(url('admin_tickets', ['id' => $ticketId])) ?>">« <?= e(t('Volver al ticket #{id}', ['id' => $ticketId])) ?></a><?php endif; ?>
+    <a class="btn btn-small btn-grey" href="<?= e(url('manager', ['id' => $u['id']])) ?>">🎩 <?= e(t('Perfil público')) ?></a>
     <a href="<?= e(url('admin', ['tab' => 'users'])) ?>">« <?= e(t('Usuarios')) ?></a></span>
 </div>
 <?= admin_tabs('users') ?>

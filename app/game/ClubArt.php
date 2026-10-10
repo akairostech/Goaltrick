@@ -204,7 +204,7 @@ final class ClubArt
      *  Caras de los jugadores con el uniforme del club
      * ------------------------------------------------------------------ */
 
-    public const FACE_COUNT = 400;
+    public const FACE_COUNT = 5000;
 
     /**
      * Cara nº $face (1..400) vistiendo la camiseta del uniforme nº $kit (1..1000): 400 × 1000 combinaciones

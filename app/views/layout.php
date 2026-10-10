@@ -53,7 +53,15 @@ $clubMenu = [
             </details>
             <?php endif; ?>
             <?php if ($user): ?>
-                <span class="tb-user">👤 <a href="<?= e(url('profile')) ?>"><?= e($user['username']) ?></a></span>
+                <details class="tb-user user-menu">
+                    <summary title="<?= e(t('Mi cuenta y mi perfil')) ?>"><?= president_img($user, 20, 'tb-face') ?> <span class="tb-uname"><?= e($user['username']) ?></span> <span class="caret">▾</span></summary>
+                    <div class="user-drop">
+                        <div class="user-drop-head"><?= president_img($user, 40, 'tb-face') ?><div><strong><?= e($user['username']) ?></strong><br><span class="small muted"><?= e($user['email']) ?></span></div></div>
+                        <a href="<?= e(url('profile')) ?>">⚙️ <?= e(t('Mi cuenta')) ?></a>
+                        <a href="<?= e(url('manager', ['id' => $user['id']])) ?>">🎩 <?= e(t('Mi perfil')) ?></a>
+                        <a href="<?= e(url('manager_edit')) ?>" class="sub">✏️ <?= e(t('Editar mi perfil')) ?></a>
+                    </div>
+                </details>
                 <a class="tb-mail<?= $unread ? ' has-unread' : '' ?>" href="<?= e(url('messages')) ?>" title="<?= e(t('Mensajes')) ?>">✉️<?php if ($unread): ?><span class="badge"><?= $unread ?></span><?php endif; ?></a>
                 <span class="tb-season"><?= e(t('Temporada {s} · Semana {w}', ['s' => $season, 'w' => $week])) ?></span>
                 <a class="btn btn-small btn-ghost" href="<?= e(url('logout', ['t' => csrf_token()])) ?>"><?= e(t('Salir')) ?></a>

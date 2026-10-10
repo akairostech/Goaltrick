@@ -7,7 +7,7 @@ $nat = DB::row('SELECT is_national, country_id FROM teams WHERE id = ?', [$id]);
 if ($nat && (int)$nat['is_national']) {
     redirect(url('nation', ['id' => $nat['country_id']]));
 }
-$t = DB::row('SELECT t.*, u.username, u.id AS uid, u.last_activity_at, lu.name AS unit_name, c.name AS country, c.code AS ccode
+$t = DB::row('SELECT t.*, u.username, u.id AS uid, u.avatar AS uavatar, u.motto AS umotto, u.last_activity_at, lu.name AS unit_name, c.name AS country, c.code AS ccode
     FROM teams t LEFT JOIN users u ON u.id = t.user_id JOIN league_units lu ON lu.id = t.league_unit_id JOIN countries c ON c.id = t.country_id WHERE t.id = ?', [$id]);
 if (!$t) {
     flash('error', t('Equipo no encontrado.'));
@@ -39,7 +39,7 @@ $resultNames = ['champion' => '🏆 ' . t('Campeón'), 'promoted' => '⬆️ ' .
     <div class="box">
         <div class="box-head"><?= e(t('Información del club')) ?></div>
         <table class="kv">
-            <tr><th><?= e(t('Mánager')) ?></th><td><?= $t['username'] ? e($t['username']) : '<span class="tag tag-bot">' . e(t('Controlado por la máquina')) . '</span>' ?></td></tr>
+            <tr><th><?= e(t('Mánager')) ?></th><td><?= $t['username'] ? manager_link($t['uid'], $t['username'], true) : '<span class="tag tag-bot">' . e(t('Controlado por la máquina')) . '</span>' ?></td></tr>
             <?php if ($t['username']): ?><tr><th><?= e(t('Última conexión')) ?></th><td><?= e(fdate($t['last_activity_at'])) ?></td></tr><?php endif; ?>
             <tr><th><?= e(t('Liga')) ?></th><td><?= nation_link($t['country_id'], $t['country'], $t['ccode']) ?> · <a href="<?= e(url('league', ['unit' => $t['league_unit_id']])) ?>"><?= e(t('División {name}', ['name' => $t['unit_name']])) ?></a></td></tr>
             <tr><th><?= e(t('Escudo y uniforme')) ?></th><td class="club-art-cell"><?= crest_img($t, 52, 'crest') ?> <?= kit_img($t, 56) ?></td></tr>

@@ -114,7 +114,7 @@ $team = DB::row('SELECT * FROM teams WHERE id = ?', [$teamId]);
             <span class="cb"><b><?= num($capacity) ?></b><?= e(t('Aforo')) ?></span>
             <span class="cb"><b><?= $titles ?></b><?= e(t('Títulos')) ?></span>
         </div>
-        <div class="small muted"><?= e(t('Mánager')) ?>: <strong><?= e($user['username']) ?></strong> · <?= e(t('Estadio')) ?>: <a href="<?= e(url('stadium')) ?>"><?= e($team['stadium_name']) ?></a></div>
+        <div class="small muted"><?= e(t('Mánager')) ?>: <?= manager_link($user['id'], $user['username'], true) ?> · <?= e(t('Estadio')) ?>: <a href="<?= e(url('stadium')) ?>"><?= e($team['stadium_name']) ?></a></div>
     </div>
     <div class="club-hero-kit"><?= kit_img($team, 120) ?><a class="btn btn-small" href="<?= e(url('home', ['tab' => 'kit'])) ?>">👕 <?= e(t('Cambiar uniforme')) ?></a></div>
 </div>

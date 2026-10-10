@@ -1,4 +1,4 @@
-# GoalTrick v1.9 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.10 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -16,7 +16,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Selecciones nacionales** (v1.1): convocan automáticamente a los jugadores disponibles de su nacionalidad con mayor TSI en cada posición (2 porteros, 3 centrales, 3 laterales, 4 medios, 3 extremos y 3 delanteros), jueguen en el club que jueguen.
 - **Mundial de Fútbol** (v1.1): 16 selecciones, 4 grupos de 4, cuartos, semifinales, tercer puesto y final, en campo neutral y con penaltis en las eliminatorias. Partidos internacionales, goles con la selección, primas para los clubes y palmarés.
 - **Vitrina de trofeos** (v1.2): en el resumen del club y en su página pública, con trofeos ilustrados para los campeones de la I, II y III división.
-- **Imágenes de perfil**: 400 avatares caricaturescos distintos de futbolistas (`assets/img/avatars/`), uno por jugador.
+- **Imágenes de perfil**: 5000 avatares caricaturescos distintos de futbolistas (`assets/img/avatars/`) y otros 5000 del personal técnico (`assets/img/staff/`).
 - **Habilidades con los nombres de Hattrick** (v1.2): Condición (resistencia), Jugadas (antes Construcción), Lateral (con más peso en el motor: el mejor de cada banda desborda y centra), Pases, Anotación, Defensa, Portería y Balón parado.
 - **Administración** (v1.2): editar cualquier equipo (dinero, personal, entrenamiento, cantera, estadio) y sus jugadores (habilidades, edad, lesiones, imagen, traspasar a otro equipo, crear o quitar jugadores), y reiniciar por completo la partida conservando o no las cuentas.
 - **Patrocinio** (v1.3): 400 empresas ficticias de 25 rubros con su logo (`sql/companies.sql`, `assets/img/sponsors/`). Antes de cada temporada cada club recibe 3 ofertas según su división (contrato fijo, por objetivos o largo plazo), con pago semanal, prima de firma, primas por victoria o por título. Si el mánager no elige a tiempo se firma el contrato fijo; los bots eligen solos.
@@ -35,7 +35,8 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **Ayuda y soporte** (v1.8): los usuarios abren tickets por categorías (error del juego, reportar a un usuario, cuenta, mercado, sugerencia...), con enlace opcional y denuncias confidenciales; botones «Reportar» en los mensajes recibidos y en la página de cada club. La administración tiene su bandeja de tickets (filtros, asignación, estados, respuestas y notas internas) y el usuario recibe un aviso en su buzón al ser respondido.
 - **Moderación** (v1.8): ficha de investigación de cada usuario con sus traspasos (y con qué mánagers), pujas, mensajes enviados y recibidos (aunque los haya borrado), finanzas, amistosos, partidos, noticias, tickets, denuncias recibidas, IP de acceso y otras cuentas desde las mismas IP. Sanciones con motivo: aviso, suspensión temporal (1 a 365 días, se levanta sola), expulsión permanente (opcionalmente quitándole el equipo) y readmisión, con historial. El usuario sancionado ve el motivo al intentar entrar.
 - **Administración de equipos** (v1.8): cambiar el escudo y el uniforme de cualquier club (diseño nº 1-1000 con vista previa, subir una imagen o quitar una imagen inapropiada).
-- **Caras con el uniforme del club** (v1.9): las 400 caras de jugador se combinan con los 1000 uniformes (400.000 imágenes posibles) generándose al vuelo con `face.php`, así cada jugador aparece con la camiseta (colores, diseño, mangas, cuello y número) del uniforme que ha elegido su club. Si el club ha subido un uniforme propio, la camiseta usa los colores del último diseño elegido de la galería. Los jugadores sin club muestran su imagen original.
+- **Caras con el uniforme del club** (v1.9): las 5000 caras de jugador se combinan con los 1000 uniformes (5 millones de imágenes posibles) generándose al vuelo con `face.php`, así cada jugador aparece con la camiseta (colores, diseño, mangas, cuello y número) del uniforme que ha elegido su club. Si el club ha subido un uniforme propio, la camiseta usa los colores del último diseño elegido de la galería. Los jugadores sin club muestran su imagen original.
+- **Perfil público del mánager** (v1.10): `index.php?page=manager&id=N`, enlazado desde la ficha de cada equipo, el buscador, los conectados y los mensajes. Muestra cara de presidente, lema, país y ciudad, edad, club favorito, presentación, días en el cargo, balance de partidos, goles, mayor goleada, títulos, fichajes y ventas, vitrina de trofeos, últimos partidos e historial de temporadas. Cada mánager lo edita en «Mi perfil → Editar mi perfil» y elige su cara entre **1000 presidentes caricaturescos** (`assets/img/presidents/`) agrupados en 8 tonos de piel de 125 caras cada uno (Porcelana, Marfil, Miel, Arena, Canela, Avellana, Cacao y Ébano). Al pulsar el nombre de usuario en la barra superior se abre un menú con «Mi cuenta» y «Mi perfil».
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos
@@ -61,13 +62,13 @@ Si prefieres importar tú las tablas (por ejemplo con phpMyAdmin): crea la base 
 php cron/run.php --install admin admin@correo.com MiContraseña "Mi Equipo FC"
 ```
 
-## Actualizar desde una versión anterior (1.0 – 1.7)
+## Actualizar desde una versión anterior (1.0 – 1.9)
 
 1. Copia los archivos nuevos encima de los antiguos **conservando tu `config.ini`** (o copia en él los datos de tu base de datos). Las opciones nuevas (`other_country_divisions` y la sección `[worldcup]`) tienen valores por defecto, así que no es obligatorio añadirlas.
 2. Abre la web: se te redirigirá a `upgrade.php`. Pulsa **Actualizar ahora**. (Por consola: `php cron/run.php --upgrade`.)
-3. El actualizador aplica todos los cambios pendientes en orden. De 1.7 a 1.8 crea las tablas de tickets, sanciones y accesos. De 1.6 a 1.7 crea la tabla de alineaciones por partido y conserva la que ya hubieras enviado. De 1.5 a 1.6 añade el uniforme y el escudo de cada club y guarda el TSI de los jugadores en cada traspaso (para los traspasos antiguos usa su TSI actual). De 1.4 a 1.5 añade el idioma de cada usuario, las alineaciones guardadas y amplía algunas columnas de texto; además vuelve a sortear el Mundial de la temporada en curso con las 32 selecciones (si ya había empezado, se anulan sus partidos y empieza de nuevo; si ya no cabe en el calendario, el de la temporada siguiente tendrá las 32). De 1.3 a 1.4 crea las ligas de las 16 naciones nuevas (jugando las jornadas ya disputadas), da un perfil a todo el personal existente, envía ofertas de patrocinio a los clubes nuevos y sortea la Copa de cada país (puede tardar unos minutos). De 1.2 a 1.3 amplía las caras de jugador a 400, carga las empresas y envía las ofertas de patrocinio de la temporada en curso. De 1.1 a 1.2 añade la imagen de perfil de los jugadores. De 1.0 a 1.1 además añade las columnas y tablas nuevas, renombra Futbolandia a Panamá, crea las ligas de los demás países (jugando las jornadas que ya se hubieran disputado esta temporada), crea las selecciones y programa el Mundial. No se borra nada de tu partida.
+3. El actualizador aplica todos los cambios pendientes en orden. De 1.9 a 1.10 añade los datos del perfil público a los usuarios (su país parte del país de su club). De 1.7 a 1.8 crea las tablas de tickets, sanciones y accesos. De 1.6 a 1.7 crea la tabla de alineaciones por partido y conserva la que ya hubieras enviado. De 1.5 a 1.6 añade el uniforme y el escudo de cada club y guarda el TSI de los jugadores en cada traspaso (para los traspasos antiguos usa su TSI actual). De 1.4 a 1.5 añade el idioma de cada usuario, las alineaciones guardadas y amplía algunas columnas de texto; además vuelve a sortear el Mundial de la temporada en curso con las 32 selecciones (si ya había empezado, se anulan sus partidos y empieza de nuevo; si ya no cabe en el calendario, el de la temporada siguiente tendrá las 32). De 1.3 a 1.4 crea las ligas de las 16 naciones nuevas (jugando las jornadas ya disputadas), da un perfil a todo el personal existente, envía ofertas de patrocinio a los clubes nuevos y sortea la Copa de cada país (puede tardar unos minutos). De 1.2 a 1.3 amplía las caras de jugador a 400, carga las empresas y envía las ofertas de patrocinio de la temporada en curso. De 1.1 a 1.2 añade la imagen de perfil de los jugadores. De 1.0 a 1.1 además añade las columnas y tablas nuevas, renombra Futbolandia a Panamá, crea las ligas de los demás países (jugando las jornadas que ya se hubieran disputado esta temporada), crea las selecciones y programa el Mundial. No se borra nada de tu partida.
 
-`sql/upgrade_v1.1.sql` … `sql/upgrade_v1.8.sql` contienen los mismos cambios de tablas por si prefieres aplicarlos a mano en phpMyAdmin (después abre igualmente `upgrade.php`).
+`sql/upgrade_v1.1.sql` … `sql/upgrade_v1.10.sql` contienen los mismos cambios de tablas por si prefieres aplicarlos a mano en phpMyAdmin (después abre igualmente `upgrade.php`).
 
 ## Tareas programadas (partidos, entrenamiento, economía)
 
@@ -136,8 +137,10 @@ sql/seed.sql         Datos iniciales (países, estado del juego)
 sql/upgrade_v1.1.sql Cambios de tablas de la v1.0 a la v1.1 (opcional, manual)
 sql/upgrade_v1.2.sql Cambios de tablas de la v1.1 a la v1.2 (opcional, manual)
 sql/upgrade_v1.3.sql Cambios de tablas de la v1.2 a la v1.3 (opcional, manual)
+sql/upgrade_v1.4.sql … sql/upgrade_v1.10.sql  Cambios de tablas de cada versión (opcional, manual)
 sql/companies.sql    Las 400 empresas patrocinadoras
-assets/img/          Trofeos (trophies/), avatares de jugadores (avatars/) y logos de empresas (sponsors/), en SVG
+assets/img/          Trofeos (trophies/), caras de jugadores (avatars/), del personal (staff/),
+                     de presidentes para el perfil (presidents/) y logos de empresas (sponsors/), en SVG
 cron/run.php         Tareas programadas por consola
 ```
 

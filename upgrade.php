@@ -60,6 +60,13 @@ $pending = Installer::needsUpgrade();
                 <a class="btn btn-accent" href="index.php"><?= e(t('Ir al juego')) ?></a>
             <?php else: ?>
                 <p><?= e(t('Has instalado una versión nueva del juego. Hay que actualizar la base de datos (versión {from} → {to}).', ['from' => Installer::dbVersion(), 'to' => Installer::DB_VERSION])) ?> <strong><?= e(t('No se borra nada de tu partida.')) ?></strong></p>
+                <p><?= e(t('Novedades de la versión {v}:', ['v' => '1.10'])) ?></p>
+                <ul>
+                    <li><?= e(t('Perfil público del mánager con presentación, lema, país, trayectoria, vitrina e historial (se abre desde la ficha de cada equipo).')) ?></li>
+                    <li><?= e(t('1.000 caras de presidente para el perfil, ordenadas por tono de piel.')) ?></li>
+                    <li><?= e(t('Menú en el nombre de usuario con «Mi cuenta» y «Mi perfil».')) ?></li>
+                    <li><?= e(t('5.000 caras de jugadores y 5.000 de personal técnico.')) ?></li>
+                </ul>
                 <p><?= e(t('Novedades de la versión {v}:', ['v' => '1.8'])) ?></p>
                 <ul>
                     <li><?= e(t('Ayuda y soporte: los usuarios abren tickets (errores, denuncias, dudas) y la administración los responde.')) ?></li>

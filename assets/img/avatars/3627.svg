@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+<rect width="100" height="100" rx="14" fill="#e2d4f1"/>
+<circle cx="82" cy="18" r="10" fill="#fff" opacity="0.35"/>
+<!--KIT-->
+<clipPath id="c3627"><path d="M10 100 C10 82 26 74 50 74 C74 74 90 82 90 100Z"/></clipPath>
+<path d="M10 100 C10 82 26 74 50 74 C74 74 90 82 90 100Z" fill="#111827" stroke="#2a2420" stroke-width="2.4"/>
+<text x="72" y="97" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="10" fill="#facc15" stroke="#2a2420" stroke-width="0.6">80</text>
+<!--/KIT-->
+<path d="M42 64 H58 V78 C54 81 46 81 42 78Z" fill="#c48a48" stroke="#2a2420" stroke-width="2"/>
+<!--COLLAR-->
+<path d="M40 76 L50 84 L60 76" fill="none" stroke="#facc15" stroke-width="3.5" stroke-linecap="round"/>
+<!--/COLLAR-->
+<ellipse cx="27" cy="48" rx="5" ry="7" fill="#e0ac69" stroke="#2a2420" stroke-width="2"/>
+<ellipse cx="73" cy="48" rx="5" ry="7" fill="#e0ac69" stroke="#2a2420" stroke-width="2"/>
+<ellipse cx="50" cy="45" rx="22" ry="26" fill="#e0ac69" stroke="#2a2420" stroke-width="2.4"/>
+<ellipse cx="36" cy="54" rx="4.5" ry="2.6" fill="#ff8a8a" opacity="0.35"/><ellipse cx="64" cy="54" rx="4.5" ry="2.6" fill="#ff8a8a" opacity="0.35"/>
+<path d="M30 50 C31 70 42 72 50 72 C58 72 69 70 70 50 C66 60 60 62 50 62 C40 62 34 60 30 50Z" fill="#3b2416" stroke="#2a2420" stroke-width="2"/>
+<ellipse cx="41" cy="45" rx="5.2" ry="5.8" fill="#fff" stroke="#2a2420" stroke-width="1.6"/>
+<circle cx="41.6" cy="46" r="2.6" fill="#2a2420"/><circle cx="42.4" cy="44.8" r="0.9" fill="#fff"/>
+<ellipse cx="59" cy="45" rx="5.2" ry="5.8" fill="#fff" stroke="#2a2420" stroke-width="1.6"/>
+<circle cx="59.6" cy="46" r="2.6" fill="#2a2420"/><circle cx="60.4" cy="44.8" r="0.9" fill="#fff"/>
+<path d="M36 38.5 L46 38.5" fill="none" stroke="#3b2416" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M54 38.5 L64 38.5" fill="none" stroke="#3b2416" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M50 48 C48 53 47 55 50 56.5 C51.5 57 53 56.5 53.5 55.5" fill="none" stroke="#2a2420" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M41 60 C44 57 48 57 50 59 C52 57 56 57 59 60 C56 62 52 61 50 60 C48 61 44 62 41 60Z" fill="#3b2416" stroke="#2a2420" stroke-width="1.4"/>
+<path d="M42 60.5 Q50 70 58 60.5 Z" fill="#fff" stroke="#2a2420" stroke-width="2" stroke-linejoin="round"/>
+<path d="M25 46 C20 22 80 18 75 46 L71 40 L68 47 L63 38 L58 45 L53 37 L48 45 L43 37 L38 45 L34 39 L30 47Z" fill="#3b2416" stroke="#2a2420" stroke-width="2.2" stroke-linejoin="round"/>
+</svg>

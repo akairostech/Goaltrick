@@ -97,6 +97,10 @@ if (!current_user()) {
     </ul>
     <p><?= e(t('Tienes hasta la primera actualización económica de la temporada para elegir; si no, se firma automáticamente el contrato fijo. El patrocinador paga cada semana en la actualización económica. Además, la publicidad del estadio aporta un ingreso según tus socios.')) ?></p>
 </div></div>
+<div class="box"><div class="box-head"><?= e(t('Tu perfil de mánager')) ?></div><div class="box-body">
+    <p><?= e(t('Pulsa tu nombre de usuario en la barra superior: «Mi cuenta» sirve para cambiar la contraseña, el correo o el idioma, y «Mi perfil» abre tu perfil público, el que ven los demás mánagers al pulsar tu nombre en la ficha de tu equipo.')) ?></p>
+    <p><?= e(t('Desde «Editar mi perfil» puedes escribir tu presentación y tu lema, indicar tu país, ciudad, año de nacimiento y club favorito, y elegir tu cara entre 1.000 presidentes, filtrándolos por tono de piel. Las estadísticas del perfil cuentan desde que te hiciste cargo de tu club.')) ?></p>
+</div></div>
 <div class="box"><div class="box-head"><?= e(t('Ayuda, soporte y normas')) ?></div><div class="box-body">
     <p><?= e(t('Si encuentras un error en el juego, tienes un problema con tu cuenta o quieres denunciar a otro mánager (insultos, mensajes molestos, multicuentas, trampas o aprovechamiento de errores), abre un ticket en «Ayuda y soporte». La administración te responderá por ese mismo ticket y recibirás un aviso en tu buzón. Las denuncias son confidenciales.')) ?></p>
     <p><?= e(t('No está permitido tener más de una cuenta, traspasar dinero o jugadores entre cuentas a precios ficticios, aprovechar errores del juego ni acosar a otros usuarios. La administración puede enviar avisos, suspender temporalmente o expulsar del juego a quien incumpla las normas.')) ?></p>
