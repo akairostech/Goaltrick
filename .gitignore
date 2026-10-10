@@ -1,0 +1,5 @@
+# Instalación local
+install.lock
+*.log
+.DS_Store
+Thumbs.db

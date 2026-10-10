@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Gorium Hogar Electro</title>
+<circle cx="60" cy="46" r="38" fill="#f0f9ff" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#0369a1" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><rect x="-11" y="-10" width="22" height="16" rx="4" fill="#0369a1" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-5 -10 V-18 M5 -10 V-18" stroke="#1f2328" stroke-width="3.5"/><path d="M0 6 V12 C0 16 6 17 10 17" fill="none" stroke="#1f2328" stroke-width="3.5"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#0369a1" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#f0f9ff" letter-spacing="0.5">GORIUM</text>
+</svg>

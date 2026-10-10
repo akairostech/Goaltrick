@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Galay Lager</title>
+<circle cx="60" cy="46" r="38" fill="#0369a1" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#f0f9ff" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><rect x="-12" y="-10" width="18" height="26" rx="3" fill="#f0f9ff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M6 -4 H11 C15 -4 15 8 11 8 H6" fill="none" stroke="#1f2328" stroke-width="2.5"/><path d="M-14 -10 C-14 -18 -4 -18 -3 -14 C0 -19 8 -17 8 -10Z" fill="#fff" stroke="#1f2328" stroke-width="2"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#f0f9ff" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="106.2" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" fill="#0369a1" letter-spacing="0.5">GALAY LAGER</text>
+</svg>

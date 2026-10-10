@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Arcade Roble</title>
+<rect x="31" y="17" width="58" height="58" rx="10" transform="rotate(45 60 46)" fill="#1f2937" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-14 -9 H14 C20 -9 22 10 15 12 C11 13 8 6 4 6 H-4 C-8 6 -11 13 -15 12 C-22 10 -20 -9 -14 -9Z" fill="#dc2626" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-11 -1 H-5 M-8 -4 V2" stroke="#1f2328" stroke-width="2.5"/><circle cx="8" cy="-3" r="2" fill="#1f2328"/><circle cx="12" cy="1" r="2" fill="#1f2328"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#dc2626" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="106.2" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" fill="#1f2937" letter-spacing="0.5">ARCADE ROBLE</text>
+</svg>

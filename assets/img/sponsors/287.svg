@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Lanay Play</title>
+<circle cx="60" cy="46" r="38" fill="#1e3a8a" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#facc15" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-14 -9 H14 C20 -9 22 10 15 12 C11 13 8 6 4 6 H-4 C-8 6 -11 13 -15 12 C-22 10 -20 -9 -14 -9Z" fill="#facc15" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-11 -1 H-5 M-8 -4 V2" stroke="#1f2328" stroke-width="2.5"/><circle cx="8" cy="-3" r="2" fill="#1f2328"/><circle cx="12" cy="1" r="2" fill="#1f2328"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#facc15" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="107.0" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="11" fill="#1e3a8a" letter-spacing="0.5">LANAY PLAY</text>
+</svg>

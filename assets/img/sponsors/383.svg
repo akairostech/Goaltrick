@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Tostadores Corem</title>
+<circle cx="60" cy="46" r="38" fill="#6d28d9" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#c4b5fd" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-15 -6 H9 V8 C9 15 -15 15 -15 8Z" fill="#c4b5fd" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M9 -2 H13 C18 -2 18 7 13 7 H9" fill="none" stroke="#1f2328" stroke-width="2.5"/><path d="M-9 -12 C-11 -15 -7 -17 -9 -20 M-2 -12 C-4 -15 0 -17 -2 -20" fill="none" stroke="#1f2328" stroke-width="2"/><path d="M-19 16 H15" stroke="#1f2328" stroke-width="3"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#c4b5fd" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#6d28d9" letter-spacing="0.5">COREM</text>
+</svg>

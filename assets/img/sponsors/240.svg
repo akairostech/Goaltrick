@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Transportes Roble</title>
+<circle cx="60" cy="46" r="38" fill="#1d4ed8" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><rect x="-19" y="-11" width="24" height="19" rx="2" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M5 -5 H13 L19 2 V8 H5Z" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="-11" cy="11" r="4.5" fill="#1f2328"/><circle cx="11" cy="11" r="4.5" fill="#1f2328"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#ffffff" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#1d4ed8" letter-spacing="0.5">ROBLE</text>
+</svg>

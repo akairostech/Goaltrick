@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Jorium Salud</title>
+<path d="M60 6 L96 16 C96 50 82 74 60 86 C38 74 24 50 24 16Z" fill="#be123c" stroke="#1f2328" stroke-width="3"/><path d="M60 14 L88 22 C88 48 77 67 60 77" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-6 -18 H6 V-6 H18 V6 H6 V18 H-6 V6 H-18 V-6 H-6Z" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#ffffff" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="106.2" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" fill="#be123c" letter-spacing="0.5">JORIUM SALUD</text>
+</svg>

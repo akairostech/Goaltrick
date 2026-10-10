@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Seguros Lumova</title>
+<circle cx="60" cy="46" r="38" fill="#0f766e" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M0 -18 L16 -12 C16 4 9 13 0 18 C-9 13 -16 4 -16 -12Z" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-7 0 L-2 6 L8 -6" fill="none" stroke="#1f2328" stroke-width="3" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#ffffff" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#0f766e" letter-spacing="0.5">LUMOVA</text>
+</svg>

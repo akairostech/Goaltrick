@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Electro Helida</title>
+<path d="M100.0 46.0 L90.4 55.9 L92.4 69.5 L78.8 71.9 L72.4 84.0 L60.0 78.0 L47.6 84.0 L41.2 71.9 L27.6 69.5 L29.6 55.9 L20.0 46.0 L29.6 36.1 L27.6 22.5 L41.2 20.1 L47.6 8.0 L60.0 14.0 L72.4 8.0 L78.8 20.1 L92.4 22.5 L90.4 36.1Z" fill="#ffffff" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><rect x="-11" y="-10" width="22" height="16" rx="4" fill="#be123c" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-5 -10 V-18 M5 -10 V-18" stroke="#1f2328" stroke-width="3.5"/><path d="M0 6 V12 C0 16 6 17 10 17" fill="none" stroke="#1f2328" stroke-width="3.5"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#be123c" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#ffffff" letter-spacing="0.5">HELIDA</text>
+</svg>

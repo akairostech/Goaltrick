@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Laboratorios Marea</title>
+<rect x="31" y="17" width="58" height="58" rx="10" transform="rotate(45 60 46)" fill="#ffd166" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-6 -18 H6 V-6 H18 V6 H6 V18 H-6 V6 H-18 V-6 H-6Z" fill="#d62828" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#d62828" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#ffd166" letter-spacing="0.5">MAREA</text>
+</svg>

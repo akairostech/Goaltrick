@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Moxena Protección</title>
+<path d="M60 6 L95 26 V66 L60 86 L25 66 V26Z" fill="#fde68a" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M0 -18 L16 -12 C16 4 9 13 0 18 C-9 13 -16 4 -16 -12Z" fill="#7c3aed" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-7 0 L-2 6 L8 -6" fill="none" stroke="#1f2328" stroke-width="3" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#7c3aed" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#fde68a" letter-spacing="0.5">MOXENA</text>
+</svg>

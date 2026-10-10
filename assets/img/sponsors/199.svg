@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Laboratorios Colibrí</title>
+<rect x="22" y="8" width="76" height="76" rx="18" fill="#ffffff" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-6 -18 H6 V-6 H18 V6 H6 V18 H-6 V6 H-18 V-6 H-6Z" fill="#be123c" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#be123c" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="107.7" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="13" fill="#ffffff" letter-spacing="0.5">COLIBRÍ</text>
+</svg>

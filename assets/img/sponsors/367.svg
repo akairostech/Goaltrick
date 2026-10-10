@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Plantaciones Alborada</title>
+<path d="M60 6 L95 26 V66 L60 86 L25 66 V26Z" fill="#b45309" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-15 15 C-19 -6 -4 -18 17 -17 C18 4 6 18 -15 15Z" fill="#fff7ed" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-15 15 C-6 4 2 -4 10 -10" fill="none" stroke="#1f2328" stroke-width="2.5"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#fff7ed" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="107.7" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="13" fill="#b45309" letter-spacing="0.5">ALBORADA</text>
+</svg>

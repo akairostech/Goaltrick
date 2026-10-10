@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Estett Móvil</title>
+<circle cx="60" cy="46" r="38" fill="#065f46" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#a7f3d0" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><circle cx="0" cy="10" r="4" fill="#a7f3d0" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-10 0 A14 14 0 0 1 10 0" fill="none" stroke="#a7f3d0" stroke-width="4" stroke-linecap="round"/><path d="M-17 -7 A24 24 0 0 1 17 -7" fill="none" stroke="#a7f3d0" stroke-width="4" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#a7f3d0" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="106.2" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" fill="#065f46" letter-spacing="0.5">ESTETT MÓVIL</text>
+</svg>

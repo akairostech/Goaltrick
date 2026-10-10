@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Paxara Labs</title>
+<circle cx="60" cy="46" r="38" fill="#22d3ee" stroke="#1f2328" stroke-width="3"/><circle cx="60" cy="46" r="31" fill="none" stroke="#374151" stroke-width="2.5"/>
+<g transform="translate(60 46) scale(1.15)"><rect x="-11" y="-11" width="22" height="22" rx="3" fill="#374151" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-6 -15 V-11 M-6 11 V15 M-15 -6 H-11 M11 -6 H15" stroke="#1f2328" stroke-width="2.5"/><path d="M0 -15 V-11 M0 11 V15 M-15 0 H-11 M11 0 H15" stroke="#1f2328" stroke-width="2.5"/><path d="M6 -15 V-11 M6 11 V15 M-15 6 H-11 M11 6 H15" stroke="#1f2328" stroke-width="2.5"/><rect x="-5" y="-5" width="10" height="10" fill="#1f2328" opacity="0.35"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#374151" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="106.2" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" fill="#22d3ee" letter-spacing="0.5">PAXARA LABS</text>
+</svg>

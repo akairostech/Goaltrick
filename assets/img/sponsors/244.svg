@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Resort Navium</title>
+<path d="M60 6 L96 16 C96 50 82 74 60 86 C38 74 24 50 24 16Z" fill="#fef08a" stroke="#1f2328" stroke-width="3"/><path d="M60 14 L88 22 C88 48 77 67 60 77" fill="none" stroke="#16a34a" stroke-width="2" opacity="0.7"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M0 18 C2 6 2 -4 0 -10" fill="none" stroke="#1f2328" stroke-width="4"/><path d="M0 -10 C-6 -18 -16 -16 -19 -9 C-12 -12 -6 -11 0 -10 C-3 -18 4 -21 12 -18 C6 -16 2 -13 0 -10 C8 -14 16 -10 18 -3 C10 -8 4 -9 0 -10Z" fill="#16a34a" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-19 18 H19" stroke="#1f2328" stroke-width="3"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#16a34a" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#fef08a" letter-spacing="0.5">NAVIUM</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Istett Ingeniería</title>
+<rect x="22" y="8" width="76" height="76" rx="18" fill="#1d4ed8" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-12 18 V-16 H-6 V18 M-9 -16 L18 -16 M-6 -10 L18 -16 M14 -16 V-2" fill="none" stroke="#1f2328" stroke-width="3"/><rect x="9" y="-2" width="10" height="7" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><rect x="-17" y="14" width="16" height="5" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#ffffff" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#1d4ed8" letter-spacing="0.5">ISTETT</text>
+</svg>

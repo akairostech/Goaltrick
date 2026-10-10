@@ -1,0 +1,9 @@
+# GoalTrick - protección de archivos internos (Apache / XAMPP)
+Options -Indexes
+DirectoryIndex index.php
+
+<FilesMatch "\.(ini|lock|sql|md|log)$">
+    Require all denied
+</FilesMatch>
+
+RedirectMatch 403 ^.*/(app|sql|cron)/.*$

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Buses Manantial</title>
+<rect x="22" y="8" width="76" height="76" rx="18" fill="#fef3c7" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><rect x="-15" y="-17" width="30" height="31" rx="5" fill="#4d7c0f" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><rect x="-11" y="-12" width="22" height="11" rx="2" fill="#fff" opacity="0.85"/><circle cx="-8" cy="7" r="2.5" fill="#1f2328"/><circle cx="8" cy="7" r="2.5" fill="#1f2328"/><path d="M-11 14 V18 M11 14 V18" stroke="#1f2328" stroke-width="4"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#4d7c0f" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="107.0" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="11" fill="#fef3c7" letter-spacing="0.5">MANANTIAL</text>
+</svg>

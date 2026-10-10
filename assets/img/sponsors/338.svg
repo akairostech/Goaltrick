@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Academia Lanix</title>
+<path d="M100.0 46.0 L90.4 55.9 L92.4 69.5 L78.8 71.9 L72.4 84.0 L60.0 78.0 L47.6 84.0 L41.2 71.9 L27.6 69.5 L29.6 55.9 L20.0 46.0 L29.6 36.1 L27.6 22.5 L41.2 20.1 L47.6 8.0 L60.0 14.0 L72.4 8.0 L78.8 20.1 L92.4 22.5 L90.4 36.1Z" fill="#0f766e" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M0 -12 C-6 -16 -14 -16 -19 -13 V15 C-14 12 -6 12 0 16 C6 12 14 12 19 15 V-13 C14 -16 6 -16 0 -12Z" fill="#ffffff" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 -12 V16" stroke="#1f2328" stroke-width="2"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#ffffff" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="108.4" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="15" fill="#0f766e" letter-spacing="0.5">LANIX</text>
+</svg>

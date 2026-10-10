@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<title>Wexel Motors</title>
+<rect x="31" y="17" width="58" height="58" rx="10" transform="rotate(45 60 46)" fill="#4d7c0f" stroke="#1f2328" stroke-width="3"/>
+<g transform="translate(60 46) scale(1.15)"><path d="M-19 6 V-1 L-12 -10 H10 L18 -1 V6Z" fill="#fef3c7" stroke="#1f2328" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="-10" cy="8" r="5" fill="#1f2328"/><circle cx="10" cy="8" r="5" fill="#1f2328"/><path d="M-9 -7 H8 L12 -2 H-12Z" fill="#fff" opacity="0.8"/></g>
+<rect x="8" y="92" width="104" height="22" rx="11" fill="#fef3c7" stroke="#1f2328" stroke-width="2.5"/>
+<text x="60" y="106.2" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="9" fill="#4d7c0f" letter-spacing="0.5">WEXEL MOTORS</text>
+</svg>
