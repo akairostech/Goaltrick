@@ -673,3 +673,4 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
 .matches-table .match-actions .btn { padding: 2px 5px; margin-left: 1px; }
 .matches-table .match-actions .form-badge { margin-right: 0; }
 .matches-table .mt-name { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.matches-table .mt-pens { font-size: 11.5px; line-height: 1.1; }
