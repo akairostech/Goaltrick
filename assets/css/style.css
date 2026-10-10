@@ -63,10 +63,16 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 14px 0; }
     box-shadow: 0 2px 4px rgba(0,0,0,.2);
 }
 .topbar-inner { display: flex; align-items: center; justify-content: space-between; min-height: 58px; gap: 10px; flex-wrap: wrap; }
-.logo { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: bold; font-size: 22px; letter-spacing: .5px; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
-.logo:hover { color: #fff; text-decoration: none; }
-.logo-ball { font-size: 28px; }
-.logo-text { font-family: Georgia, "Trebuchet MS", serif; font-style: italic; }
+.logo { display: flex; align-items: center; gap: 2px; color: #fff; transform: rotate(-3deg); transition: transform .2s; }
+.logo:hover { color: #fff; text-decoration: none; transform: rotate(-1deg) scale(1.04); }
+.logo:hover .logo-ball { animation: logo-bounce .6s ease; }
+.logo-ball { display: block; width: 54px; height: 48px; filter: drop-shadow(0 2px 0 rgba(0,0,0,.25)); }
+.logo-text { font-family: "Arial Black", "Segoe UI Black", "Helvetica Neue", Impact, sans-serif; font-weight: 900; font-size: 27px; line-height: 1; letter-spacing: .5px;
+    text-shadow: -2px -2px 0 #1d2a1b, 2px -2px 0 #1d2a1b, -2px 2px 0 #1d2a1b, 2px 2px 0 #1d2a1b, 0 -2px 0 #1d2a1b, 0 2px 0 #1d2a1b, -2px 0 0 #1d2a1b, 2px 0 0 #1d2a1b, 0 5px 0 #0d240f; }
+.logo-text .lt-a { color: #ffffff; }
+.logo-text .lt-b { color: #f7c51e; margin-left: 1px; }
+@keyframes logo-bounce { 0%, 100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-6px) rotate(-25deg); } 70% { transform: translateY(1px) rotate(-40deg); } }
+@media (max-width: 760px) { .logo-text { font-size: 21px; } .logo-ball { width: 42px; height: 37px; } }
 .topbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .topbar-right a { color: #fff; }
 .tb-season { background: rgba(0,0,0,.2); padding: 3px 8px; border-radius: 10px; font-size: 11px; }

@@ -35,12 +35,12 @@ $clubMenu = [
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e(($pageTitle ? $pageTitle . ' · ' : '') . $site) ?></title>
     <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="<?= e(asset('img/logo-ball.svg')) ?>">
 </head>
 <body class="layout-<?= e($layout) ?>">
 <header class="topbar">
     <div class="wrap topbar-inner">
-        <a class="logo" href="<?= e(url()) ?>"><span class="logo-ball">⚽</span><span class="logo-text"><?= e($site) ?></span></a>
+        <a class="logo" href="<?= e(url()) ?>"><?= logo_html($site) ?></a>
         <div class="topbar-right">
             <?php $langs = Lang::available(); if (count($langs) > 1): $cur = Lang::code(); ?>
             <details class="lang-switch">

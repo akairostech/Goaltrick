@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 64" width="72" height="64">
+  <!-- GoalTrick: balón caricaturesco con estela -->
+  <g stroke-linecap="round" fill="none">
+    <path d="M4 26 H16" stroke="#1d2a1b" stroke-width="7"/>
+    <path d="M4 26 H16" stroke="#f7c51e" stroke-width="3.5"/>
+    <path d="M2 36 H13" stroke="#1d2a1b" stroke-width="7"/>
+    <path d="M2 36 H13" stroke="#ffffff" stroke-width="3.5"/>
+    <path d="M7 46 H17" stroke="#1d2a1b" stroke-width="7"/>
+    <path d="M7 46 H17" stroke="#f7c51e" stroke-width="3.5"/>
+  </g>
+  <ellipse cx="43" cy="60" rx="17" ry="3" fill="#000" opacity=".25"/>
+  <defs><clipPath id="ball"><circle cx="43" cy="33" r="23"/></clipPath></defs>
+  <circle cx="43" cy="33" r="23" fill="#ffffff"/>
+  <g clip-path="url(#ball)" fill="#1d2a1b">
+    <polygon points="43,24 51.5,30.2 48.3,40.2 37.7,40.2 34.5,30.2"/>
+    <polygon points="43,8 50,12 48,17 38,17 36,12"/>
+    <polygon points="64,26 67,36 61,38 56,31 59,25"/>
+    <polygon points="22,26 27,25 30,31 25,38 19,36"/>
+    <polygon points="31,50 37,47 41,53 37,59 30,57"/>
+    <polygon points="55,50 49,47 45,53 49,59 56,57"/>
+  </g>
+  <g clip-path="url(#ball)" stroke="#1d2a1b" stroke-width="1.6" fill="none">
+    <path d="M43 24 V17 M51.5 30.2 L58 28 M48.3 40.2 L52 47 M37.7 40.2 L34 47 M34.5 30.2 L28 28"/>
+  </g>
+  <circle cx="43" cy="33" r="23" fill="none" stroke="#1d2a1b" stroke-width="4"/>
+  <path d="M30 20 Q35 14 43 13" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity=".9"/>
+  <path d="M27 40 Q30 50 40 54" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" opacity=".12"/>
+  <path d="M62 6 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#f7c51e" stroke="#1d2a1b" stroke-width="1.6" stroke-linejoin="round"/>
+</svg>

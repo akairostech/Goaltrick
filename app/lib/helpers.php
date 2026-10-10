@@ -689,3 +689,17 @@ function admin_tabs(string $active): string
     }
     return $h . '</div>';
 }
+
+/** Logotipo del juego: balón caricaturesco + nombre en dos colores ("Goal" + "Trick") */
+function logo_html(string $site): string
+{
+    // Se parte el nombre en la segunda mayúscula (GoalTrick -> Goal|Trick); si no hay, va entero
+    $a = $site;
+    $b = '';
+    if (preg_match('/^(.+?)(\p{Lu}.*)$/u', mb_substr($site, 1), $m)) {
+        $a = mb_substr($site, 0, 1) . $m[1];
+        $b = $m[2];
+    }
+    return '<img class="logo-ball" src="' . e(asset('img/logo-ball.svg')) . '" width="54" height="48" alt="">'
+        . '<span class="logo-text"><span class="lt-a">' . e($a) . '</span>' . ($b !== '' ? '<span class="lt-b">' . e($b) . '</span>' : '') . '</span>';
+}
