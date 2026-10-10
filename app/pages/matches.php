@@ -26,7 +26,7 @@ $seasons = array_column(DB::all('SELECT DISTINCT season FROM ((SELECT season FRO
 <div class="box">
     <div class="box-head"><?= e(t('Temporada {n}', ['n' => $season])) ?></div>
     <div class="table-wrap">
-    <table class="table">
+    <table class="table matches-table">
         <thead><tr><th><?= e(t('Fecha')) ?></th><th><?= e(t('Tipo')) ?></th><th class="right"><?= e(t('Local')) ?></th><th class="center"><?= e(t('Resultado')) ?></th><th><?= e(t('Visitante')) ?></th><th></th></tr></thead>
         <tbody>
         <?php foreach ($matches as $m):
@@ -43,9 +43,9 @@ $seasons = array_column(DB::all('SELECT DISTINCT season FROM ((SELECT season FRO
             <tr>
                 <td class="nowrap small"><?= e(date('d/m/y H:i', strtotime($m['scheduled_at']))) ?></td>
                 <td class="small"><?= $m['type'] === 'league' ? e(t('Liga J{n}', ['n' => (int)$m['round']])) : e(match_type_label($m)) ?></td>
-                <td class="right nowrap"><?= (int)$m['home_team_id'] === $teamId ? '<strong>' . e($m['hn']) . '</strong>' : team_link($m['home_team_id'], $m['hn']) ?> <?= crest_img($crestOf($m, 'h'), 22) ?></td>
+                <td class="right nowrap"><span class="mt-name" title="<?= e($m['hn']) ?>"><?= (int)$m['home_team_id'] === $teamId ? '<strong>' . e($m['hn']) . '</strong>' : team_link($m['home_team_id'], $m['hn']) ?></span> <?= crest_img($crestOf($m, 'h'), 22) ?></td>
                 <td class="center nowrap"><?= $played ? '<strong>' . e(score_label($m)) . '</strong>' : '<span class="muted">- : -</span>' ?></td>
-                <td class="nowrap"><?= crest_img($crestOf($m, 'a'), 22) ?> <?= (int)$m['away_team_id'] === $teamId ? '<strong>' . e($m['an']) . '</strong>' : team_link($m['away_team_id'], $m['an']) ?></td>
+                <td class="nowrap"><?= crest_img($crestOf($m, 'a'), 22) ?> <span class="mt-name" title="<?= e($m['an']) ?>"><?= (int)$m['away_team_id'] === $teamId ? '<strong>' . e($m['an']) . '</strong>' : team_link($m['away_team_id'], $m['an']) ?></span></td>
                 <td class="nowrap match-actions"><?php if ($played): ?><span class="form-badge form-<?= $res ?>"><?= e($resLabel) ?></span> <a class="btn btn-small btn-grey" href="<?= e(url('match', ['id' => $m['id']])) ?>">📰 <?= e(t('Crónica')) ?></a><?php else: ?><a class="btn btn-small btn-grey" href="<?= e(url('match', ['id' => $m['id']])) ?>">🔎 <?= e(t('Previa')) ?></a><?php if ($isMine): $sentM = Lineup::sentFor($teamId, (int)$m['id']) !== null; ?> <a class="btn btn-small<?= $sentM ? '' : ' btn-accent' ?>" href="<?= e(url('lineup', ['match' => $m['id']])) ?>" title="<?= e($sentM ? t('Alineación enviada') : t('Sin enviar: se usará la predeterminada')) ?>"><?= $sentM ? '✅' : '📋' ?> <?= e(t('Alineación')) ?></a><?php endif; ?><?php endif; ?></td>
             </tr>
         <?php endforeach; ?>

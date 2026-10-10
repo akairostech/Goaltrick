@@ -663,3 +663,13 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
 .crest-name { display: inline-flex; align-items: center; gap: 5px; }
 .crest-name img { flex-shrink: 0; }
 .table td.num { white-space: nowrap; }
+
+/* Partidos: columnas más juntas para evitar la barra de desplazamiento lateral */
+.matches-table th, .matches-table td { padding: 5px 3px; }
+.matches-table th:first-child, .matches-table td:first-child { padding-left: 6px; }
+.matches-table th:last-child, .matches-table td:last-child { padding-right: 6px; }
+.matches-table th { letter-spacing: 0; }
+.matches-table td.small { font-size: 11px; }
+.matches-table .match-actions .btn { padding: 2px 5px; margin-left: 1px; }
+.matches-table .match-actions .form-badge { margin-right: 0; }
+.matches-table .mt-name { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
