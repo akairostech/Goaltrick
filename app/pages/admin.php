@@ -34,6 +34,15 @@ if (is_post()) {
             }
             flash('success', $out ? implode(' | ', $out) : t('Nada que ejecutar.'));
             break;
+        case 'finish_works':
+            // v1.10.11 (modo pruebas): termina ya todas las obras de estadio en curso
+            $n = (int)DB::value('SELECT COUNT(*) FROM teams WHERE build_finishes_at IS NOT NULL');
+            if ($n) {
+                DB::exec('UPDATE teams SET build_finishes_at = ? WHERE build_finishes_at IS NOT NULL AND build_finishes_at > ?', [now(), now()]);
+                Economy::finishConstructions();
+            }
+            flash('success', $n ? t('Obras terminadas en {n} estadio(s).', ['n' => $n]) : t('No hay obras de estadio en curso.'));
+            break;
         case 'ban':
         case 'unban':
             $uid = (int)post('id');
@@ -118,6 +127,9 @@ $stats = DB::row("SELECT (SELECT COUNT(*) FROM users) users, (SELECT COUNT(*) FR
             <input type="number" name="n" value="1" min="1" max="30" style="width:70px"><button class="btn btn-accent" type="submit"><?= e(t('Forzar siguientes eventos')) ?></button></form>
         <br><br>
         <form method="post" class="inline-form" data-confirm-submit="<?= e(t('¿Simular el resto de la semana hasta la jornada de liga?')) ?>"><?= csrf_field() ?><input type="hidden" name="action" value="force_week"><button class="btn btn-accent" type="submit"><?= e(t('Simular hasta la próxima jornada')) ?></button></form>
+<?php $worksN = (int)DB::value('SELECT COUNT(*) FROM teams WHERE build_finishes_at IS NOT NULL'); ?>
+        <br>
+        <form method="post" class="inline-form" data-confirm-submit="<?= e(t('¿Terminar ahora todas las obras de los estadios?')) ?>"><?= csrf_field() ?><input type="hidden" name="action" value="finish_works"><button class="btn btn-accent" type="submit"<?= $worksN ? '' : ' disabled' ?>>🏗 <?= e(t('Terminar obras de los estadios')) ?></button> <span class="small muted"><?= e(t('{n} obra(s) en curso', ['n' => $worksN])) ?></span></form>
         <p class="small muted" style="margin-top:8px"><?= e(t('Una actualización de entrenamiento con muchos equipos puede tardar algunos segundos.')) ?></p>
     </div></div>
     <div class="box"><div class="box-head"><?= e(t('Próximos eventos')) ?></div>
