@@ -703,3 +703,5 @@ img.wc-ico { display: inline-block; height: 1.45em; width: auto; vertical-align:
 .rating-cmp td .small, .rating-cmp td.small { font-size: 10px; }
 .rating-cmp thead th { font-size: 10px; }
 .rating-cmp .rbar { height: 10px; }
+/* v1.10.12: penaltis debajo del marcador (Mundial) */
+.pens-line { font-size: 11.5px; line-height: 1.1; font-weight: bold; }

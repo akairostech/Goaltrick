@@ -48,7 +48,7 @@ $teamName = fn($id) => $id ? DB::row('SELECT t.name, t.country_id, c.code FROM t
 $gameRow = function (array $m) {
     $played = $m['status'] === 'played';
     return '<tr><td class="right">' . nation_link($m['hcid'], $m['hn'], $m['hcode']) . '</td>'
-        . '<td class="center nowrap"><a href="' . e(url('match', ['id' => $m['id']])) . '">' . ($played ? '<strong>' . e(score_label($m)) . '</strong>' : e(date('d/m H:i', strtotime($m['scheduled_at'])))) . '</a></td>'
+        . '<td class="center nowrap"><a href="' . e(url('match', ['id' => $m['id']])) . '">' . ($played ? score_html($m) : e(date('d/m H:i', strtotime($m['scheduled_at'])))) . '</a></td>'
         . '<td>' . nation_link($m['acid'], $m['an'], $m['acode']) . '</td></tr>';
 };
 ?>

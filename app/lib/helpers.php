@@ -532,6 +532,16 @@ function score_label(array $m): string
     return $t;
 }
 
+/** v1.10.12: marcador en HTML con los penaltis (si los hubo) en una línea debajo, en letra más pequeña */
+function score_html(array $m): string
+{
+    $h = '<strong>' . (int)$m['home_goals'] . ' - ' . (int)$m['away_goals'] . '</strong>';
+    if (isset($m['home_pens']) && $m['home_pens'] !== null) {
+        $h .= '<div class="pens-line">(' . (int)$m['home_pens'] . '-' . (int)$m['away_pens'] . ' ' . e(t('pen.')) . ')</div>';
+    }
+    return $h;
+}
+
 function flag(?string $code, ?string $title = null): string
 {
     return $code ? NationService::flagImg($code, $title ?? strtoupper($code)) : '';
