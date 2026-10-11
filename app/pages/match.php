@@ -203,7 +203,7 @@ foreach ($lineups as $l) {
         <?php foreach (['home' => $m['hn'], 'away' => $m['an']] as $side => $name): ?>
         <div class="box">
             <div class="box-head"><?= e(t('Alineación de {team}', ['team' => $name])) ?></div>
-            <table class="table compact">
+            <table class="table compact lineup-table">
                 <thead><tr><th><?= e(t('Pos')) ?></th><th><?= e(t('Jugador')) ?></th><th class="num"><?= e(t('Min')) ?></th><th><?= e(t('Valoración')) ?></th></tr></thead>
                 <tbody>
                 <?php foreach ($bySide[$side] as $l): ?>

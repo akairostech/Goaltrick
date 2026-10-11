@@ -97,7 +97,7 @@ $n = count($table);
                 <?php if ($round < LeagueService::LEAGUE_ROUNDS): ?> <a href="<?= e(url('league', ['unit' => $unitId, 'season' => $season, 'round' => $round + 1])) ?>"><?= e(t('Siguiente')) ?> »</a><?php endif; ?>
             </span>
         </div>
-        <table class="table compact">
+        <table class="table compact round-table">
             <?php foreach ($games as $g): ?>
                 <tr>
                     <td class="right"><?= e($g['hn']) ?> <?= $crest($g['home_team_id'], 18) ?></td>
