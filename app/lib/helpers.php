@@ -392,6 +392,35 @@ function specialty_badge(?string $s): string
     return '<span class="spec" title="' . e($name) . '">' . $icon . ' ' . e($name) . '</span>';
 }
 
+/** v1.10.9: datos de un jugador para el tooltip (crónicas); misma forma que los de la página de alineación */
+function player_tip_data(array $p): array
+{
+    $skills = [];
+    foreach (SKILLS as $k => $label) {
+        $skills[] = [skill_title($k), (int)floor((float)$p[$k]), skill_name($p[$k])];
+    }
+    return [
+        'id'       => (int)$p['id'],
+        'name'     => player_name($p),
+        'img'      => avatar_url($p),
+        'role'     => $p['role'],
+        'roleName' => role_name($p['role']),
+        'age'      => (int)$p['age_years'],
+        'days'     => (int)$p['age_days'],
+        'tsi'      => num($p['tsi']),
+        'formName' => form_name($p['form']),
+        'stamina'  => (int)floor((float)$p['stamina']),
+        'xp'       => (int)floor((float)$p['experience']),
+        'lead'     => (int)$p['leadership'],
+        'spec'     => $p['specialty'] && isset(SPECIALTIES[$p['specialty']]) ? SPECIALTIES[$p['specialty']][1] . ' ' . specialty_name($p['specialty']) : '',
+        'inj'      => (float)$p['injury_weeks'],
+        'susp'     => (int)$p['suspended'],
+        'yc'       => (int)$p['yellow_cards'],
+        'goals'    => (int)$p['goals_season'],
+        'skills'   => $skills,
+    ];
+}
+
 function player_name(array $p): string
 {
     return $p['first_name'] . ' ' . $p['last_name'];

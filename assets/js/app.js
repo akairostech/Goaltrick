@@ -337,6 +337,50 @@
 
         render();
     }
+
+    // v1.10.9: tooltip con los datos del jugador en las alineaciones de la crónica
+    var tipDataEl = document.getElementById('player-tip-data');
+    var mtip = document.getElementById('player-tip');
+    if (tipDataEl && mtip && !document.getElementById('lineup-form')) {
+        var TP = JSON.parse(tipDataEl.textContent);
+        var escT = function (t) { return String(t).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); };
+        var placeTip = function (ev) {
+            if (mtip.hidden) { return; }
+            var w = mtip.offsetWidth, h = mtip.offsetHeight, x = ev.clientX + 16, y = ev.clientY + 16;
+            if (x + w > window.innerWidth - 8) { x = ev.clientX - w - 16; }
+            if (y + h > window.innerHeight - 8) { y = Math.max(8, window.innerHeight - h - 8); }
+            mtip.style.left = Math.max(8, x) + 'px';
+            mtip.style.top = y + 'px';
+        };
+        var showPlayerTip = function (el, ev) {
+            var p = TP[el.dataset.tipPid];
+            if (!p) { return; }
+            var rows = p.skills.map(function (s) {
+                return '<tr><th>' + escT(s[0]) + '</th><td><span class="skillbar ' + (s[1] >= 13 ? 'sb-top' : s[1] >= 9 ? 'sb-high' : s[1] >= 6 ? 'sb-mid' : 'sb-low')
+                    + '"><span style="width:' + (s[1] * 5) + '%"></span></span></td><td>' + escT(s[2]) + ' <span class="muted">(' + s[1] + ')</span></td></tr>';
+            }).join('');
+            mtip.innerHTML = '<div class="tip-head"><img src="' + escT(p.img) + '" alt=""><div><strong>' + escT(p.name) + '</strong><br>'
+                + '<span class="small">' + escT(p.roleName) + ' · ' + escT(L('{y} años y {d} días', {y: p.age, d: p.days})) + '</span></div></div>'
+                + '<div class="tip-stats"><span>TSI <b>' + p.tsi + '</b></span><span>' + escT(L('Forma')) + ' <b>' + escT(p.formName) + '</b></span><span>' + escT(L('Condición')) + ' <b>' + p.stamina + '</b></span>'
+                + '<span>' + escT(L('Exp.')) + ' <b>' + p.xp + '</b></span><span>' + escT(L('Liderazgo')) + ' <b>' + p.lead + '</b></span><span>' + escT(L('Goles')) + ' <b>' + p.goals + '</b></span></div>'
+                + (p.spec ? '<div class="tip-line">' + escT(L('Especialidad:')) + ' <b>' + escT(p.spec) + '</b></div>' : '')
+                + (p.inj > 0 ? '<div class="tip-line neg">' + escT(L('Lesionado: {n} semana(s)', {n: p.inj})) + '</div>' : '')
+                + (p.susp ? '<div class="tip-line neg">' + escT(L('Sancionado para el próximo partido')) + '</div>' : '')
+                + (p.yc ? '<div class="tip-line">' + escT(L('Tarjetas amarillas: {n}', {n: p.yc})) + '</div>' : '')
+                + '<table class="tip-skills">' + rows + '</table>';
+            mtip.hidden = false;
+            placeTip(ev);
+        };
+        document.addEventListener('mouseover', function (e) {
+            var el = e.target.closest && e.target.closest('[data-tip-pid]');
+            if (el && !el.contains(e.relatedTarget)) { showPlayerTip(el, e); }
+        });
+        document.addEventListener('mousemove', placeTip);
+        document.addEventListener('mouseout', function (e) {
+            var el = e.target.closest && e.target.closest('[data-tip-pid]');
+            if (el && !el.contains(e.relatedTarget)) { mtip.hidden = true; }
+        });
+    }
 })();
 
 /* Menús desplegables de la barra superior (idioma y usuario): se cierran al pulsar fuera o con Esc (v1.10) */

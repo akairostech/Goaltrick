@@ -164,6 +164,14 @@ $bySide = ['home' => [], 'away' => []];
 foreach ($lineups as $l) {
     $bySide[(int)$l['team_id'] === (int)$m['home_team_id'] ? 'home' : 'away'][] = $l;
 }
+// v1.10.9: datos actuales de los jugadores para el tooltip de las alineaciones
+$tipData = [];
+$tipIds = array_values(array_unique(array_map(fn($l) => (int)$l['player_id'], $lineups)));
+if ($tipIds) {
+    foreach (DB::all('SELECT * FROM players WHERE id IN (' . implode(',', array_fill(0, count($tipIds), '?')) . ')', $tipIds) as $tp) {
+        $tipData[(int)$tp['id']] = player_tip_data($tp);
+    }
+}
 ?>
 <div class="grid-2">
     <div class="box">
@@ -209,7 +217,7 @@ foreach ($lineups as $l) {
                 <?php foreach ($bySide[$side] as $l): ?>
                     <tr>
                         <td class="small"><?= e(isset(Lineup::POSITIONS[$l['position']][2]) ? t(Lineup::POSITIONS[$l['position']][2]) : $l['position']) ?></td>
-                        <td class="nowrap"><?= avatar_img($l, 20) ?> <?= player_link($l) ?><?= $l['goals'] ? ' ⚽' . ($l['goals'] > 1 ? '×' . (int)$l['goals'] : '') : '' ?><?= $l['red'] ? ' 🟥' : ($l['yellow'] ? ' 🟨' : '') ?><?= $l['injured'] ? ' 🩹' : '' ?></td>
+                        <td class="nowrap" data-tip-pid="<?= (int)$l['player_id'] ?>"><?= avatar_img($l, 20) ?> <?= player_link($l) ?><?= $l['goals'] ? ' ⚽' . ($l['goals'] > 1 ? '×' . (int)$l['goals'] : '') : '' ?><?= $l['red'] ? ' 🟥' : ($l['yellow'] ? ' 🟨' : '') ?><?= $l['injured'] ? ' 🩹' : '' ?></td>
                         <td class="num"><?= (int)$l['minutes'] ?></td>
                         <td><?= stars($l['stars']) ?></td>
                     </tr>
@@ -220,3 +228,7 @@ foreach ($lineups as $l) {
         <?php endforeach; ?>
     </div>
 </div>
+<?php if ($tipData): ?>
+<script type="application/json" id="player-tip-data"><?= json_encode($tipData, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
+<div id="player-tip" class="player-tip" hidden></div>
+<?php endif; ?>
