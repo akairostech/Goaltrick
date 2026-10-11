@@ -1,4 +1,4 @@
-# GoalTrick v1.10.7 — juego de gestión de fútbol (estilo Hattrick)
+# GoalTrick v1.10.8 — juego de gestión de fútbol (estilo Hattrick)
 
 Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MySQL**, sin dependencias externas.
 
@@ -44,6 +44,7 @@ Juego web multijugador de gestión de un club de fútbol, hecho en **PHP 8 + MyS
 - **v1.10.5**: los iconos de «Liga» (🥇) y «Copa» (🏆) se intercambian; la sección «Copa» muestra los escudos de los equipos (partidos de cada ronda, campeón, goleadores y palmarés), y el icono del «Mundial» es ahora una versión pequeña del trofeo de la Copa del Mundo (`assets/img/trophies/worldcup.svg`).
 - **v1.10.6**: nueva tabla «Estadísticas» bajo la plantilla en «Jugadores» (TSI, salario, valor estimado, nacionalidades, lesionados y tarjetas rojas y amarillas de la temporada, con totales y promedios por jugador); la tabla de máximos goleadores de «Clasificación» usa letra más pequeña, y en las valoraciones cada grupo de 5 estrellas se muestra como una estrella celeste brillante (cuando hay más de 5).
 - **v1.10.7**: en las crónicas, las tablas de alineaciones tienen menos separación entre líneas, y en «Liga» la tabla de la jornada usa letra más pequeña.
+- **v1.10.8**: letra más pequeña en las tablas de alineaciones de las crónicas (11 px) y en la tabla de la jornada de «Liga» (10,5 px).
 - **Otros**: amistosos, cantera, personal, mensajes privados, anuncios, buscador de equipos, rankings, panel de administración (incluye «modo pruebas» para adelantar el calendario).
 
 ## Requisitos
