@@ -698,3 +698,8 @@ img.wc-ico { display: inline-block; height: 1.45em; width: auto; vertical-align:
 .lineup-table td img.avatar { width: 18px; height: 18px; vertical-align: middle; }
 .round-table td { font-size: 10.5px; }
 .round-table td strong { font-size: 11px; }
+/* v1.10.10: caja «Estadísticas» de la crónica en letra más pequeña */
+.rating-cmp td { font-size: 11px; padding: 3px 6px; }
+.rating-cmp td .small, .rating-cmp td.small { font-size: 10px; }
+.rating-cmp thead th { font-size: 10px; }
+.rating-cmp .rbar { height: 10px; }
