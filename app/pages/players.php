@@ -15,6 +15,21 @@ $players = DB::all("SELECT p.*, c.code AS ccode, c.name AS cname,
         (SELECT l.id FROM transfer_listings l WHERE l.player_id = p.id AND l.status = 'active' LIMIT 1) AS listing_id
     FROM players p JOIN countries c ON c.id = p.country_id WHERE p.team_id = ? AND p.retired = 0 ORDER BY $order", [$team['id']]);
 $wages = array_sum(array_column($players, 'wage'));
+// v1.10.6: estadísticas de la plantilla (totales y promedios por jugador)
+$nPl = count($players);
+$avg = fn($total) => $nPl ? $total / $nPl : 0;
+$tsiTotal = array_sum(array_column($players, 'tsi'));
+$valueTotal = array_sum(array_map(fn($p) => PlayerFactory::value($p), $players));
+$nations = [];
+foreach ($players as $p) {
+    $nations[$p['ccode']] = ($nations[$p['ccode']] ?? ['name' => $p['cname'], 'n' => 0]);
+    $nations[$p['ccode']]['n']++;
+}
+uasort($nations, fn($a, $b) => $b['n'] <=> $a['n']);
+$injured = count(array_filter($players, fn($p) => (float)$p['injury_weeks'] > 0));
+$statSeason = GameState::season();
+$cards = DB::row("SELECT COALESCE(SUM(mp.yellow), 0) AS y, COALESCE(SUM(mp.red), 0) AS r FROM match_players mp
+    JOIN matches m ON m.id = mp.match_id WHERE mp.team_id = ? AND m.season = ?", [$team['id'], $statSeason]) ?: ['y' => 0, 'r' => 0];
 $sl = fn(string $k, string $label) => '<a href="' . e(url('players', ['sort' => $k])) . '"' . ($sort === $k ? ' style="text-decoration:underline"' : '') . '>' . $label . '</a>';
 ?>
 <div class="page-title">
@@ -69,6 +84,25 @@ $sl = fn(string $k, string $label) => '<a href="' . e(url('players', ['sort' => 
                 </td>
             </tr>
         <?php endforeach; ?>
+        </tbody>
+    </table>
+    </div>
+</div>
+<div class="box">
+    <div class="box-head"><?= e(t('Estadísticas')) ?></div>
+    <div class="table-wrap">
+    <table class="table compact squad-stats">
+        <thead><tr><th></th><th class="num"><?= e(t('Total')) ?></th><th class="num"><?= e(t('Promedio por jugador')) ?></th></tr></thead>
+        <tbody>
+            <tr><th>TSI</th><td class="num"><?= num($tsiTotal) ?></td><td class="num"><?= num($avg($tsiTotal)) ?></td></tr>
+            <tr><th><?= e(t('Salario')) ?></th><td class="num"><?= e(t('{amount} / semana', ['amount' => money($wages)])) ?></td><td class="num"><?= e(t('{amount} / semana', ['amount' => money($avg($wages))])) ?></td></tr>
+            <tr><th><?= e(t('Valor estimado')) ?></th><td class="num"><?= e(money($valueTotal)) ?></td><td class="num"><?= e(money($avg($valueTotal))) ?></td></tr>
+            <tr><th><?= e(t('Nacionalidades')) ?></th>
+                <td class="num"><?= count($nations) ?> <span class="nat-flags"><?php foreach ($nations as $code => $nt): ?><?= NationService::flagImg($code, t($nt['name']) . ' (' . $nt['n'] . ')') ?> <?php endforeach; ?></span></td>
+                <td class="num"><?= e(t('{n} jugadores por nacionalidad', ['n' => num($nations ? $nPl / count($nations) : 0, 1)])) ?></td></tr>
+            <tr><th><?= e(t('Lesionados')) ?></th><td class="num"><?= $injured ?></td><td class="num"><?= e(t('{n}% de la plantilla', ['n' => num($avg($injured) * 100, 1)])) ?></td></tr>
+            <tr><th><?= e(t('Tarjetas rojas')) ?> <span class="muted small">(<?= e(t('Temporada {n}', ['n' => $statSeason])) ?>)</span></th><td class="num"><?= (int)$cards['r'] ?></td><td class="num"><?= num($avg((int)$cards['r']), 2) ?></td></tr>
+            <tr><th><?= e(t('Tarjetas amarillas')) ?> <span class="muted small">(<?= e(t('Temporada {n}', ['n' => $statSeason])) ?>)</span></th><td class="num"><?= (int)$cards['y'] ?></td><td class="num"><?= num($avg((int)$cards['y']), 2) ?></td></tr>
         </tbody>
     </table>
     </div>

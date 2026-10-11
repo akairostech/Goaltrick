@@ -109,7 +109,7 @@ $n = count($table);
     </div>
     <div class="box">
         <div class="box-head"><?= e(t('Máximos goleadores')) ?></div>
-        <table class="table compact">
+        <table class="table compact scorers-table">
             <?php foreach ($scorers as $i => $s): ?>
                 <tr><td><?= $i + 1 ?></td><td class="nowrap"><?= avatar_img($s + ['team_id' => $s['tid']], 28) ?> <?= player_link($s) ?></td><td class="muted small nowrap"><?= $crest($s['tid'], 16) ?> <?= e($s['tn']) ?></td><td class="num"><strong><?= (int)$s['g'] ?></strong></td></tr>
             <?php endforeach; ?>

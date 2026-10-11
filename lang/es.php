@@ -1332,6 +1332,12 @@ Si no lo has pedido tú, ignora este mensaje.',
     'Sanc.' => 'Sanc.',
     'Tarjetas amarillas' => 'Tarjetas amarillas',
     'En venta' => 'En venta',
+    'Promedio por jugador' => 'Promedio por jugador',
+    'Nacionalidades' => 'Nacionalidades',
+    '{n} jugadores por nacionalidad' => '{n} jugadores por nacionalidad',
+    'Lesionados' => 'Lesionados',
+    '{n}% de la plantilla' => '{n}% de la plantilla',
+    'Tarjetas rojas' => 'Tarjetas rojas',
     'Las habilidades van de 0 (inexistente) a 20 (divino). Pasa el ratón por encima de un número para ver su denominación. Pulsa en el nombre de una columna para ordenar.' => 'Las habilidades van de 0 (inexistente) a 20 (divino). Pasa el ratón por encima de un número para ver su denominación. Pulsa en el nombre de una columna para ordenar.',
 
     // ---- app/pages/profile.php

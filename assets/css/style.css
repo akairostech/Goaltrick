@@ -685,3 +685,11 @@ a.tile:hover { text-decoration: none; border-color: var(--green-500); }
 img.emoji { display: inline-block !important; width: 1.15em !important; height: 1.15em !important; min-width: 0 !important; max-width: none !important; margin: 0 .05em !important; padding: 0 !important; vertical-align: -.2em !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; object-fit: contain; }
 /* v1.10.5: trofeo del Mundial como icono de la sección */
 img.wc-ico { display: inline-block; height: 1.45em; width: auto; vertical-align: -.32em; }
+/* v1.10.6: estadísticas de la plantilla, goleadores más compactos y estrellas agrupadas */
+.squad-stats tbody th { text-align: left; font-weight: bold; color: var(--green-800); background: none; text-transform: none; font-size: 12px; letter-spacing: 0; white-space: nowrap; }
+.squad-stats .nat-flags { display: block; margin-top: 2px; white-space: normal; line-height: 1.5; }
+.squad-stats .nat-flags .flag-img { margin: 1px 0; }
+.scorers-table td { font-size: 11px; padding-top: 2px; padding-bottom: 2px; }
+.scorers-table td.num strong { font-size: 12px; }
+.scorers-table img.avatar, .scorers-table td:nth-child(2) img { width: 22px; height: 22px; }
+.stars .star-5 { color: #38bdf8; font-size: 1.15em; text-shadow: 0 0 2px #fff, 0 0 4px #7dd3fc, 0 0 7px #0ea5e9; margin-right: 1px; -webkit-text-stroke: .5px #0369a1; }

@@ -420,7 +420,11 @@ function stars(float|int|string|null $s): string
     }
     $full = (int)floor($s);
     $half = ($s - $full) >= 0.5;
-    return '<span class="stars" title="' . e(t('{n} estrellas', ['n' => num($s, 1)])) . '">' . str_repeat('★', $full) . ($half ? '½' : '') . '</span>';
+    // v1.10.6: cada grupo de 5 estrellas se muestra como una estrella celeste brillante
+    $big = $full > 5 ? intdiv($full, 5) : 0;
+    $rest = $full - $big * 5;
+    return '<span class="stars" title="' . e(t('{n} estrellas', ['n' => num($s, 1)])) . '">'
+        . str_repeat('<span class="star-5" aria-hidden="true">★</span>', $big) . str_repeat('★', $rest) . ($half ? '½' : '') . '</span>';
 }
 
 /** Nombre de la valoración de un sector (estilo "débil (bajo)") */
